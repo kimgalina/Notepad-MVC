@@ -12,16 +12,19 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import java.awt.Font;
 import javax.swing.JScrollPane;
+import javax.swing.JFileChooser;
+import java.io.File;
 
 
 public class Viewer {
 
     JTextArea content ;
+    JFileChooser fileChooser;
     ActionController controller;
     WindowController windowController;
 
     public Viewer(){
-        controller = new ActionController();
+        controller = new ActionController(this);
         windowController = new WindowController(controller);
     }
 
@@ -41,7 +44,7 @@ public class Viewer {
         frame.setSize(1000,800);
 
         frame.setJMenuBar(menuBar);
-        frame.add("Center",scrollPane);
+        frame.add(scrollPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
     }
@@ -191,5 +194,25 @@ public class Viewer {
         helpMenu.setFont(menuFont);
 
         return helpMenu;
+    }
+
+    public  File getFile(){
+        if(fileChooser == null){
+            fileChooser = new JFileChooser();
+        }
+
+        int returnVal = fileChooser.showOpenDialog(new JFrame());
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           File file = fileChooser.getSelectedFile();
+           return file;
+       } else {
+
+       }
+        return null;
+    }
+
+    public void update(String text){
+        content.setText(text);
     }
 }
