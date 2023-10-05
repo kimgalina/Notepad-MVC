@@ -20,6 +20,7 @@ public class Viewer {
 
     JTextArea content ;
     JFileChooser fileChooser;
+    JFrame frame;
     ActionController controller;
     WindowController windowController;
 
@@ -39,7 +40,7 @@ public class Viewer {
         JMenuBar menuBar = getJMenuBar(menuFont,submenuFont);
         JScrollPane scrollPane = new JScrollPane(content);
 
-        JFrame frame = new JFrame("Notepad MVC");
+        frame = new JFrame("Notepad MVC");
         frame.setLocation(300,100);
         frame.setSize(1000,800);
 
@@ -212,7 +213,10 @@ public class Viewer {
         return null;
     }
 
-    public void update(String text){
+    public void update(String text,String frameName){
         content.setText(text);
+        if(frameName!= null){
+            frame.setTitle(frameName);
+        }
     }
 }
