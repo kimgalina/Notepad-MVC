@@ -9,30 +9,48 @@ import javax.swing.JRadioButtonMenuItem;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 
+import javax.swing.JTextArea;
+import java.awt.Font;
+import javax.swing.JScrollPane;
+
 
 public class Viewer {
 
-    public Viewer(){
-        ActionController controller = new ActionController();
-        WindowController windowController = new WindowController(controller);
+    JTextArea content ;
+    ActionController controller;
+    WindowController windowController;
 
-        JMenuBar menuBar = getJMenuBar(controller);
+    public Viewer(){
+        controller = new ActionController();
+        windowController = new WindowController(controller);
+    }
+
+    public void startApplication(){
+        Font contentFont = new Font("Consolas", Font.PLAIN,25);
+        Font menuFont = new Font("Times New Roman",Font.BOLD,23);
+
+        content = new JTextArea();
+        content.setFont(contentFont);
+
+        JMenuBar menuBar = getJMenuBar(menuFont);
+        JScrollPane scrollPane = new JScrollPane(content);
 
         JFrame frame = new JFrame("Notepad MVC");
         frame.setLocation(300,100);
         frame.setSize(800,500);
 
         frame.setJMenuBar(menuBar);
+        frame.add("Center",scrollPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
     }
 
-    private JMenuBar getJMenuBar(ActionController controller){
-        JMenu fileMenu = getFileMenu(controller);
-        JMenu editMenu = getEditMenu(controller);
-        JMenu formatMenu = getFormatMenu(controller);
-        JMenu viewMenu = getViewMenu(controller);
-        JMenu helpMenu = getHelpMenu(controller);
+    private JMenuBar getJMenuBar(Font menuFont){
+        JMenu fileMenu = getFileMenu(menuFont);
+        JMenu editMenu = getEditMenu(menuFont);
+        JMenu formatMenu = getFormatMenu(menuFont);
+        JMenu viewMenu = getViewMenu(menuFont);
+        JMenu helpMenu = getHelpMenu(menuFont);
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -44,7 +62,7 @@ public class Viewer {
         return menuBar;
     }
 
-    private JMenu getFileMenu(ActionController controller) {
+    private JMenu getFileMenu(Font menuFont) {
         JMenuItem newDocument = new JMenuItem( "New Document" , new ImageIcon("images/new.gif"));
         newDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         newDocument.addActionListener(controller);
@@ -78,14 +96,16 @@ public class Viewer {
         fileMenu.add(openDocument);
         fileMenu.add(saveDocument);
         fileMenu.add(saveAsDocument);
-        fileMenu.addSeparator();;
+        fileMenu.addSeparator();
         fileMenu.add(printDocument);
-        fileMenu.addSeparator();;
+        fileMenu.addSeparator();
         fileMenu.add(exitProgram);
+
+        fileMenu.setFont(menuFont);
         return fileMenu;
     }
 
-    private JMenu getEditMenu(ActionController controller) {
+    private JMenu getEditMenu(Font menuFont) {
         JMenuItem cutDocument = new JMenuItem( "Cut" , new ImageIcon("images/cut.gif"));
         cutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         cutDocument.addActionListener(controller);
@@ -141,11 +161,12 @@ public class Viewer {
         editMenu.add(goDocument);
         editMenu.add(selectAllDocument);
         editMenu.add(timeAndDateDocument);
+        editMenu.setFont(menuFont);
 
         return editMenu;
     }
 
-    private JMenu getFormatMenu(ActionController controller) {
+    private JMenu getFormatMenu(Font menuFont) {
         JRadioButtonMenuItem wordSpase = new JRadioButtonMenuItem("Word space");
         wordSpase.setSelected(true);
         wordSpase.addActionListener(controller);
@@ -160,11 +181,12 @@ public class Viewer {
         formatMenu.add(wordSpase);
         formatMenu.addSeparator();
         formatMenu.add(fontDocument);
+        formatMenu.setFont(menuFont);
 
         return formatMenu;
     }
 
-    private JMenu getViewMenu(ActionController controller) {
+    private JMenu getViewMenu(Font menuFont) {
         JRadioButtonMenuItem statusSpase = new JRadioButtonMenuItem("Status space");
         statusSpase.setSelected(false);
         statusSpase.addActionListener(controller);
@@ -172,11 +194,12 @@ public class Viewer {
 
         JMenu viewMenu = new JMenu("View");
         viewMenu.add(statusSpase);
+        viewMenu.setFont(menuFont);
 
         return viewMenu;
     }
 
-    private JMenu getHelpMenu(ActionController controller) {
+    private JMenu getHelpMenu(Font menuFont) {
         JMenuItem viewHelpDocument = new JMenuItem( "View Help" , new ImageIcon("images/font.gif"));
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
         viewHelpDocument.addActionListener(controller);
@@ -190,6 +213,7 @@ public class Viewer {
         JMenu helpMenu = new JMenu("Help");
         helpMenu.add(viewHelpDocument);
         helpMenu.add(aboutDocument);
+        helpMenu.setFont(menuFont);
 
         return helpMenu;
     }
