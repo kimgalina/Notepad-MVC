@@ -1,18 +1,19 @@
+import javax.swing.JToolBar;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
+import javax.swing.JFileChooser;
+import javax.swing.JButton;
+import javax.swing.JTextArea;
 import javax.swing.JMenu;
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JMenuBar;
+import javax.swing.JScrollPane;
+import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
+import javax.swing.ImageIcon;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 
-import javax.swing.JTextArea;
-import java.awt.Font;
-import javax.swing.JScrollPane;
-import javax.swing.JFileChooser;
 import java.io.File;
 
 
@@ -39,15 +40,62 @@ public class Viewer {
 
         JMenuBar menuBar = getJMenuBar(menuFont,submenuFont);
         JScrollPane scrollPane = new JScrollPane(content);
+        JToolBar toolBar = getToolBar();
 
         frame = new JFrame("Notepad MVC");
         frame.setLocation(300,100);
         frame.setSize(1000,800);
 
         frame.setJMenuBar(menuBar);
+        frame.add(toolBar, BorderLayout.NORTH);
         frame.add(scrollPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
+    }
+
+    private JToolBar getToolBar() {
+        JToolBar toolBar = new JToolBar();
+
+        JButton buttonNew = new JButton(new ImageIcon("images/new.gif"));
+        buttonNew.addActionListener(controller);
+        buttonNew.setActionCommand("New_Document");
+        buttonNew.setFocusable(false);
+        JButton buttonOpen = new JButton(new ImageIcon("images/open.gif"));
+        buttonOpen.addActionListener(controller);
+        buttonOpen.setActionCommand("Open_Document");
+        buttonOpen.setFocusable(false);
+        JButton buttonSave = new JButton(new ImageIcon("images/save.gif"));
+        buttonSave.addActionListener(controller);
+        buttonSave.setActionCommand("Save");
+        buttonSave.setFocusable(false);
+        JButton buttonCut = new JButton(new ImageIcon("images/cut.gif"));
+        buttonCut.addActionListener(controller);
+        buttonCut.setActionCommand("Cut");
+        buttonCut.setFocusable(false);
+        JButton buttonCopy = new JButton(new ImageIcon("images/copy.gif"));
+        buttonCopy.addActionListener(controller);
+        buttonCopy.setActionCommand("Copy");
+        buttonCopy.setFocusable(false);
+        JButton buttonPaste = new JButton(new ImageIcon("images/past.gif"));
+        buttonPaste.addActionListener(controller);
+        buttonPaste.setActionCommand("Paste");
+        buttonPaste.setFocusable(false);
+        JButton buttonColor = new JButton(new ImageIcon("images/color.gif")); // todo: find how to show window where change the color
+        buttonColor.addActionListener(controller);
+        buttonColor.setFocusable(false);
+
+        toolBar.add(buttonNew);
+        toolBar.add(buttonOpen);
+        toolBar.add(buttonSave);
+        toolBar.addSeparator();
+        toolBar.add(buttonCut);
+        toolBar.add(buttonCopy);
+        toolBar.add(buttonPaste);
+        toolBar.add(buttonColor);
+        toolBar.setFloatable(true);
+        toolBar.setRollover(true);
+
+        return toolBar;
     }
 
     private JMenuBar getJMenuBar(Font menuFont,Font submenuFont){
