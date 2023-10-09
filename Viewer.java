@@ -15,7 +15,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 
 import java.io.File;
-
+import javax.swing.JOptionPane;
 
 public class Viewer {
 
@@ -53,6 +53,12 @@ public class Viewer {
         frame.setVisible(true);
     }
 
+    public void showError(String errorMessage){
+        JOptionPane.showMessageDialog(new JFrame(),
+        errorMessage,
+        "Error",
+        JOptionPane.ERROR_MESSAGE);
+    }
     public File getFile(){
         if(fileChooser == null){
             fileChooser = new JFileChooser();

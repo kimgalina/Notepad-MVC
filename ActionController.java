@@ -17,6 +17,7 @@ public class ActionController implements ActionListener {
 
     private Viewer viewer;
     private String contentText;
+    private File CurrentOpenFile;
 
     public ActionController(Viewer viewer) {
         this.viewer = viewer;
@@ -102,7 +103,7 @@ public class ActionController implements ActionListener {
         try{
             RandomAccessFile file1 = new RandomAccessFile(file, "r");
             FileChannel fileChannel = file1.getChannel();
-            ByteBuffer byteBuffer = ByteBuffer.allocate(512);
+            ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
             while (fileChannel.read(byteBuffer) > 0) {
             // flip the buffer to prepare for get operation
                 byteBuffer.flip();
@@ -112,9 +113,10 @@ public class ActionController implements ActionListener {
             }
             file1.close();
         }catch(FileNotFoundException e){
-            e.printStackTrace();
+            viewer.showError(e.toString());
+
         }catch(IOException e){
-            e.printStackTrace();
+            viewer.showError(e.toString());
         }
         return content;
     }
