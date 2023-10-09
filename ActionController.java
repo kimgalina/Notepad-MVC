@@ -5,6 +5,14 @@ import java.io.File;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 
+
+import java.io.RandomAccessFile;
+import java.io.FileNotFoundException;
+
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.io.IOException;
+
 public class ActionController implements ActionListener {
 
     private Viewer viewer;
@@ -89,9 +97,25 @@ public class ActionController implements ActionListener {
         viewer.updateTextColor(color);
     }
 
-    private String readFile(File fileName){
-        //using nio to read the file and form content of the entire file to a string
-        String content = "I love Java";
+    private String readFile(File file){
+        String content = "";
+        try{
+            RandomAccessFile file1 = new RandomAccessFile(file, "r");
+            FileChannel fileChannel = file1.getChannel();
+            ByteBuffer byteBuffer = ByteBuffer.allocate(512);
+            while (fileChannel.read(byteBuffer) > 0) {
+            // flip the buffer to prepare for get operation
+                byteBuffer.flip();
+                while (byteBuffer.hasRemaining()) {
+                    content += (char) byteBuffer.get();
+                }
+            }
+            file1.close();
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
         return content;
     }
 }
