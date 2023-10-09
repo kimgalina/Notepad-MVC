@@ -31,9 +31,9 @@ public class Viewer {
     }
 
     public void startApplication(){
-        Font contentFont = new Font("Consolas", Font.PLAIN,25);
-        Font menuFont = new Font("Times New Roman",Font.BOLD,23);
-        Font submenuFont = new Font("Times New Roman",Font.PLAIN,20);
+        Font contentFont = new Font("Consolas", Font.PLAIN, 25);
+        Font menuFont = new Font("Tahoma", Font.BOLD, 20);
+        Font submenuFont = new Font("Tahoma", Font.PLAIN, 16);
 
         content = new JTextArea();
         content.setFont(contentFont);
