@@ -84,7 +84,7 @@ public class Viewer {
         buttonPaste.addActionListener(controller);
         buttonPaste.setActionCommand("Paste");
         buttonPaste.setFocusable(false);
-        JButton buttonColor = new JButton(new ImageIcon("images/color.gif")); // todo: find how to show window where change the color
+        JButton buttonColor = new JButton(new ImageIcon("images/color.gif"));
         buttonColor.addActionListener(controller);
         buttonColor.setActionCommand("Choose_Color");
         buttonColor.setFocusable(false);
