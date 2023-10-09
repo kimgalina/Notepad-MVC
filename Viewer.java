@@ -53,6 +53,29 @@ public class Viewer {
         frame.setVisible(true);
     }
 
+    public File getFile(){
+        if(fileChooser == null){
+            fileChooser = new JFileChooser();
+        }
+
+        int returnVal = fileChooser.showOpenDialog(new JFrame());
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           File file = fileChooser.getSelectedFile();
+           return file;
+       } else {
+
+       }
+        return null;
+    }
+
+    public void update(String text, String frameName){
+        content.setText(text);
+        if(frameName!= null){
+            frame.setTitle(frameName);
+        }
+    }
+
     public void updateTextColor(Color color) {
         content.setForeground(color);
     }
@@ -60,34 +83,13 @@ public class Viewer {
     private JToolBar getToolBar() {
         JToolBar toolBar = new JToolBar();
 
-        JButton buttonNew = new JButton(new ImageIcon("images/new.gif"));
-        buttonNew.addActionListener(controller);
-        buttonNew.setActionCommand("New_Document");
-        buttonNew.setFocusable(false);
-        JButton buttonOpen = new JButton(new ImageIcon("images/open.gif"));
-        buttonOpen.addActionListener(controller);
-        buttonOpen.setActionCommand("Open_Document");
-        buttonOpen.setFocusable(false);
-        JButton buttonSave = new JButton(new ImageIcon("images/save.gif"));
-        buttonSave.addActionListener(controller);
-        buttonSave.setActionCommand("Save");
-        buttonSave.setFocusable(false);
-        JButton buttonCut = new JButton(new ImageIcon("images/cut.gif"));
-        buttonCut.addActionListener(controller);
-        buttonCut.setActionCommand("Cut");
-        buttonCut.setFocusable(false);
-        JButton buttonCopy = new JButton(new ImageIcon("images/copy.gif"));
-        buttonCopy.addActionListener(controller);
-        buttonCopy.setActionCommand("Copy");
-        buttonCopy.setFocusable(false);
-        JButton buttonPaste = new JButton(new ImageIcon("images/past.gif"));
-        buttonPaste.addActionListener(controller);
-        buttonPaste.setActionCommand("Paste");
-        buttonPaste.setFocusable(false);
-        JButton buttonColor = new JButton(new ImageIcon("images/color.gif"));
-        buttonColor.addActionListener(controller);
-        buttonColor.setActionCommand("Choose_Color");
-        buttonColor.setFocusable(false);
+        JButton buttonNew = createButton("images/new.gif", "New_Document");
+        JButton buttonOpen = createButton("images/open.gif", "Open_Document");
+        JButton buttonSave = createButton("images/save.gif", "Save");
+        JButton buttonCut = createButton("images/cut.gif", "Cut");
+        JButton buttonCopy = createButton("images/copy.gif", "Copy");
+        JButton buttonPaste = createButton("images/paste.gif", "Paste");
+        JButton buttonColor = createButton("images/color.gif", "Choose_Color");
 
         toolBar.add(buttonNew);
         toolBar.add(buttonOpen);
@@ -101,6 +103,16 @@ public class Viewer {
         toolBar.setRollover(true);
 
         return toolBar;
+    }
+
+    private JButton createButton(String iconPath, String actionCommand) {
+        JButton button = new JButton(new ImageIcon(iconPath));
+
+        button.addActionListener(controller);
+        button.setActionCommand(actionCommand);
+        button.setFocusable(false);
+
+        return button;
     }
 
     private JMenuBar getJMenuBar(Font menuFont,Font submenuFont){
@@ -248,28 +260,5 @@ public class Viewer {
         helpMenu.setFont(menuFont);
 
         return helpMenu;
-    }
-
-    public File getFile(){
-        if(fileChooser == null){
-            fileChooser = new JFileChooser();
-        }
-
-        int returnVal = fileChooser.showOpenDialog(new JFrame());
-
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-           File file = fileChooser.getSelectedFile();
-           return file;
-       } else {
-
-       }
-        return null;
-    }
-
-    public void update(String text,String frameName){
-        content.setText(text);
-        if(frameName!= null){
-            frame.setTitle(frameName);
-        }
     }
 }
