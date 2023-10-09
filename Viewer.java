@@ -53,6 +53,10 @@ public class Viewer {
         frame.setVisible(true);
     }
 
+    public void updateTextColor(Color color) {
+        content.setForeground(color);
+    }
+
     private JToolBar getToolBar() {
         JToolBar toolBar = new JToolBar();
 
@@ -82,6 +86,7 @@ public class Viewer {
         buttonPaste.setFocusable(false);
         JButton buttonColor = new JButton(new ImageIcon("images/color.gif")); // todo: find how to show window where change the color
         buttonColor.addActionListener(controller);
+        buttonColor.setActionCommand("Choose_Color");
         buttonColor.setFocusable(false);
 
         toolBar.add(buttonNew);
@@ -245,7 +250,7 @@ public class Viewer {
         return helpMenu;
     }
 
-    public  File getFile(){
+    public File getFile(){
         if(fileChooser == null){
             fileChooser = new JFileChooser();
         }

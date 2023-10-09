@@ -1,6 +1,9 @@
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Color;
 import java.io.File;
+import javax.swing.JColorChooser;
+import javax.swing.JFrame;
 
 public class ActionController implements ActionListener {
 
@@ -8,7 +11,7 @@ public class ActionController implements ActionListener {
     private String contentText;
 
     public ActionController(Viewer viewer) {
-            this.viewer = viewer;
+        this.viewer = viewer;
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -18,7 +21,8 @@ public class ActionController implements ActionListener {
             String fileName = "fileName";//////
             contentText = readFile(file);
             viewer.update(contentText,fileName);
-
+        } else if (command.equals("Choose_Color")) {
+            openColorChooser();
         }else if(command.equals("New_Document")){
 
             System.out.println(command);
@@ -78,6 +82,11 @@ public class ActionController implements ActionListener {
             System.out.println(command);
 
         }
+    }
+
+    private void openColorChooser() {
+        Color color = JColorChooser.showDialog(new JFrame(), "Chooser", Color.BLACK);
+        viewer.updateTextColor(color);
     }
 
     private String readFile(File fileName){
