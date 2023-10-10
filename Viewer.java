@@ -26,12 +26,12 @@ public class Viewer {
     ActionController controller;
     WindowController windowController;
 
-    public Viewer(){
+    public Viewer() {
         controller = new ActionController(this);
         windowController = new WindowController(controller);
     }
 
-    public void startApplication(){
+    public void startApplication() {
         Font contentFont = new Font("Consolas", Font.PLAIN, 25);
         Font menuFont = new Font("Tahoma", Font.BOLD, 20);
         Font submenuFont = new Font("Tahoma", Font.PLAIN, 16);
@@ -54,7 +54,7 @@ public class Viewer {
         frame.setVisible(true);
     }
 
-    public void showError(String errorMessage){
+    public void showError(String errorMessage) {
         JOptionPane.showMessageDialog(new JFrame(),
         errorMessage,
         "Error",
@@ -62,7 +62,7 @@ public class Viewer {
     }
 
     public File getFile(){
-        if(fileChooser == null){
+        if(fileChooser == null) {
             fileChooser = new JFileChooser();
         }
 
@@ -78,9 +78,9 @@ public class Viewer {
         return null;
     }
 
-    public void update(String text, String frameName){
+    public void update(String text, String frameName) {
         content.setText(text);
-        if(frameName!= null){
+        if(frameName!= null) {
             frame.setTitle(frameName);
         }
     }
@@ -124,7 +124,7 @@ public class Viewer {
         return button;
     }
 
-    private JMenuBar getJMenuBar(Font menuFont, Font submenuFont){
+    private JMenuBar getJMenuBar(Font menuFont, Font submenuFont) {
         JMenu fileMenu = getFileMenu(menuFont, submenuFont);
         JMenu editMenu = getEditMenu(menuFont, submenuFont);
         JMenu formatMenu = getFormatMenu(menuFont, submenuFont);
@@ -141,7 +141,7 @@ public class Viewer {
         return menuBar;
     }
 
-    private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand, Font submenuFont){
+    private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand, Font submenuFont) {
         JMenuItem menuItem = new JMenuItem(name, new ImageIcon(pathToIcon));
         menuItem.addActionListener(controller);
         menuItem.setActionCommand(actionCommand);
