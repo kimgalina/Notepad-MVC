@@ -156,7 +156,7 @@ public class Viewer {
         newDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 
         JMenuItem openDocument = createMenuItem("Open Document", "images/open.gif", "Open_Document", submenuFont);
-        openDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
+        openDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 
         JMenuItem saveDocument = createMenuItem("Save", "images/save.gif", "Save", submenuFont);
         saveDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
