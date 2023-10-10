@@ -10,16 +10,17 @@ import javax.swing.JScrollPane;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.ImageIcon;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
-
+import java.awt.Font;
+import java.awt.Color;
+import java.awt.BorderLayout;
 import java.io.File;
 import javax.swing.JOptionPane;
 
 public class Viewer {
 
-    JTextArea content ;
+    JTextArea content;
     JFileChooser fileChooser;
     JFrame frame;
     ActionController controller;
@@ -43,8 +44,8 @@ public class Viewer {
         JToolBar toolBar = getToolBar();
 
         frame = new JFrame("Notepad MVC");
-        frame.setLocation(300,100);
-        frame.setSize(1000,800);
+        frame.setLocation(300, 100);
+        frame.setSize(1000, 800);
 
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
@@ -59,6 +60,7 @@ public class Viewer {
         "Error",
         JOptionPane.ERROR_MESSAGE);
     }
+
     public File getFile(){
         if(fileChooser == null){
             fileChooser = new JFileChooser();
@@ -72,6 +74,7 @@ public class Viewer {
        } else {
 
        }
+
         return null;
     }
 
@@ -121,12 +124,12 @@ public class Viewer {
         return button;
     }
 
-    private JMenuBar getJMenuBar(Font menuFont,Font submenuFont){
-        JMenu fileMenu = getFileMenu(menuFont,submenuFont);
-        JMenu editMenu = getEditMenu(menuFont,submenuFont);
-        JMenu formatMenu = getFormatMenu(menuFont,submenuFont);
-        JMenu viewMenu = getViewMenu(menuFont,submenuFont);
-        JMenu helpMenu = getHelpMenu(menuFont,submenuFont);
+    private JMenuBar getJMenuBar(Font menuFont, Font submenuFont){
+        JMenu fileMenu = getFileMenu(menuFont, submenuFont);
+        JMenu editMenu = getEditMenu(menuFont, submenuFont);
+        JMenu formatMenu = getFormatMenu(menuFont, submenuFont);
+        JMenu viewMenu = getViewMenu(menuFont, submenuFont);
+        JMenu helpMenu = getHelpMenu(menuFont, submenuFont);
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -138,31 +141,32 @@ public class Viewer {
         return menuBar;
     }
 
-    private JMenuItem createMenuItem(String name, String pathToIcon,String actionCommand,Font submenuFont){
-        JMenuItem menuItem = new JMenuItem( name, new ImageIcon(pathToIcon));
+    private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand, Font submenuFont){
+        JMenuItem menuItem = new JMenuItem(name, new ImageIcon(pathToIcon));
         menuItem.addActionListener(controller);
         menuItem.setActionCommand(actionCommand);
         menuItem.setFont(submenuFont);
+
         return menuItem;
     }
 
     private JMenu getFileMenu(Font menuFont, Font submenuFont) {
 
-        JMenuItem newDocument = createMenuItem("New Document","images/new.gif","New_Document",submenuFont);
+        JMenuItem newDocument = createMenuItem("New Document", "images/new.gif", "New_Document", submenuFont);
         newDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 
-        JMenuItem openDocument = createMenuItem( "Open Document" ,"images/open.gif","Open_Document",submenuFont);
+        JMenuItem openDocument = createMenuItem("Open Document", "images/open.gif", "Open_Document", submenuFont);
         openDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
 
-        JMenuItem saveDocument = createMenuItem( "Save" ,"images/save.gif","Save",submenuFont);
+        JMenuItem saveDocument = createMenuItem("Save", "images/save.gif", "Save", submenuFont);
         saveDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 
-        JMenuItem saveAsDocument = createMenuItem( "Save As ..." ,"images/save_as.gif","Save_As",submenuFont);
+        JMenuItem saveAsDocument = createMenuItem("Save As ..." , "images/save_as.gif", "Save_As", submenuFont);
 
-        JMenuItem printDocument = createMenuItem( "Print ","images/print.gif","Print",submenuFont);
+        JMenuItem printDocument = createMenuItem("Print ", "images/print.gif", "Print", submenuFont);
         printDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
 
-        JMenuItem exitProgram = createMenuItem( "Exit","","Exit",submenuFont);
+        JMenuItem exitProgram = createMenuItem("Exit", "", "Exit", submenuFont);
 
         JMenu fileMenu = new JMenu("File");
         fileMenu.add(newDocument);
@@ -174,35 +178,36 @@ public class Viewer {
         fileMenu.addSeparator();
         fileMenu.add(exitProgram);
         fileMenu.setFont(menuFont);
+
         return fileMenu;
     }
 
-    private JMenu getEditMenu(Font menuFont,Font submenuFont) {
-        JMenuItem cutDocument = createMenuItem( "Cut" ,"images/cut.gif","Cut",submenuFont);
+    private JMenu getEditMenu(Font menuFont, Font submenuFont) {
+        JMenuItem cutDocument = createMenuItem("Cut", "images/cut.gif", "Cut", submenuFont);
         cutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
 
-        JMenuItem copyDocument = createMenuItem( "Copy" ,"images/copy.gif","Copy",submenuFont);
+        JMenuItem copyDocument = createMenuItem("Copy", "images/copy.gif", "Copy", submenuFont);
         copyDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
 
-        JMenuItem pasteDocument = createMenuItem( "Paste" ,"images/past.gif","Paste",submenuFont);
+        JMenuItem pasteDocument = createMenuItem("Paste", "images/past.gif", "Paste", submenuFont);
         pasteDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
 
-        JMenuItem clearDocument = createMenuItem( "Clear" ,"images/delit.gif","Clear",submenuFont);
+        JMenuItem clearDocument = createMenuItem("Clear", "images/delit.gif", "Clear", submenuFont);
         clearDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
 
-        JMenuItem findDocument = createMenuItem( "Find" ,"images/find.gif","Find",submenuFont);
+        JMenuItem findDocument = createMenuItem("Find", "images/find.gif", "Find", submenuFont);
         findDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
 
-        JMenuItem findMoreDocument = createMenuItem( "Find more" , "images/findMore.gif","Find_More",submenuFont);
+        JMenuItem findMoreDocument = createMenuItem("Find more", "images/findMore.gif", "Find_More", submenuFont);
         findMoreDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, ActionEvent.CTRL_MASK));
 
-        JMenuItem goDocument = createMenuItem( "Go" ,"images/go.gif","Go",submenuFont);
+        JMenuItem goDocument = createMenuItem("Go", "images/go.gif", "Go", submenuFont);
         goDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
 
-        JMenuItem selectAllDocument = createMenuItem( "Select all" ,"images/marcker.gif","Select_All",submenuFont);
+        JMenuItem selectAllDocument = createMenuItem("Select all", "images/marcker.gif", "Select_All", submenuFont);
         selectAllDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 
-        JMenuItem timeAndDateDocument = createMenuItem( "Time and  date" ,"images/time.gif","Time_And_Date",submenuFont);
+        JMenuItem timeAndDateDocument = createMenuItem("Time and  date", "images/time.gif", "Time_And_Date", submenuFont);
         timeAndDateDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, ActionEvent.CTRL_MASK));
 
         JMenu editMenu = new JMenu("Edit");
@@ -220,14 +225,14 @@ public class Viewer {
         return editMenu;
     }
 
-    private JMenu getFormatMenu(Font menuFont,Font submenuFont) {
+    private JMenu getFormatMenu(Font menuFont, Font submenuFont) {
         JRadioButtonMenuItem wordSpase = new JRadioButtonMenuItem("Word space");
         wordSpase.setSelected(true);
         wordSpase.addActionListener(controller);
         wordSpase.setActionCommand("Word_Space");
         wordSpase.setFont(submenuFont);
 
-        JMenuItem fontDocument = createMenuItem( "Font" ,"images/font.gif","Font",submenuFont);
+        JMenuItem fontDocument = createMenuItem("Font", "images/font.gif", "Font", submenuFont);
         fontDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 
         JMenu formatMenu = new JMenu("Format");
@@ -239,7 +244,7 @@ public class Viewer {
         return formatMenu;
     }
 
-    private JMenu getViewMenu(Font menuFont,Font submenuFont) {
+    private JMenu getViewMenu(Font menuFont, Font submenuFont) {
         JRadioButtonMenuItem statusSpase = new JRadioButtonMenuItem("Status space");
         statusSpase.setSelected(false);
         statusSpase.addActionListener(controller);
@@ -253,11 +258,11 @@ public class Viewer {
         return viewMenu;
     }
 
-    private JMenu getHelpMenu(Font menuFont,Font submenuFont) {
-        JMenuItem viewHelpDocument = createMenuItem( "View Help" ,"images/font.gif","View_Help",submenuFont);
+    private JMenu getHelpMenu(Font menuFont, Font submenuFont) {
+        JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont);
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
 
-        JMenuItem aboutDocument = createMenuItem( "About" , "images/font.gif","About",submenuFont);
+        JMenuItem aboutDocument = createMenuItem("About", "images/font.gif", "About", submenuFont);
         aboutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
 
         JMenu helpMenu = new JMenu("Help");
