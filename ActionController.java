@@ -24,7 +24,7 @@ public class ActionController implements ActionListener {
 
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
-        if(command.equals("Open_Document")){
+        if (command.equals("Open_Document")) {
             File file = viewer.getFile();
             String fileName = "fileName";
             contentText = readFile(file);
@@ -98,7 +98,7 @@ public class ActionController implements ActionListener {
         viewer.updateTextColor(color);
     }
 
-    private String readFile(File file){
+    private String readFile(File file) {
         String content = "";
 
         try {
@@ -114,12 +114,12 @@ public class ActionController implements ActionListener {
             }
 
             file1.close();
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             viewer.showError(e.toString());
-        } catch(IOException e) {
+        } catch (IOException e) {
             viewer.showError(e.toString());
         }
-        
+
         return content;
     }
 }
