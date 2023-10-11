@@ -1,9 +1,13 @@
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+<<<<<<< HEAD
 
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
+=======
+import java.io.File;
+>>>>>>> 387bce92f6641080658858aeb4d4b579787dd2fe
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -32,7 +36,8 @@ public class ActionController implements ActionListener {
             openDocument();
 
         } else if (command.equals("Choose_Color")) {
-            openColorChooser();
+            Color color = viewer.openColorChooser();
+            viewer.updateTextColor(color);
 
         } else if (command.equals("New_Document")) {
             createNewDocument();
