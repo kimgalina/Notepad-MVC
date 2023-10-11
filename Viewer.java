@@ -18,10 +18,14 @@ import java.awt.BorderLayout;
 import java.io.File;
 import javax.swing.JOptionPane;
 
+import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
+
 public class Viewer {
 
     JTextArea content;
     JFileChooser fileChooser;
+    JTabbedPane tabPane;
     JFrame frame;
     ActionController controller;
     WindowController windowController;
@@ -36,6 +40,8 @@ public class Viewer {
         Font menuFont = new Font("Tahoma", Font.BOLD, 20);
         Font submenuFont = new Font("Tahoma", Font.PLAIN, 16);
 
+        JPanel topPanel = new JPanel(new BorderLayout());
+
         content = new JTextArea();
         content.setFont(contentFont);
 
@@ -43,17 +49,32 @@ public class Viewer {
         JScrollPane scrollPane = new JScrollPane(content);
         JToolBar toolBar = getToolBar();
 
+        topPanel.add(menuBar);
+        topPanel.add(toolBar,BorderLayout.NORTH);
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+
+        tabPane = new JTabbedPane();
+        tabPane.addTab("Untitled",mainPanel);
+
         frame = new JFrame("Notepad MVC");
         frame.setLocation(300, 100);
         frame.setSize(1000, 800);
 
-        frame.setJMenuBar(menuBar);
-        frame.add(toolBar, BorderLayout.NORTH);
-        frame.add(scrollPane);
+        frame.add(tabPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
     }
 
+    public void createNewTab(){
+        JPanel panel = new JPanel();
+
+        tabPane.addTab("Untitled",panel);
+    }
     public void showError(String errorMessage) {
         JOptionPane.showMessageDialog(new JFrame(),
         errorMessage,
@@ -84,6 +105,7 @@ public class Viewer {
             frame.setTitle(frameName);
         }
     }
+
 
     public void updateTextColor(Color color) {
         content.setForeground(color);

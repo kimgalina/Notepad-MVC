@@ -35,8 +35,7 @@ public class ActionController implements ActionListener {
             openColorChooser();
 
         } else if (command.equals("New_Document")) {
-            System.out.println(command);
-
+            createNewDocument();
         } else if (command.equals("Save")) {
             System.out.println(command);
 
@@ -105,16 +104,9 @@ public class ActionController implements ActionListener {
         viewer.update(contentText, filePath);
     }
     private String readFile(String filePath) {
-        Path path = null;
         int bytesCount;
         String fileContent = "";
-        try {
-            path = Paths.get(filePath);
-        }catch(InvalidPathException e){
-            viewer.showError(e.toString());
-        }
-
-        try(FileChannel fchannel = FileChannel.open(path,StandardOpenOption.READ)) {
+        try(FileChannel fchannel = FileChannel.open(Paths.get(filePath),StandardOpenOption.READ)) {
             ByteBuffer buffer = ByteBuffer.allocate(4096);
             do {
                 bytesCount = fchannel.read(buffer);
@@ -126,10 +118,15 @@ public class ActionController implements ActionListener {
                 }
             } while(bytesCount != -1);
 
+        }catch(InvalidPathException e){
+            viewer.showError(e.toString());
         } catch(IOException e) {
             viewer.showError(e.toString());
         }
 
         return fileContent;
+    }
+    private void createNewDocument(){
+        viewer.createNewTab();
     }
 }
