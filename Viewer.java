@@ -54,7 +54,7 @@ public class Viewer {
         JToolBar toolBar = getToolBar();
 
         topPanel.add(menuBar);
-        topPanel.add(toolBar,BorderLayout.NORTH);
+        topPanel.add(toolBar, BorderLayout.NORTH);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
 
@@ -63,7 +63,7 @@ public class Viewer {
 
 
         tabPane = new JTabbedPane();
-        tabPane.addTab("Untitled",mainPanel);
+        tabPane.addTab("Untitled", mainPanel);
 
         frame = new JFrame("Notepad MVC");
         frame.setLocation(300, 100);
@@ -138,7 +138,7 @@ public class Viewer {
             try {
                 fontSize = Integer.parseInt(sizeTextField.getText());
             } catch (NumberFormatException e) {
-                showError("Некорректный размер шрифта. Используется размер по умолчанию.");
+                showError("Font size is not correct. Using default size.");
             }
 
             Font newFont = new Font(selectedFont, Font.PLAIN, fontSize);

@@ -106,7 +106,7 @@ public class ActionController implements ActionListener {
         int bytesCount;
         String fileContent = "";
 
-        try(FileChannel fchannel = FileChannel.open(Paths.get(filePath),StandardOpenOption.READ)) {
+        try(FileChannel fchannel = FileChannel.open(Paths.get(filePath), StandardOpenOption.READ)) {
             ByteBuffer buffer = ByteBuffer.allocate(4096);
             do {
                 bytesCount = fchannel.read(buffer);
