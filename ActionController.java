@@ -2,8 +2,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.io.File;
-import javax.swing.JColorChooser;
-import javax.swing.JFrame;
 
 import java.io.RandomAccessFile;
 import java.io.FileNotFoundException;
@@ -28,7 +26,8 @@ public class ActionController implements ActionListener {
             openFile();
 
         } else if (command.equals("Choose_Color")) {
-            openColorChooser();
+            Color color = viewer.openColorChooser();
+            viewer.updateTextColor(color);
 
         } else if (command.equals("New_Document")) {
             System.out.println(command);

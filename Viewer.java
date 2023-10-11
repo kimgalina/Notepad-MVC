@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Color;
+import javax.swing.JColorChooser;
 import java.awt.BorderLayout;
 import java.io.File;
 import javax.swing.JOptionPane;
@@ -55,6 +56,14 @@ public class Viewer {
         frame.add(scrollPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
+    }
+
+    public Color openColorChooser() {
+        return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
+    }
+
+    public void updateTextColor(Color color) {
+        content.setForeground(color);
     }
 
     public void showError(String errorMessage) {
