@@ -1,16 +1,20 @@
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
-import java.io.File;
+
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 
-import java.io.RandomAccessFile;
-import java.io.FileNotFoundException;
-
+import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.nio.file.InvalidPathException;
 
 public class ActionController implements ActionListener {
 
@@ -25,10 +29,7 @@ public class ActionController implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
         if (command.equals("Open_Document")) {
-            File file = viewer.getFile();
-            String fileName = "fileName";
-            contentText = readFile(file);
-            viewer.update(contentText, fileName);
+            openDocument();
 
         } else if (command.equals("Choose_Color")) {
             openColorChooser();
@@ -97,29 +98,38 @@ public class ActionController implements ActionListener {
         Color color = JColorChooser.showDialog(new JFrame(), "Chooser", Color.BLACK);
         viewer.updateTextColor(color);
     }
-
-    private String readFile(File file) {
-        String content = "";
-
+    private void openDocument() {
+        File file = viewer.getFile();
+        String filePath = file.getAbsolutePath();
+        String contentText = readFile(filePath);
+        viewer.update(contentText, filePath);
+    }
+    private String readFile(String filePath) {
+        Path path = null;
+        int bytesCount;
+        String fileContent = "";
         try {
-            RandomAccessFile file1 = new RandomAccessFile(file, "r");
-            FileChannel fileChannel = file1.getChannel();
-            ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
-
-            while (fileChannel.read(byteBuffer) > 0) {
-                byteBuffer.flip();
-                while (byteBuffer.hasRemaining()) {
-                    content += (char) byteBuffer.get();
-                }
-            }
-
-            file1.close();
-        } catch (FileNotFoundException e) {
-            viewer.showError(e.toString());
-        } catch (IOException e) {
+            path = Paths.get(filePath);
+        }catch(InvalidPathException e){
             viewer.showError(e.toString());
         }
 
-        return content;
+        try(FileChannel fchannel = FileChannel.open(path,StandardOpenOption.READ)) {
+            ByteBuffer buffer = ByteBuffer.allocate(4096);
+            do {
+                bytesCount = fchannel.read(buffer);
+                if(bytesCount != -1) {
+                    buffer.rewind();
+                    for(int i = 0; i < bytesCount; i++) {
+                        fileContent += (char) buffer.get();
+                    }
+                }
+            } while(bytesCount != -1);
+
+        } catch(IOException e) {
+            viewer.showError(e.toString());
+        }
+
+        return fileContent;
     }
 }
