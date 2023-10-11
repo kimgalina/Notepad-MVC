@@ -73,11 +73,13 @@ public class Viewer {
         frame.addWindowListener(windowController);
         frame.setVisible(true);
     }
+
     public void createNewTab(){
         JPanel panel = new JPanel();
 
         tabPane.addTab("Untitled",panel);
     }
+
     public Color openColorChooser() {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
@@ -115,10 +117,6 @@ public class Viewer {
         if(frameName != null) {
             frame.setTitle(frameName);
         }
-    }
-
-    public void updateTextColor(Color color) {
-        content.setForeground(color);
     }
 
     public void updateTextFont() {

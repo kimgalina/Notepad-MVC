@@ -91,18 +91,6 @@ public class ActionController implements ActionListener {
         }
     }
 
-    private void openFile() {
-        File file = viewer.getFile();
-        String fileName = file.getName();
-        contentText = readFile(file);
-        viewer.update(contentText, fileName);
-    }
-
-    private void openColorChooser() {
-        Color color = JColorChooser.showDialog(new JFrame(), "Chooser", Color.BLACK);
-        viewer.updateTextColor(color);
-    }
-
     private void openFontChooser() {
         viewer.updateTextFont();
     }
@@ -117,6 +105,7 @@ public class ActionController implements ActionListener {
     private String readFile(String filePath) {
         int bytesCount;
         String fileContent = "";
+
         try(FileChannel fchannel = FileChannel.open(Paths.get(filePath),StandardOpenOption.READ)) {
             ByteBuffer buffer = ByteBuffer.allocate(4096);
             do {
@@ -137,7 +126,7 @@ public class ActionController implements ActionListener {
 
         return fileContent;
     }
-    
+
     private void createNewDocument() {
         viewer.createNewTab();
     }
