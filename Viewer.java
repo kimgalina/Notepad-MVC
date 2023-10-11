@@ -17,14 +17,17 @@ import java.awt.Color;
 import java.awt.BorderLayout;
 import java.io.File;
 import javax.swing.JOptionPane;
+import java.awt.GraphicsEnvironment;
+import javax.swing.JComboBox;
+import javax.swing.JTextField;
 
 public class Viewer {
 
-    JTextArea content;
-    JFileChooser fileChooser;
-    JFrame frame;
-    ActionController controller;
-    WindowController windowController;
+    private JTextArea content;
+    private JFileChooser fileChooser;
+    private JFrame frame;
+    private ActionController controller;
+    private WindowController windowController;
 
     public Viewer() {
         controller = new ActionController(this);
@@ -39,7 +42,7 @@ public class Viewer {
         content = new JTextArea();
         content.setFont(contentFont);
 
-        JMenuBar menuBar = getJMenuBar(menuFont,submenuFont);
+        JMenuBar menuBar = getJMenuBar(menuFont, submenuFont);
         JScrollPane scrollPane = new JScrollPane(content);
         JToolBar toolBar = getToolBar();
 
@@ -80,13 +83,40 @@ public class Viewer {
 
     public void update(String text, String frameName) {
         content.setText(text);
-        if(frameName!= null) {
+        if(frameName != null) {
             frame.setTitle(frameName);
         }
     }
 
     public void updateTextColor(Color color) {
         content.setForeground(color);
+    }
+
+    public void updateTextFont() {
+        String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        JComboBox<String> fontComboBox = new JComboBox<>(fonts);
+        JTextField sizeTextField = new JTextField(5);
+
+        Object[] message = {
+            "Выберите шрифт:", fontComboBox,
+            "Введите размер шрифта:", sizeTextField
+        };
+
+        int option = JOptionPane.showConfirmDialog(frame, message, "Выбор шрифта и размера", JOptionPane.OK_CANCEL_OPTION);
+
+        if (option == JOptionPane.OK_OPTION) {
+            String selectedFont = (String) fontComboBox.getSelectedItem();
+            int fontSize = 24;
+
+            try {
+                fontSize = Integer.parseInt(sizeTextField.getText());
+            } catch (NumberFormatException e) {
+                showError("Некорректный размер шрифта. Используется размер по умолчанию.");
+            }
+
+            Font newFont = new Font(selectedFont, Font.PLAIN, fontSize);
+            content.setFont(newFont);
+        }
     }
 
     private JToolBar getToolBar() {
@@ -139,15 +169,6 @@ public class Viewer {
         menuBar.add(helpMenu);
 
         return menuBar;
-    }
-
-    private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand, Font submenuFont) {
-        JMenuItem menuItem = new JMenuItem(name, new ImageIcon(pathToIcon));
-        menuItem.addActionListener(controller);
-        menuItem.setActionCommand(actionCommand);
-        menuItem.setFont(submenuFont);
-
-        return menuItem;
     }
 
     private JMenu getFileMenu(Font menuFont, Font submenuFont) {
@@ -271,5 +292,14 @@ public class Viewer {
         helpMenu.setFont(menuFont);
 
         return helpMenu;
+    }
+
+    private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand, Font submenuFont) {
+        JMenuItem menuItem = new JMenuItem(name, new ImageIcon(pathToIcon));
+        menuItem.addActionListener(controller);
+        menuItem.setActionCommand(actionCommand);
+        menuItem.setFont(submenuFont);
+
+        return menuItem;
     }
 }

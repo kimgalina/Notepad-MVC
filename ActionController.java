@@ -25,10 +25,7 @@ public class ActionController implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
         if (command.equals("Open_Document")) {
-            File file = viewer.getFile();
-            String fileName = "fileName";
-            contentText = readFile(file);
-            viewer.update(contentText, fileName);
+            openFile();
 
         } else if (command.equals("Choose_Color")) {
             openColorChooser();
@@ -72,14 +69,14 @@ public class ActionController implements ActionListener {
         } else if(command.equals("Select all")) {
             System.out.println(command);
 
-        } else if(command.equals("Time and  date")) {
+        } else if(command.equals("Time and date")) {
             System.out.println(command);
 
         } else if(command.equals("Word_Space")) {
             System.out.println(command);
 
-        } else if(command.equals("Format")) {
-            System.out.println(command);
+        } else if(command.equals("Font")) {
+            openFontChooser();
 
         } else if(command.equals("Status_Space")) {
             System.out.println(command);
@@ -93,9 +90,20 @@ public class ActionController implements ActionListener {
         }
     }
 
+    private void openFile() {
+        File file = viewer.getFile();
+        String fileName = file.getName();
+        contentText = readFile(file);
+        viewer.update(contentText, fileName);
+    }
+
     private void openColorChooser() {
         Color color = JColorChooser.showDialog(new JFrame(), "Chooser", Color.BLACK);
         viewer.updateTextColor(color);
+    }
+
+    private void openFontChooser() {
+        viewer.updateTextFont();
     }
 
     private String readFile(File file) {
