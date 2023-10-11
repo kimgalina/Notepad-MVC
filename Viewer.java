@@ -22,6 +22,9 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 
+import javax.swing.JTabbedPane;
+import javax.swing.JPanel;
+
 public class Viewer {
 
     private JTextArea content;
@@ -29,6 +32,7 @@ public class Viewer {
     private JFrame frame;
     private ActionController controller;
     private WindowController windowController;
+    private JTabbedPane tabPane;
 
     public Viewer() {
         controller = new ActionController(this);
@@ -40,6 +44,8 @@ public class Viewer {
         Font menuFont = new Font("Tahoma", Font.BOLD, 20);
         Font submenuFont = new Font("Tahoma", Font.PLAIN, 16);
 
+        JPanel topPanel = new JPanel(new BorderLayout());
+
         content = new JTextArea();
         content.setFont(contentFont);
 
@@ -47,17 +53,31 @@ public class Viewer {
         JScrollPane scrollPane = new JScrollPane(content);
         JToolBar toolBar = getToolBar();
 
+        topPanel.add(menuBar);
+        topPanel.add(toolBar,BorderLayout.NORTH);
+
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
+        mainPanel.add(topPanel, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+
+        tabPane = new JTabbedPane();
+        tabPane.addTab("Untitled",mainPanel);
+
         frame = new JFrame("Notepad MVC");
         frame.setLocation(300, 100);
         frame.setSize(1000, 800);
 
-        frame.setJMenuBar(menuBar);
-        frame.add(toolBar, BorderLayout.NORTH);
-        frame.add(scrollPane);
+        frame.add(tabPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
     }
+    public void createNewTab(){
+        JPanel panel = new JPanel();
 
+        tabPane.addTab("Untitled",panel);
+    }
     public Color openColorChooser() {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
