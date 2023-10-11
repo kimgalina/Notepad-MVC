@@ -1,13 +1,6 @@
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
-<<<<<<< HEAD
-
-import javax.swing.JColorChooser;
-import javax.swing.JFrame;
-=======
-import java.io.File;
->>>>>>> 387bce92f6641080658858aeb4d4b579787dd2fe
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -98,10 +91,6 @@ public class ActionController implements ActionListener {
         }
     }
 
-    private void openColorChooser() {
-        Color color = JColorChooser.showDialog(new JFrame(), "Chooser", Color.BLACK);
-        viewer.updateTextColor(color);
-    }
     private void openDocument() {
         File file = viewer.getFile();
         String filePath = file.getAbsolutePath();
@@ -123,7 +112,7 @@ public class ActionController implements ActionListener {
                 }
             } while(bytesCount != -1);
 
-        }catch(InvalidPathException e){
+        }catch(InvalidPathException e) {
             viewer.showError(e.toString());
         } catch(IOException e) {
             viewer.showError(e.toString());
@@ -131,7 +120,7 @@ public class ActionController implements ActionListener {
 
         return fileContent;
     }
-    private void createNewDocument(){
+    private void createNewDocument() {
         viewer.createNewTab();
     }
 }
