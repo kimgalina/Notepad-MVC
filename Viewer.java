@@ -14,17 +14,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Color;
+import javax.swing.JColorChooser;
 import java.awt.BorderLayout;
 import java.io.File;
 import javax.swing.JOptionPane;
 
 public class Viewer {
 
-    JTextArea content;
-    JFileChooser fileChooser;
-    JFrame frame;
-    ActionController controller;
-    WindowController windowController;
+    private JTextArea content;
+    private JFileChooser fileChooser;
+    private JFrame frame;
+    private ActionController controller;
+    private WindowController windowController;
 
     public Viewer() {
         controller = new ActionController(this);
@@ -52,6 +53,14 @@ public class Viewer {
         frame.add(scrollPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
+    }
+
+    public Color openColorChooser() {
+        return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
+    }
+
+    public void updateTextColor(Color color) {
+        content.setForeground(color);
     }
 
     public void showError(String errorMessage) {
@@ -83,10 +92,6 @@ public class Viewer {
         if(frameName!= null) {
             frame.setTitle(frameName);
         }
-    }
-
-    public void updateTextColor(Color color) {
-        content.setForeground(color);
     }
 
     private JToolBar getToolBar() {
