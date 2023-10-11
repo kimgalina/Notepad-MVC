@@ -21,11 +21,11 @@ import javax.swing.JOptionPane;
 
 public class Viewer {
 
-    JTextArea content;
-    JFileChooser fileChooser;
-    JFrame frame;
-    ActionController controller;
-    WindowController windowController;
+    private JTextArea content;
+    private JFileChooser fileChooser;
+    private JFrame frame;
+    private ActionController controller;
+    private WindowController windowController;
 
     public Viewer() {
         controller = new ActionController(this);
