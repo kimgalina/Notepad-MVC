@@ -29,15 +29,11 @@ import java.awt.Component;
 import javax.swing.JViewport;
 
 public class Viewer {
-
-
     private JFileChooser fileChooser;
     private JFrame frame;
     private ActionController controller;
     private WindowController windowController;
     private JTabbedPane tabPane;
-
-
     private Font contentFont;
     private Font submenuFont;
     private Font menuFont;
@@ -101,7 +97,6 @@ public class Viewer {
         panel.add(topPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-
         tabPane.addTab("Untitled", panel);
 
     }
@@ -138,10 +133,11 @@ public class Viewer {
         return null;
     }
 
-    public void update(String text, String frameName, JTextArea content) {
+    public void update(String text, String tabName, JTextArea content, JPanel currentPanel) {
         content.setText(text);
-        if(frameName != null) {
-            frame.setTitle(frameName);
+        if(tabName != null) {
+            int tabIndex = tabPane.indexOfComponent(currentPanel);
+            tabPane.setTitleAt(tabIndex,tabName);
         }
     }
 

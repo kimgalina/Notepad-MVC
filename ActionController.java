@@ -103,7 +103,12 @@ public class ActionController implements ActionListener {
         File file = viewer.getFile();
         String filePath = file.getAbsolutePath();
         String contentText = readFile(filePath);
-        viewer.update(contentText, filePath, viewer.findPanelsContent(currentPanel));
+        String fileName = getFileNameFromPath(filePath);
+        viewer.update(contentText, fileName, viewer.findPanelsContent(currentPanel), currentPanel);
+    }
+    private String getFileNameFromPath(String path) {
+        String[] directories = path.split("\\\\");
+        return directories[directories.length - 1];
     }
 
     private String readFile(String filePath) {
