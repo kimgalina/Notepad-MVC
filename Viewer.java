@@ -28,6 +28,14 @@ import javax.swing.JPanel;
 import java.awt.Component;
 import javax.swing.JViewport;
 
+import javax.swing.JComponent;
+import java.awt.FlowLayout;
+import javax.swing.JLabel;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import java.awt.Dimension;
+import java.awt.Container;
+
 public class Viewer {
     private JFileChooser fileChooser;
     private JFrame frame;
@@ -65,8 +73,9 @@ public class Viewer {
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
+        tabPane.addTab(null, mainPanel);
 
-        tabPane.addTab("Untitled", mainPanel);
+        tabPane.setTabComponentAt(0,createCustomTabComponent("Untitled",controller));
 
         frame = new JFrame("Notepad MVC");
         frame.setLocation(300, 100);
@@ -76,7 +85,31 @@ public class Viewer {
         frame.addWindowListener(windowController);
         frame.setVisible(true);
     }
+    private JComponent createCustomTabComponent(String tabTitle, ActionController controller) {
+        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        tabPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); //margin from top and bottom - 10
+        tabPanel.setOpaque(false);
+        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and tabName
 
+        JLabel label = new JLabel(tabTitle);
+        label.setFont(new Font("Tahoma", Font.PLAIN, 20));
+        tabPanel.add(label);
+
+        tabPanel.add(Box.createRigidArea(new Dimension(40, 10)));// space between button and tabName
+
+        JButton closeTabBtn = createCloseTabBtn(controller);
+        tabPanel.add(closeTabBtn);
+        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and button
+        return tabPanel;
+    }
+    private JButton createCloseTabBtn(ActionController controller){
+        JButton closeButton = new JButton("\u00d7");
+        closeButton.setFont(menuFont);
+        closeButton.setBorder(null);
+        closeButton.setActionCommand("CloseTab");
+        closeButton.addActionListener(controller);
+        return closeButton;
+    }
     public void createNewTab() {
 
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -97,7 +130,9 @@ public class Viewer {
         panel.add(topPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
 
-        tabPane.addTab("Untitled", panel);
+        tabPane.addTab(null, panel);
+        int tabIndex = tabPane.indexOfComponent(panel);
+        tabPane.setTabComponentAt(tabIndex,createCustomTabComponent("Untitled", newController));
 
     }
 
@@ -135,9 +170,22 @@ public class Viewer {
 
     public void update(String text, String tabName, JTextArea content, JPanel currentPanel) {
         content.setText(text);
-        if(tabName != null) {
-            int tabIndex = tabPane.indexOfComponent(currentPanel);
-            tabPane.setTitleAt(tabIndex,tabName);
+        int tabIndex = tabPane.indexOfComponent(currentPanel);
+        renameTab(tabName, tabIndex);
+
+    }
+    private void renameTab(String tabName, int tabIndex ) {
+        Component tabComponent = tabPane.getTabComponentAt(tabIndex);// taking tab with the index = tabIndex
+        if (tabComponent instanceof Container) {
+            Component[] components = ((Container) tabComponent).getComponents();
+
+            for (Component component : components) {
+                if (component instanceof JLabel) {
+                    JLabel tabLabel = (JLabel) component;
+                    tabLabel.setText(tabName);
+                    break;
+                }
+            }
         }
     }
 
