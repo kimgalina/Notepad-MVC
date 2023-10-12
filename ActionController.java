@@ -13,17 +13,21 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.nio.file.InvalidPathException;
 
-public class ActionController implements ActionListener {
+import javax.swing.JPanel;
 
+public class ActionController implements ActionListener {
+    private JPanel currentPanel;
     private Viewer viewer;
     private String contentText;
     private File CurrentOpenFile;
 
-    public ActionController(Viewer viewer) {
+    public ActionController(Viewer viewer,JPanel panel) {
         this.viewer = viewer;
+        currentPanel = panel;
     }
 
     public void actionPerformed(ActionEvent event) {
+
         String command = event.getActionCommand();
         if (command.equals("Open_Document")) {
             openDocument();
@@ -99,7 +103,7 @@ public class ActionController implements ActionListener {
         File file = viewer.getFile();
         String filePath = file.getAbsolutePath();
         String contentText = readFile(filePath);
-        viewer.update(contentText, filePath);
+        viewer.update(contentText, filePath, viewer.findPanelsContent(currentPanel));
     }
 
     private String readFile(String filePath) {
