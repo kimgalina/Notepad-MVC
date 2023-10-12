@@ -75,7 +75,7 @@ public class Viewer {
 
         tabPane.addTab(null, mainPanel);
 
-        tabPane.setTabComponentAt(0,createCustomTabComponent("Untitled",controller));
+        tabPane.setTabComponentAt(0, createCustomTabComponent("Untitled", controller));
 
         frame = new JFrame("Notepad MVC");
         frame.setLocation(300, 100);
@@ -85,6 +85,7 @@ public class Viewer {
         frame.addWindowListener(windowController);
         frame.setVisible(true);
     }
+
     private JComponent createCustomTabComponent(String tabTitle, ActionController controller) {
         JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         tabPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); //margin from top and bottom - 10
@@ -102,6 +103,7 @@ public class Viewer {
         tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and button
         return tabPanel;
     }
+
     private JButton createCloseTabBtn(ActionController controller){
         JButton closeButton = new JButton("\u00d7");
         closeButton.setFont(menuFont);
@@ -110,6 +112,7 @@ public class Viewer {
         closeButton.addActionListener(controller);
         return closeButton;
     }
+
     public void createNewTab() {
 
         JPanel topPanel = new JPanel(new BorderLayout());
