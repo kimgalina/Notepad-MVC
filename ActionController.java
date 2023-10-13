@@ -38,10 +38,10 @@ public class ActionController implements ActionListener {
             createNewDocument();
 
         } else if (command.equals("Save")) {
-            save();
+            saveDocument();
 
         } else if(command.equals("Save_As")) {
-            System.out.println(command);
+            saveDocumentAs();
 
         } else if(command.equals("Print")) {
             System.out.println(command);
@@ -140,16 +140,35 @@ public class ActionController implements ActionListener {
         viewer.createNewTab();
     }
 
-    private void save(){
-        createNewFile();
-    }
-    private void createNewFile() {
-        File newFile = viewer.selectNewFileLocation();
-        Path newFilePath = Paths.get(newFile.getAbsolutePath());
-        try{
-            Files.createFile(newFilePath);
-        }catch(IOException e){
-            viewer.showError(e.toString());
+    private void saveDocument() {
+        if (CurrentOpenFile != null) {
+          try {
+              String fileName = getFileNameFromPath(CurrentOpenFile.getAbsolutePath());
+              String content = viewer.getCurrentContent().getText();
+              Files.write(CurrentOpenFile.toPath(), content.getBytes());
+          } catch (IOException e) {
+              viewer.showError(e.toString());
+          }
+        } else {
+          saveDocumentAs();
         }
+    }
+
+    private void saveDocumentAs() {
+      String fileName = "";
+      if (CurrentOpenFile == null) {
+          fileName = "Untitled.txt";
+      } else  {
+          fileName = getFileNameFromPath(CurrentOpenFile.getAbsolutePath());
+      }
+      File selectedFile = viewer.getNewFileSaveLocation(fileName);
+      try {
+          Path filePath = selectedFile.toPath();
+          Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
+          CurrentOpenFile = selectedFile;
+          viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
+      } catch (IOException e) {
+          viewer.showError(e.toString());
+      }
     }
 }

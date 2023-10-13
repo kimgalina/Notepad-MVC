@@ -1,6 +1,8 @@
 import javax.swing.JToolBar;
 import javax.swing.JFrame;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
 import javax.swing.JTextArea;
 import javax.swing.JMenu;
@@ -71,7 +73,7 @@ public class Viewer {
 
         panel.add(scrollPane, BorderLayout.CENTER);
         tabPane.addTab(null, panel);
-        tabPane.setTabComponentAt(0, createCustomTabComponent("Untitled"));
+        tabPane.setTabComponentAt(0, createCustomTabComponent("Untitled.txt"));
 
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
@@ -93,6 +95,10 @@ public class Viewer {
                 }
             }
         }
+    }
+
+    public JTextArea getCurrentContent() {
+        return currentContent;
     }
 
     public Color openColorChooser() {
@@ -121,11 +127,16 @@ public class Viewer {
         }
         return null;
     }
-    public File selectNewFileLocation(){
+
+    public File getNewFileSaveLocation(String fileName){
         if (fileChooser == null) {
             fileChooser = new JFileChooser();
         }
-        fileChooser.setSelectedFile(new File(getNewFileName()));// we need to get first 12 SYMBOLS FROM the file first string
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files (*.txt)", "txt");
+        if (!fileName.equals("Untitled.txt")) {
+          fileChooser.setSelectedFile(new File(fileName));
+        }
+        fileChooser.setFileFilter(filter);
         int returnValue = fileChooser.showSaveDialog(new JFrame());
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
@@ -133,6 +144,7 @@ public class Viewer {
         }
         return null;
     }
+
     private String getNewFileName(){
         String content = currentContent.getText();
         if(content.length() != 0){
