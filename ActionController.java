@@ -100,6 +100,7 @@ public class ActionController implements ActionListener {
 
     private void openDocument() {
         File file = viewer.getFile();
+        CurrentOpenFile = file;
         String filePath = file.getAbsolutePath();
         String contentText = readFile(filePath);
         String fileName = getFileNameFromPath(filePath);
