@@ -51,17 +51,16 @@ public class Viewer {
     private JTextArea currentContent;
 
     public Viewer() {
+        frame = getFrame();
         controller = new ActionController(this);
         windowController = new WindowController(controller);
-        contentFont = new Font("Consolas", Font.PLAIN, 25);
+        contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
         tabPane = new JTabbedPane();
     }
 
     public void startApplication() {
-        frame = getFrame();
-
         JMenuBar menuBar = getJMenuBar(menuFont, submenuFont, controller);
         JToolBar toolBar = getToolBar(controller);
 
@@ -223,26 +222,27 @@ public class Viewer {
 
     private JComponent createCustomTabComponent(String tabTitle) {
         JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        tabPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); //margin from top and bottom - 10
+        tabPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); //margin from top and bottom - 10
         tabPanel.setOpaque(false);
         tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and tabName
 
         JLabel label = new JLabel(tabTitle);
-        label.setFont(new Font("Tahoma", Font.PLAIN, 20));
+        label.setFont(new Font("Tahoma", Font.PLAIN, 14));
         tabPanel.add(label);
 
         tabPanel.add(Box.createRigidArea(new Dimension(40, 10)));// space between button and tabName
 
         JButton closeTabBtn = createCloseTabBtn();
         tabPanel.add(closeTabBtn);
-        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and button
+        tabPanel.add(Box.createRigidArea(new Dimension(5, 5)));// space between edge and button
         return tabPanel;
     }
 
     private JButton createCloseTabBtn(){
         JButton closeButton = new JButton("\u00d7");
-        closeButton.setFont(menuFont);
+        closeButton.setFont(submenuFont);
         closeButton.setBorder(null);
+        closeButton.setContentAreaFilled(false);
         closeButton.setActionCommand("CloseTab");
         closeButton.addActionListener(controller);
         return closeButton;
