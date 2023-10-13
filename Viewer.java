@@ -190,6 +190,29 @@ public class Viewer {
         }
         return null;
     }
+    public File selectNewFileLocation(){
+        if (fileChooser == null) {
+            fileChooser = new JFileChooser();
+        }
+        fileChooser.setSelectedFile(new File(getNewFileName()));// we need to get first 12 SYMBOLS FROM the file first string
+        int returnValue = fileChooser.showSaveDialog(new JFrame());
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            return selectedFile;
+        }
+        return null;
+    }
+    private String getNewFileName(){
+        String content = currentContent.getText();
+        if(content.length() != 0){
+            if(content.length() > 12){
+                return content.substring(0,13) + ".txt";
+            }else{
+                return content + ".txt";
+            }
+        }
+        return "Untitled.txt";
+    }
 
     public void update(String text, String tabName) {
         currentContent.setText(text);

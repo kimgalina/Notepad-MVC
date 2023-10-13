@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.nio.file.InvalidPathException;
-
+import java.nio.file.Files;
 
 public class ActionController implements ActionListener {
     private Viewer viewer;
@@ -36,8 +36,9 @@ public class ActionController implements ActionListener {
 
         } else if (command.equals("New_Document")) {
             createNewDocument();
+
         } else if (command.equals("Save")) {
-            System.out.println(command);
+            save();
 
         } else if(command.equals("Save_As")) {
             System.out.println(command);
@@ -141,5 +142,18 @@ public class ActionController implements ActionListener {
 
     private void createNewDocument() {
         viewer.createNewTab();
+    }
+
+    private void save(){
+        createNewFile();
+    }
+    private void createNewFile() {
+        File newFile = viewer.selectNewFileLocation();
+        Path newFilePath = Paths.get(newFile.getAbsolutePath());
+        try{
+            Files.createFile(newFilePath);
+        }catch(IOException e){
+            viewer.showError(e.toString());
+        }
     }
 }
