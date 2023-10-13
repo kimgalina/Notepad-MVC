@@ -37,6 +37,7 @@ import java.awt.Dimension;
 import java.awt.Container;
 
 public class Viewer {
+
     private JFileChooser fileChooser;
     private JFrame frame;
     private ActionController controller;
@@ -45,11 +46,10 @@ public class Viewer {
     private Font contentFont;
     private Font submenuFont;
     private Font menuFont;
-    private JPanel mainPanel;
+    private JTextArea currentContent;
 
     public Viewer() {
-        mainPanel = new JPanel(new BorderLayout());
-        controller = new ActionController(this,mainPanel);
+        controller = new ActionController(this);
         windowController = new WindowController(controller);
         contentFont = new Font("Consolas", Font.PLAIN, 25);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
@@ -58,35 +58,57 @@ public class Viewer {
     }
 
     public void startApplication() {
-        JPanel topPanel = new JPanel(new BorderLayout());
+        frame = getFrame();
+
+        JMenuBar menuBar = getJMenuBar(menuFont, submenuFont, controller);
+        JToolBar toolBar = getToolBar(controller);
 
         JTextArea content = new JTextArea();
         content.setFont(contentFont);
         JScrollPane scrollPane = new JScrollPane(content);
 
-        JMenuBar menuBar = getJMenuBar(menuFont, submenuFont,controller);
-        JToolBar toolBar = getToolBar(controller);
+        JPanel panel = new JPanel(new BorderLayout());
 
-        topPanel.add(menuBar);
-        topPanel.add(toolBar, BorderLayout.NORTH);
+        panel.add(scrollPane, BorderLayout.CENTER);
+        tabPane.addTab(null, panel);
+        tabPane.setTabComponentAt(0, createCustomTabComponent("Untitled"));
 
-        mainPanel.add(topPanel, BorderLayout.NORTH);
-        mainPanel.add(scrollPane, BorderLayout.CENTER);
-
-        tabPane.addTab(null, mainPanel);
-
-        tabPane.setTabComponentAt(0, createCustomTabComponent("Untitled", controller));
-
-        frame = new JFrame("Notepad MVC");
-        frame.setLocation(300, 100);
-        frame.setSize(1000, 800);
+        frame.setJMenuBar(menuBar);
+        frame.add(toolBar, BorderLayout.NORTH);
 
         frame.add(tabPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
     }
 
-    private JComponent createCustomTabComponent(String tabTitle, ActionController controller) {
+    public void setCurrentContent() {
+        JPanel currentPanel = getCurrentPanel();
+
+        for (Component component : currentPanel.getComponents()) {
+            if (component instanceof JScrollPane) {
+                JScrollPane scrollPane = (JScrollPane) component;
+                JViewport viewport = scrollPane.getViewport();
+                if (viewport.getView() instanceof JTextArea) {
+                    JTextArea textArea = (JTextArea) viewport.getView();
+                    currentContent = textArea;
+                }
+            }
+        }
+    }
+
+    private JPanel getCurrentPanel() {
+        int currentTabIndex = tabPane.getSelectedIndex();
+        if (currentTabIndex != -1) {
+            Component currentTab = tabPane.getComponentAt(currentTabIndex);
+            if (currentTab instanceof JPanel) {
+                JPanel panel = (JPanel) currentTab;
+                return panel;
+            }
+        }
+        return null;
+    }
+
+    private JComponent createCustomTabComponent(String tabTitle) {
         JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         tabPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); //margin from top and bottom - 10
         tabPanel.setOpaque(false);
@@ -98,13 +120,13 @@ public class Viewer {
 
         tabPanel.add(Box.createRigidArea(new Dimension(40, 10)));// space between button and tabName
 
-        JButton closeTabBtn = createCloseTabBtn(controller);
+        JButton closeTabBtn = createCloseTabBtn();
         tabPanel.add(closeTabBtn);
         tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and button
         return tabPanel;
     }
 
-    private JButton createCloseTabBtn(ActionController controller){
+    private JButton createCloseTabBtn(){
         JButton closeButton = new JButton("\u00d7");
         closeButton.setFont(menuFont);
         closeButton.setBorder(null);
@@ -114,69 +136,19 @@ public class Viewer {
     }
 
     public void createNewTab() {
-
-        JPanel topPanel = new JPanel(new BorderLayout());
         JPanel panel = new JPanel(new BorderLayout());
-
-        ActionController newController = new ActionController(this,panel);
 
         JTextArea content = new JTextArea();
         content.setFont(contentFont);
         JScrollPane scrollPane = new JScrollPane(content);
 
-        JMenuBar menuBar = getJMenuBar(menuFont, submenuFont,newController);
-        JToolBar toolBar = getToolBar(newController);
-
-        topPanel.add(menuBar);
-        topPanel.add(toolBar, BorderLayout.NORTH);
-
-        panel.add(topPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
 
         tabPane.addTab(null, panel);
         int tabIndex = tabPane.indexOfComponent(panel);
-        tabPane.setTabComponentAt(tabIndex,createCustomTabComponent("Untitled", newController));
-
+        tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled"));
     }
 
-    public Color openColorChooser() {
-        return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
-    }
-
-    public void updateTextColor(Color color) {
-        //content.setForeground(color);
-    }
-
-    public void showError(String errorMessage) {
-        JOptionPane.showMessageDialog(new JFrame(),
-        errorMessage,
-        "Error",
-        JOptionPane.ERROR_MESSAGE);
-    }
-
-    public File getFile(){
-        if(fileChooser == null) {
-            fileChooser = new JFileChooser();
-        }
-
-        int returnVal = fileChooser.showOpenDialog(new JFrame());
-
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-           File file = fileChooser.getSelectedFile();
-           return file;
-       } else {
-
-       }
-
-        return null;
-    }
-
-    public void update(String text, String tabName, JTextArea content, JPanel currentPanel) {
-        content.setText(text);
-        int tabIndex = tabPane.indexOfComponent(currentPanel);
-        renameTab(tabName, tabIndex);
-
-    }
     private void renameTab(String tabName, int tabIndex ) {
         Component tabComponent = tabPane.getTabComponentAt(tabIndex);// taking tab with the index = tabIndex
         if (tabComponent instanceof Container) {
@@ -192,19 +164,42 @@ public class Viewer {
         }
     }
 
-    public JTextArea findPanelsContent(JPanel currentPanel){
-        for (Component component : currentPanel.getComponents()) {
-            if (component instanceof JScrollPane) {
-                JScrollPane scrollPane = (JScrollPane) component;
-                JViewport viewport = scrollPane.getViewport();
-                if (viewport.getView() instanceof JTextArea) {
-                    JTextArea textArea = (JTextArea) viewport.getView();
-                    return textArea;
-                }
-            }
+    public Color openColorChooser() {
+        return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
+    }
+
+    public void showError(String errorMessage) {
+        JOptionPane.showMessageDialog(new JFrame(),
+        errorMessage,
+        "Error",
+        JOptionPane.ERROR_MESSAGE);
+    }
+
+    public File getFile() {
+        if (fileChooser == null) {
+            fileChooser = new JFileChooser();
         }
-        System.out.println("TextArea not found");
+
+        int returnVal = fileChooser.showOpenDialog(new JFrame());
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+           File file = fileChooser.getSelectedFile();
+           return file;
+        } else {
+
+        }
         return null;
+    }
+
+    public void update(String text, String tabName) {
+        currentContent.setText(text);
+        int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
+        renameTab(tabName, tabIndex);
+
+    }
+
+    public void updateTextColor(Color color) {
+        currentContent.setForeground(color);
     }
 
     public void updateTextFont() {
@@ -230,7 +225,7 @@ public class Viewer {
             }
 
             Font newFont = new Font(selectedFont, Font.PLAIN, fontSize);
-            //content.setFont(newFont);
+            currentContent.setFont(newFont);
         }
     }
 
@@ -416,6 +411,14 @@ public class Viewer {
         menuItem.setFont(submenuFont);
 
         return menuItem;
+    }
+
+    private JFrame getFrame() {
+        JFrame frame = new JFrame("Notepad MVC");
+        frame.setLocation(300, 100);
+        frame.setSize(1000, 800);
+
+        return frame;
     }
 
 }
