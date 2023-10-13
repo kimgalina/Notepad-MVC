@@ -80,7 +80,7 @@ public class ActionController implements ActionListener {
             System.out.println(command);
 
         } else if(command.equals("Font")) {
-            openFontChooser();
+            viewer.openFontChooser();
 
         } else if(command.equals("Status_Space")) {
             System.out.println(command);
@@ -96,10 +96,6 @@ public class ActionController implements ActionListener {
 
     private void setCurrentPanel() {
 
-    }
-
-    private void openFontChooser() {
-        viewer.updateTextFont();
     }
 
     private void openDocument() {

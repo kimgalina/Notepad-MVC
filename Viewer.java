@@ -75,7 +75,6 @@ public class Viewer {
 
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
-
         frame.add(tabPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
@@ -91,74 +90,6 @@ public class Viewer {
                 if (viewport.getView() instanceof JTextArea) {
                     JTextArea textArea = (JTextArea) viewport.getView();
                     currentContent = textArea;
-                }
-            }
-        }
-    }
-
-    private JPanel getCurrentPanel() {
-        int currentTabIndex = tabPane.getSelectedIndex();
-        if (currentTabIndex != -1) {
-            Component currentTab = tabPane.getComponentAt(currentTabIndex);
-            if (currentTab instanceof JPanel) {
-                JPanel panel = (JPanel) currentTab;
-                return panel;
-            }
-        }
-        return null;
-    }
-
-    private JComponent createCustomTabComponent(String tabTitle) {
-        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        tabPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); //margin from top and bottom - 10
-        tabPanel.setOpaque(false);
-        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and tabName
-
-        JLabel label = new JLabel(tabTitle);
-        label.setFont(new Font("Tahoma", Font.PLAIN, 20));
-        tabPanel.add(label);
-
-        tabPanel.add(Box.createRigidArea(new Dimension(40, 10)));// space between button and tabName
-
-        JButton closeTabBtn = createCloseTabBtn();
-        tabPanel.add(closeTabBtn);
-        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and button
-        return tabPanel;
-    }
-
-    private JButton createCloseTabBtn(){
-        JButton closeButton = new JButton("\u00d7");
-        closeButton.setFont(menuFont);
-        closeButton.setBorder(null);
-        closeButton.setActionCommand("CloseTab");
-        closeButton.addActionListener(controller);
-        return closeButton;
-    }
-
-    public void createNewTab() {
-        JPanel panel = new JPanel(new BorderLayout());
-
-        JTextArea content = new JTextArea();
-        content.setFont(contentFont);
-        JScrollPane scrollPane = new JScrollPane(content);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        tabPane.addTab(null, panel);
-        int tabIndex = tabPane.indexOfComponent(panel);
-        tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled"));
-    }
-
-    private void renameTab(String tabName, int tabIndex ) {
-        Component tabComponent = tabPane.getTabComponentAt(tabIndex);// taking tab with the index = tabIndex
-        if (tabComponent instanceof Container) {
-            Component[] components = ((Container) tabComponent).getComponents();
-
-            for (Component component : components) {
-                if (component instanceof JLabel) {
-                    JLabel tabLabel = (JLabel) component;
-                    tabLabel.setText(tabName);
-                    break;
                 }
             }
         }
@@ -225,17 +156,17 @@ public class Viewer {
         currentContent.setForeground(color);
     }
 
-    public void updateTextFont() {
+    public void openFontChooser() {
         String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
         JComboBox<String> fontComboBox = new JComboBox<>(fonts);
         JTextField sizeTextField = new JTextField(5);
 
         Object[] message = {
-            "Выберите шрифт:", fontComboBox,
-            "Введите размер шрифта:", sizeTextField
+            "Choose font:", fontComboBox,
+            "Enter font size:", sizeTextField
         };
 
-        int option = JOptionPane.showConfirmDialog(frame, message, "Выбор шрифта и размера", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(frame, message, "Font and size choosing", JOptionPane.OK_CANCEL_OPTION);
 
         if (option == JOptionPane.OK_OPTION) {
             String selectedFont = (String) fontComboBox.getSelectedItem();
@@ -249,6 +180,74 @@ public class Viewer {
 
             Font newFont = new Font(selectedFont, Font.PLAIN, fontSize);
             currentContent.setFont(newFont);
+          }
+    }
+
+    public void createNewTab() {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JTextArea content = new JTextArea();
+        content.setFont(contentFont);
+        JScrollPane scrollPane = new JScrollPane(content);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        tabPane.addTab(null, panel);
+        int tabIndex = tabPane.indexOfComponent(panel);
+        tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled"));
+    }
+
+    private JPanel getCurrentPanel() {
+        int currentTabIndex = tabPane.getSelectedIndex();
+        if (currentTabIndex != -1) {
+            Component currentTab = tabPane.getComponentAt(currentTabIndex);
+            if (currentTab instanceof JPanel) {
+                JPanel panel = (JPanel) currentTab;
+                return panel;
+            }
+        }
+        return null;
+    }
+
+    private JComponent createCustomTabComponent(String tabTitle) {
+        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        tabPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0)); //margin from top and bottom - 10
+        tabPanel.setOpaque(false);
+        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and tabName
+
+        JLabel label = new JLabel(tabTitle);
+        label.setFont(new Font("Tahoma", Font.PLAIN, 20));
+        tabPanel.add(label);
+
+        tabPanel.add(Box.createRigidArea(new Dimension(40, 10)));// space between button and tabName
+
+        JButton closeTabBtn = createCloseTabBtn();
+        tabPanel.add(closeTabBtn);
+        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and button
+        return tabPanel;
+    }
+
+    private JButton createCloseTabBtn(){
+        JButton closeButton = new JButton("\u00d7");
+        closeButton.setFont(menuFont);
+        closeButton.setBorder(null);
+        closeButton.setActionCommand("CloseTab");
+        closeButton.addActionListener(controller);
+        return closeButton;
+    }
+
+    private void renameTab(String tabName, int tabIndex ) {
+        Component tabComponent = tabPane.getTabComponentAt(tabIndex);// taking tab with the index = tabIndex
+        if (tabComponent instanceof Container) {
+            Component[] components = ((Container) tabComponent).getComponents();
+
+            for (Component component : components) {
+                if (component instanceof JLabel) {
+                    JLabel tabLabel = (JLabel) component;
+                    tabLabel.setText(tabName);
+                    break;
+                }
+            }
         }
     }
 
@@ -386,7 +385,7 @@ public class Viewer {
         wordSpase.setActionCommand("Word_Space");
         wordSpase.setFont(submenuFont);
 
-        JMenuItem fontDocument = createMenuItem("Font", "images/font.gif", "Font", submenuFont,controller);
+        JMenuItem fontDocument = createMenuItem("Font", "images/font.gif", "Font", submenuFont, controller);
         fontDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 
         JMenu formatMenu = new JMenu("Format");
@@ -413,10 +412,10 @@ public class Viewer {
     }
 
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
-        JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont,controller);
+        JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
 
-        JMenuItem aboutDocument = createMenuItem("About", "images/font.gif", "About", submenuFont,controller);
+        JMenuItem aboutDocument = createMenuItem("About", "images/font.gif", "About", submenuFont, controller);
         aboutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
 
         JMenu helpMenu = new JMenu("Help");
