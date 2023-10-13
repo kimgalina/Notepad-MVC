@@ -9,10 +9,14 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import java.nio.charset.Charset;
+
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Files;
+
+import java.util.List;
 
 public class ActionController implements ActionListener {
     private Viewer viewer;
@@ -115,25 +119,13 @@ public class ActionController implements ActionListener {
     private String readFile(String filePath) {
         int bytesCount;
         String fileContent = "";
-
-        try(FileChannel fchannel = FileChannel.open(Paths.get(filePath), StandardOpenOption.READ)) {
-            ByteBuffer buffer = ByteBuffer.allocate(4096);
-            do {
-                bytesCount = fchannel.read(buffer);
-                if(bytesCount != -1) {
-                    buffer.rewind();
-                    for(int i = 0; i < bytesCount; i++) {
-                        fileContent += (char) buffer.get();
-                    }
-                }
-            } while(bytesCount != -1);
-
-        }catch(InvalidPathException e) {
-            viewer.showError(e.toString());
+        try {
+            Path path = Paths.get(filePath);
+            List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
+            fileContent = String.join("\n", lines);
         } catch(IOException e) {
             viewer.showError(e.toString());
         }
-
         return fileContent;
     }
 
@@ -151,25 +143,25 @@ public class ActionController implements ActionListener {
               viewer.showError(e.toString());
           }
         } else {
-          saveDocumentAs();
+            saveDocumentAs();
         }
     }
 
     private void saveDocumentAs() {
-      String fileName = "";
-      if (CurrentOpenFile == null) {
-          fileName = "Untitled.txt";
-      } else  {
-          fileName = getFileNameFromPath(CurrentOpenFile.getAbsolutePath());
-      }
-      File selectedFile = viewer.getNewFileSaveLocation(fileName);
-      try {
-          Path filePath = selectedFile.toPath();
-          Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
-          CurrentOpenFile = selectedFile;
-          viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
-      } catch (IOException e) {
-          viewer.showError(e.toString());
-      }
+        String fileName = "";
+        if (CurrentOpenFile == null) {
+            fileName = "Untitled.txt";
+        } else  {
+            fileName = getFileNameFromPath(CurrentOpenFile.getAbsolutePath());
+        }
+        File selectedFile = viewer.getNewFileSaveLocation(fileName);
+        try {
+            Path filePath = selectedFile.toPath();
+            Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
+            CurrentOpenFile = selectedFile;
+            viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
+        } catch (IOException e) {
+            viewer.showError(e.toString());
+        }
     }
 }

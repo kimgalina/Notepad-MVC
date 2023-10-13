@@ -64,21 +64,27 @@ public class Viewer {
         JMenuBar menuBar = getJMenuBar(menuFont, submenuFont, controller);
         JToolBar toolBar = getToolBar(controller);
 
-        JTextArea content = new JTextArea();
-        content.setFont(contentFont);
-        JScrollPane scrollPane = new JScrollPane(content);
-
-        JPanel panel = new JPanel(new BorderLayout());
-
-        panel.add(scrollPane, BorderLayout.CENTER);
-        tabPane.addTab(null, panel);
-        tabPane.setTabComponentAt(0, createCustomTabComponent("Untitled.txt"));
+        createNewTab();
 
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
         frame.add(tabPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
+    }
+
+    public void createNewTab() {
+        JPanel panel = new JPanel(new BorderLayout());
+
+        JTextArea content = new JTextArea();
+        content.setFont(contentFont);
+        JScrollPane scrollPane = new JScrollPane(content);
+
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        tabPane.addTab(null, panel);
+        int tabIndex = tabPane.indexOfComponent(panel);
+        tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
     }
 
     public void setCurrentContent() {
@@ -144,23 +150,10 @@ public class Viewer {
         return null;
     }
 
-    private String getNewFileName(){
-        String content = currentContent.getText();
-        if(content.length() != 0){
-            if(content.length() > 12){
-                return content.substring(0,13) + ".txt";
-            }else{
-                return content + ".txt";
-            }
-        }
-        return "Untitled.txt";
-    }
-
     public void update(String text, String tabName) {
         currentContent.setText(text);
         int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
         renameTab(tabName, tabIndex);
-
     }
 
     public void updateTextColor(Color color) {
@@ -194,18 +187,16 @@ public class Viewer {
           }
     }
 
-    public void createNewTab() {
-        JPanel panel = new JPanel(new BorderLayout());
-
-        JTextArea content = new JTextArea();
-        content.setFont(contentFont);
-        JScrollPane scrollPane = new JScrollPane(content);
-
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        tabPane.addTab(null, panel);
-        int tabIndex = tabPane.indexOfComponent(panel);
-        tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled"));
+    private String getNewFileName(){
+        String content = currentContent.getText();
+        if (content.length() != 0) {
+            if(content.length() > 12){
+                return content.substring(0,13) + ".txt";
+            } else {
+                return content + ".txt";
+            }
+        }
+        return "Untitled.txt";
     }
 
     private JPanel getCurrentPanel() {
@@ -248,7 +239,7 @@ public class Viewer {
         return closeButton;
     }
 
-    private void renameTab(String tabName, int tabIndex ) {
+    private void renameTab(String tabName, int tabIndex) {
         Component tabComponent = tabPane.getTabComponentAt(tabIndex);// taking tab with the index = tabIndex
         if (tabComponent instanceof Container) {
             Component[] components = ((Container) tabComponent).getComponents();
