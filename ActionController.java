@@ -38,15 +38,11 @@ public class ActionController implements ActionListener {
         viewer.setCurrentContent();
 
         String command = event.getActionCommand();
-        if (command.equals("Open_Document")) {
-            openDocument();
-
-        } else if (command.equals("Choose_Color")) {
-            Color color = viewer.openColorChooser();
-            viewer.updateTextColor(color);
-
-        } else if (command.equals("New_Document")) {
+        if (command.equals("New_Document")) {
             createNewDocument();
+
+        } else if (command.equals("Open_Document")) {
+            openDocument();
 
         } else if (command.equals("Save")) {
             saveDocument();
@@ -55,6 +51,7 @@ public class ActionController implements ActionListener {
             saveDocumentAs();
 
         } else if(command.equals("Print")) {
+            System.out.println(command);
 
         } else if(command.equals("Exit")) {
             System.out.println(command);
@@ -101,11 +98,14 @@ public class ActionController implements ActionListener {
         } else if(command.equals("About")) {
             System.out.println(command);
 
+        } else if (command.equals("Choose_Color")) {
+            Color color = viewer.openColorChooser();
+            viewer.updateTextColor(color);
         }
     }
-
-    private void setCurrentPanel() {
-
+    
+    private void createNewDocument() {
+        viewer.createNewTab();
     }
 
     private void openDocument() {
@@ -195,9 +195,5 @@ public class ActionController implements ActionListener {
             viewer.showError(e.toString());
         }
         return fileContent;
-    }
-
-    private void createNewDocument() {
-        viewer.createNewTab();
     }
 }
