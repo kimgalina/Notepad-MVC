@@ -440,8 +440,8 @@ public class Viewer {
 
     private JFrame getFrame() {
         JFrame frame = new JFrame("Notepad MVC");
-        frame.setLocation(300, 100);
-        frame.setSize(1000, 800);
+        frame.setLocation(300, 50);
+        frame.setSize(1000, 650);
 
         return frame;
     }
