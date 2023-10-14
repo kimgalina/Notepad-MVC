@@ -71,6 +71,7 @@ public class Viewer {
         frame.add(tabPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
+        frame.setIconImage(new ImageIcon("images/notepad.png").getImage());
     }
 
     public void createNewTab() {
