@@ -8,6 +8,13 @@ import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.swing.JTextArea;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 
 import java.nio.charset.Charset;
 
@@ -21,7 +28,7 @@ import java.util.List;
 public class ActionController implements ActionListener {
     private Viewer viewer;
     private String contentText;
-    private File CurrentOpenFile;
+    private File currentOpenFile;
 
     public ActionController(Viewer viewer) {
         this.viewer = viewer;
@@ -48,19 +55,18 @@ public class ActionController implements ActionListener {
             saveDocumentAs();
 
         } else if(command.equals("Print")) {
-            System.out.println(command);
 
         } else if(command.equals("Exit")) {
             System.out.println(command);
 
         } else if(command.equals("Cut")) {
-            System.out.println(command);
+            copyOrCutText(command);
 
         } else if(command.equals("Copy")) {
-            System.out.println(command);
+            copyOrCutText(command);
 
         } else if(command.equals("Paste")) {
-            System.out.println(command);
+            pasteText();
 
         } else if(command.equals("Clear")) {
             System.out.println(command);
@@ -74,8 +80,8 @@ public class ActionController implements ActionListener {
         } else if(command.equals("Go")) {
             System.out.println(command);
 
-        } else if(command.equals("Select all")) {
-            System.out.println(command);
+        } else if(command.equals("Select_All")) {
+            viewer.getCurrentContent().selectAll();
 
         } else if(command.equals("Time and date")) {
             System.out.println(command);
@@ -104,11 +110,73 @@ public class ActionController implements ActionListener {
 
     private void openDocument() {
         File file = viewer.getFile();
-        CurrentOpenFile = file;
+        currentOpenFile = file;
         String filePath = file.getAbsolutePath();
         String contentText = readFile(filePath);
         String fileName = getFileNameFromPath(filePath);
         viewer.update(contentText, fileName);
+    }
+
+    private void saveDocument() {
+        if (currentOpenFile != null) {
+          try {
+              String fileName = getFileNameFromPath(currentOpenFile.getAbsolutePath());
+              String content = viewer.getCurrentContent().getText();
+              Files.write(currentOpenFile.toPath(), content.getBytes());
+          } catch (IOException e) {
+              viewer.showError(e.toString());
+          }
+        } else {
+            saveDocumentAs();
+        }
+    }
+
+    private void saveDocumentAs() {
+        String fileName = "";
+
+        if (currentOpenFile == null) {
+            fileName = "Untitled.txt";
+        } else  {
+            fileName = getFileNameFromPath(currentOpenFile.getAbsolutePath());
+        }
+
+        File selectedFile = viewer.getNewFileSaveLocation(fileName);
+        try {
+            Path filePath = selectedFile.toPath();
+            Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
+            currentOpenFile = selectedFile;
+            viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
+        } catch (IOException e) {
+            viewer.showError(e.toString());
+        }
+    }
+
+    private void copyOrCutText(String command) {
+        JTextArea textArea = viewer.getCurrentContent();
+        String selectedText = textArea.getSelectedText();
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        StringSelection stringSelection = new StringSelection(selectedText);
+        clipboard.setContents(stringSelection, null);
+
+        if (command.equals("Cut")) {
+            textArea.cut();
+        }
+    }
+
+    private void pasteText() {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable transferable = clipboard.getContents(null);
+
+        if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+            try {
+                String textToPaste = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+                JTextArea textArea = viewer.getCurrentContent();
+                int pos = textArea.getCaretPosition();
+                textArea.insert(textToPaste, pos);
+            } catch (UnsupportedFlavorException | IOException e) {
+                viewer.showError(e.getMessage());
+            }
+        }
     }
 
     private String getFileNameFromPath(String path) {
@@ -131,37 +199,5 @@ public class ActionController implements ActionListener {
 
     private void createNewDocument() {
         viewer.createNewTab();
-    }
-
-    private void saveDocument() {
-        if (CurrentOpenFile != null) {
-          try {
-              String fileName = getFileNameFromPath(CurrentOpenFile.getAbsolutePath());
-              String content = viewer.getCurrentContent().getText();
-              Files.write(CurrentOpenFile.toPath(), content.getBytes());
-          } catch (IOException e) {
-              viewer.showError(e.toString());
-          }
-        } else {
-            saveDocumentAs();
-        }
-    }
-
-    private void saveDocumentAs() {
-        String fileName = "";
-        if (CurrentOpenFile == null) {
-            fileName = "Untitled.txt";
-        } else  {
-            fileName = getFileNameFromPath(CurrentOpenFile.getAbsolutePath());
-        }
-        File selectedFile = viewer.getNewFileSaveLocation(fileName);
-        try {
-            Path filePath = selectedFile.toPath();
-            Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
-            CurrentOpenFile = selectedFile;
-            viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
-        } catch (IOException e) {
-            viewer.showError(e.toString());
-        }
     }
 }
