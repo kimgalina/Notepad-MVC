@@ -23,6 +23,9 @@ import javax.swing.JOptionPane;
 import java.awt.GraphicsEnvironment;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
+import javax.swing.JCheckBox;
+import javax.swing.border.BevelBorder;
+import javax.swing.BoxLayout;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
@@ -49,6 +52,13 @@ public class Viewer {
     private Font submenuFont;
     private Font menuFont;
     private JTextArea currentContent;
+    private JMenuItem viewItemZoomIn;
+    private JMenuItem viewItemZoomOut;
+    private JMenuItem viewItemZoomDefault;
+    private JCheckBox statusBarBox;
+    private Font fontZoom;
+    private JPanel statusPanel;
+    private JLabel statusLabel;
 
     public Viewer() {
         frame = getFrame();
@@ -65,9 +75,11 @@ public class Viewer {
         JToolBar toolBar = getToolBar(controller);
 
         createNewTab();
+        initStatusPanel();
 
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
+        frame.add(statusPanel, BorderLayout.SOUTH);
         frame.add(tabPane);
         frame.addWindowListener(windowController);
         frame.setVisible(true);
@@ -97,7 +109,9 @@ public class Viewer {
                 JViewport viewport = scrollPane.getViewport();
                 if (viewport.getView() instanceof JTextArea) {
                     JTextArea textArea = (JTextArea) viewport.getView();
+                    textArea.addCaretListener(new CaretController(this));
                     currentContent = textArea;
+                    fontZoom = textArea.getFont();
                 }
             }
         }
@@ -402,17 +416,127 @@ public class Viewer {
     }
 
     private JMenu getViewMenu(Font menuFont, Font submenuFont, ActionController controller) {
-        JRadioButtonMenuItem statusSpase = new JRadioButtonMenuItem("Status space");
-        statusSpase.setSelected(false);
-        statusSpase.addActionListener(controller);
-        statusSpase.setActionCommand("Status_Space");
-        statusSpase.setFont(submenuFont);
 
         JMenu viewMenu = new JMenu("View");
-        viewMenu.add(statusSpase);
         viewMenu.setFont(menuFont);
+        JMenu viewZoom = new JMenu("Zoom");
+        viewZoom.setFont(submenuFont);
+
+        viewItemZoomIn = createMenuItem("Zoom In", null,
+                "ZOOM_IN", submenuFont, controller);
+        viewItemZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
+        viewItemZoomIn.setEnabled(true);
+
+        viewItemZoomOut = createMenuItem("Zoom Out", null,
+                "ZOOM_OUT", submenuFont, controller);
+        viewItemZoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
+        viewItemZoomOut.setEnabled(true);
+
+        viewItemZoomDefault = createMenuItem("Restore Default Zoom", null,
+                "ZOOM_DEFAULT", submenuFont, controller);
+        viewItemZoomDefault.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
+        viewItemZoomDefault.setEnabled(true);
+
+        statusBarBox = new JCheckBox("StatusBar");
+        statusBarBox.setOpaque(false);
+        statusBarBox.setFocusable(false);
+        statusBarBox.setFont(submenuFont);
+        statusBarBox.setPreferredSize(new Dimension(100, 20));
+        statusBarBox.setSelected(false);
+
+        statusBarBox.addActionListener(controller);
+        viewMenu.add(viewZoom);
+        viewMenu.addSeparator();
+        viewZoom.add(viewItemZoomIn);
+        viewZoom.add(viewItemZoomOut);
+        viewZoom.addSeparator();
+        viewZoom.add(viewItemZoomDefault);
+        viewMenu.add(statusBarBox);
 
         return viewMenu;
+    }
+
+    public void zoomIn() {
+        if (canZoomIn()) {
+            fontZoom = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), currentContent.getFont().getSize() + 2);
+            currentContent.setFont(fontZoom);
+        }
+
+    }
+
+    public boolean canZoomIn() {
+        if (fontZoom.getSize() > 48) {
+            setViewItemZoomIn(false);
+            return false;
+        } else {
+            setViewItemZoomIn(true);
+            return true;
+        }
+    }
+
+    public void setViewItemZoomIn(boolean active) {
+        viewItemZoomIn.setEnabled(active);
+    }
+
+    public void zoomOut() {
+        if (canZoomOut()) {
+            int size = currentContent.getFont().getSize();
+            size = Math.max(size - 2, 8);
+            fontZoom = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), size);
+            currentContent.setFont(fontZoom);
+        }
+    }
+
+    public boolean canZoomOut() {
+        if (fontZoom.getSize() <= 8) {
+            setViewItemZoomOut(false);
+            return false;
+        } else {
+            setViewItemZoomOut(true);
+            return true;
+        }
+    }
+
+    public void setViewItemZoomOut(boolean active) {
+        viewItemZoomOut.setEnabled(active);
+    }
+
+    public void zoomDefault() {
+        if (canZoomDefault()) {
+            currentContent.setFont(new java.awt.Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(),
+                    22));
+
+        }
+    }
+
+    public boolean canZoomDefault() {
+        if (currentContent.getFont().getSize() >= 22 || currentContent.getFont().getSize() <= 22) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public JCheckBox getStatusBarBox() {
+        return statusBarBox;
+    }
+
+    private void initStatusPanel() {
+        statusPanel = new JPanel();
+        statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 20));
+        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+        statusLabel = new JLabel();
+        statusPanel.add(statusLabel);
+        statusPanel.setVisible(false);
+    }
+
+    public void setLabelByTextAreaLines(int line, int column) {
+        statusLabel.setText("  Line " + line + ", Column " + column);
+    }
+
+    public void setStatusPanelToVisible(boolean visible) {
+        statusPanel.setVisible(visible);
     }
 
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
@@ -428,6 +552,13 @@ public class Viewer {
         helpMenu.setFont(menuFont);
 
         return helpMenu;
+    }
+
+    public void getMessageAbout() {
+        JOptionPane.showMessageDialog(frame,
+                new MessageWithLink("<div>Notepad Template Method Design Pattern team<div>" +
+                        "<a href=\"\">See the development process</a>"), "About Notepad",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand, Font submenuFont, ActionController controller) {
