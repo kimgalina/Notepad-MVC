@@ -36,6 +36,9 @@ public class ActionController implements ActionListener {
 
     public void actionPerformed(ActionEvent event) {
         viewer.setCurrentContent();
+        viewer.setViewItemZoomIn(viewer.canZoomIn());
+        viewer.setViewItemZoomOut(viewer.canZoomOut());
+        viewer.setStatusPanelToVisible(viewer.getStatusBarBox().isSelected());
 
         String command = event.getActionCommand();
         if (command.equals("New_Document")) {
@@ -89,21 +92,27 @@ public class ActionController implements ActionListener {
         } else if(command.equals("Font")) {
             viewer.openFontChooser();
 
-        } else if(command.equals("Status_Space")) {
-            System.out.println(command);
+        } else if(command.equals("ZOOM_IN")) {
+            viewer.zoomIn();
+
+        } else if(command.equals("ZOOM_OUT")) {
+            viewer.zoomOut();
+
+        } else if(command.equals("ZOOM_DEFAULT")) {
+            viewer.zoomDefault();
 
         } else if(command.equals("View_Help")) {
-            System.out.println(command);
+            viewer.getMessageAbout();
 
         } else if(command.equals("About")) {
-            System.out.println(command);
+            viewer.getMessageAbout();
 
         } else if (command.equals("Choose_Color")) {
             Color color = viewer.openColorChooser();
             viewer.updateTextColor(color);
         }
     }
-    
+
     private void createNewDocument() {
         viewer.createNewTab();
     }
