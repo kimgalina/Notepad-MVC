@@ -277,6 +277,7 @@ public class Viewer {
                         "<a href=\"\">See the development process</a>"), "About Notepad",
                 JOptionPane.INFORMATION_MESSAGE);
     }
+
     public void closeCurrentTab() {
         int currentTabIndex = tabPane.getSelectedIndex();
         if (currentTabIndex > 0) {
@@ -294,6 +295,7 @@ public class Viewer {
            }
        }
     }
+
     public void showCloseTabMessage(int currentTabIndex) {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
@@ -315,6 +317,7 @@ public class Viewer {
             System.exit(0);
         }
     }
+    
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
         JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));

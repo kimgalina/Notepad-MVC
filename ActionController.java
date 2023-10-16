@@ -148,7 +148,7 @@ public class ActionController implements ActionListener {
           try {
               String fileName = getFileNameFromPath(currentOpenFile.getAbsolutePath());
               String content = viewer.getCurrentContent().getText();
-              Files.write(currentOpenFile.toPath(), content.getBytes());
+              Files.write(currentOpenFile.toPath(), content.getBytes("UTF-8"));
           } catch (IOException e) {
               viewer.showError(e.toString());
           }
@@ -185,7 +185,7 @@ public class ActionController implements ActionListener {
         if(selectedFile != null) {
             try {
                 Path filePath = selectedFile.toPath();
-                Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
+                Files.write(filePath, viewer.getCurrentContent().getText().getBytes("UTF-8"));
                 currentOpenFile = selectedFile;
                 viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
             } catch (IOException e) {
