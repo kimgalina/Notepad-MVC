@@ -202,6 +202,111 @@ public class Viewer {
           }
     }
 
+    public void zoomIn() {
+        if (canZoomIn()) {
+            fontZoom = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), currentContent.getFont().getSize() + 2);
+            currentContent.setFont(fontZoom);
+        }
+
+    }
+
+    public boolean canZoomIn() {
+        if (fontZoom.getSize() > 48) {
+            setViewItemZoomIn(false);
+            return false;
+        } else {
+            setViewItemZoomIn(true);
+            return true;
+        }
+    }
+
+    public void setViewItemZoomIn(boolean active) {
+        viewItemZoomIn.setEnabled(active);
+    }
+
+    public void zoomOut() {
+        if (canZoomOut()) {
+            int size = currentContent.getFont().getSize();
+            size = Math.max(size - 2, 8);
+            fontZoom = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), size);
+            currentContent.setFont(fontZoom);
+        }
+    }
+
+    public boolean canZoomOut() {
+        if (fontZoom.getSize() <= 8) {
+            setViewItemZoomOut(false);
+            return false;
+        } else {
+            setViewItemZoomOut(true);
+            return true;
+        }
+    }
+
+    public void setViewItemZoomOut(boolean active) {
+        viewItemZoomOut.setEnabled(active);
+    }
+
+    public void zoomDefault() {
+        if (canZoomDefault()) {
+            currentContent.setFont(new java.awt.Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(),
+                    22));
+
+        }
+    }
+
+    public boolean canZoomDefault() {
+        if (currentContent.getFont().getSize() >= 22 || currentContent.getFont().getSize() <= 22) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public JCheckBox getStatusBarBox() {
+        return statusBarBox;
+    }
+
+    public void setLabelByTextAreaLines(int line, int column) {
+        statusLabel.setText("  Line " + line + ", Column " + column);
+    }
+
+    public void setStatusPanelToVisible(boolean visible) {
+        statusPanel.setVisible(visible);
+    }
+
+    public void getMessageAbout() {
+        JOptionPane.showMessageDialog(frame,
+                new MessageWithLink("<div>Notepad Template Method Design Pattern team<div>" +
+                        "<a href=\"\">See the development process</a>"), "About Notepad",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
+        JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);
+        viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+
+        JMenuItem aboutDocument = createMenuItem("About", "images/font.gif", "About", submenuFont, controller);
+        aboutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
+
+        JMenu helpMenu = new JMenu("Help");
+        helpMenu.add(viewHelpDocument);
+        helpMenu.add(aboutDocument);
+        helpMenu.setFont(menuFont);
+
+        return helpMenu;
+    }
+
+    private void initStatusPanel() {
+        statusPanel = new JPanel();
+        statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 20));
+        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+        statusLabel = new JLabel();
+        statusPanel.add(statusLabel);
+        statusPanel.setVisible(false);
+    }
+
     private String getNewFileName(){
         String content = currentContent.getText();
         if (content.length() != 0) {
@@ -454,111 +559,6 @@ public class Viewer {
         viewMenu.add(statusBarBox);
 
         return viewMenu;
-    }
-
-    public void zoomIn() {
-        if (canZoomIn()) {
-            fontZoom = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), currentContent.getFont().getSize() + 2);
-            currentContent.setFont(fontZoom);
-        }
-
-    }
-
-    public boolean canZoomIn() {
-        if (fontZoom.getSize() > 48) {
-            setViewItemZoomIn(false);
-            return false;
-        } else {
-            setViewItemZoomIn(true);
-            return true;
-        }
-    }
-
-    public void setViewItemZoomIn(boolean active) {
-        viewItemZoomIn.setEnabled(active);
-    }
-
-    public void zoomOut() {
-        if (canZoomOut()) {
-            int size = currentContent.getFont().getSize();
-            size = Math.max(size - 2, 8);
-            fontZoom = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), size);
-            currentContent.setFont(fontZoom);
-        }
-    }
-
-    public boolean canZoomOut() {
-        if (fontZoom.getSize() <= 8) {
-            setViewItemZoomOut(false);
-            return false;
-        } else {
-            setViewItemZoomOut(true);
-            return true;
-        }
-    }
-
-    public void setViewItemZoomOut(boolean active) {
-        viewItemZoomOut.setEnabled(active);
-    }
-
-    public void zoomDefault() {
-        if (canZoomDefault()) {
-            currentContent.setFont(new java.awt.Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(),
-                    22));
-
-        }
-    }
-
-    public boolean canZoomDefault() {
-        if (currentContent.getFont().getSize() >= 22 || currentContent.getFont().getSize() <= 22) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public JCheckBox getStatusBarBox() {
-        return statusBarBox;
-    }
-
-    private void initStatusPanel() {
-        statusPanel = new JPanel();
-        statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 20));
-        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
-        statusLabel = new JLabel();
-        statusPanel.add(statusLabel);
-        statusPanel.setVisible(false);
-    }
-
-    public void setLabelByTextAreaLines(int line, int column) {
-        statusLabel.setText("  Line " + line + ", Column " + column);
-    }
-
-    public void setStatusPanelToVisible(boolean visible) {
-        statusPanel.setVisible(visible);
-    }
-
-    private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
-        JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);
-        viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
-
-        JMenuItem aboutDocument = createMenuItem("About", "images/font.gif", "About", submenuFont, controller);
-        aboutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
-
-        JMenu helpMenu = new JMenu("Help");
-        helpMenu.add(viewHelpDocument);
-        helpMenu.add(aboutDocument);
-        helpMenu.setFont(menuFont);
-
-        return helpMenu;
-    }
-
-    public void getMessageAbout() {
-        JOptionPane.showMessageDialog(frame,
-                new MessageWithLink("<div>Notepad Template Method Design Pattern team<div>" +
-                        "<a href=\"\">See the development process</a>"), "About Notepad",
-                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand, Font submenuFont, ActionController controller) {
