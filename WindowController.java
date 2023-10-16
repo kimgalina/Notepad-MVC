@@ -3,17 +3,22 @@ import java.awt.event.WindowEvent;
 
 public class WindowController implements WindowListener {
     private final ActionController controller;
+    private final Viewer viewer;
 
-    public WindowController(ActionController controller) {
+    public WindowController(ActionController controller, Viewer viewer) {
         this.controller = controller;
+        this.viewer = viewer;
     }
 
     public void windowOpened(WindowEvent e) {
     }
 
     public void windowClosing(WindowEvent e) {
-        javax.swing.JOptionPane.showMessageDialog(new javax.swing.JFrame(), "Eggs are not supposed to be green.");
-        System.exit(0);
+        if(true) {// if we have no unsaved changes
+            System.exit(0);
+        } else {
+            viewer.showExitMessage();
+        }
     }
 
     public void windowClosed(WindowEvent e) {

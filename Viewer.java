@@ -63,7 +63,7 @@ public class Viewer {
     public Viewer() {
         frame = getFrame();
         controller = new ActionController(this);
-        windowController = new WindowController(controller);
+        windowController = new WindowController(controller,this);
         contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
@@ -136,14 +136,10 @@ public class Viewer {
         if (fileChooser == null) {
             fileChooser = new JFileChooser();
         }
-
         int returnVal = fileChooser.showOpenDialog(new JFrame());
-
         if (returnVal == JFileChooser.APPROVE_OPTION) {
            File file = fileChooser.getSelectedFile();
            return file;
-        } else {
-
         }
         return null;
     }
@@ -281,7 +277,27 @@ public class Viewer {
                         "<a href=\"\">See the development process</a>"), "About Notepad",
                 JOptionPane.INFORMATION_MESSAGE);
     }
+    public void closeCurrentTab() {
+        int currentTabIndex = tabPane.getSelectedIndex();
+        if (currentTabIndex > 0) {
+           tabPane.removeTabAt(currentTabIndex);
+       } else if(currentTabIndex == 0 && true) { // and we have unsaved shanges
+           showExitMessage();
 
+       } else {
+           controller.exitProgram();
+       }
+    }
+    public void showExitMessage() {
+        int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
+                                                   JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+        if(result == JOptionPane.YES_OPTION) {
+            controller.saveDocument();
+        } else if (result == JOptionPane.NO_OPTION) {
+            controller.exitProgram();
+        }
+
+    }
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
         JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
@@ -349,7 +365,7 @@ public class Viewer {
         return tabPanel;
     }
 
-    private JButton createCloseTabBtn(){
+    private JButton createCloseTabBtn() {
         JButton closeButton = new JButton("\u00d7");
         closeButton.setFont(submenuFont);
         closeButton.setBorder(null);
@@ -373,6 +389,7 @@ public class Viewer {
             }
         }
     }
+
 
     private JToolBar getToolBar(ActionController controller) {
         JToolBar toolBar = new JToolBar();

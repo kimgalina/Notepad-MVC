@@ -16,7 +16,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
-import java.nio.charset.Charset;
+
+import java.nio.charset.StandardCharsets;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -24,6 +25,8 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Files;
 
 import java.util.List;
+import java.nio.charset.UnmappableCharacterException;
+import java.nio.charset.Charset;
 
 public class ActionController implements ActionListener {
     private Viewer viewer;
@@ -57,7 +60,8 @@ public class ActionController implements ActionListener {
             System.out.println(command);
 
         } else if(command.equals("Exit")) {
-            System.out.println(command);
+            exitProgram();
+
 
         } else if(command.equals("Cut")) {
             copyOrCutText(command);
@@ -110,23 +114,20 @@ public class ActionController implements ActionListener {
         } else if (command.equals("Choose_Color")) {
             Color color = viewer.openColorChooser();
             viewer.updateTextColor(color);
+        } else if (command.equals("CloseTab")) {
+            viewer.closeCurrentTab();
+        }
+    }
+    public void exitProgram() {
+        if(true) {
+            System.exit(0);
+        } else {
+            /// if we have no saved changes
+            ///viewer.closeProgram();
         }
     }
 
-    private void createNewDocument() {
-        viewer.createNewTab();
-    }
-
-    private void openDocument() {
-        File file = viewer.getFile();
-        currentOpenFile = file;
-        String filePath = file.getAbsolutePath();
-        String contentText = readFile(filePath);
-        String fileName = getFileNameFromPath(filePath);
-        viewer.update(contentText, fileName);
-    }
-
-    private void saveDocument() {
+    public void saveDocument() {
         if (currentOpenFile != null) {
           try {
               String fileName = getFileNameFromPath(currentOpenFile.getAbsolutePath());
@@ -140,6 +141,21 @@ public class ActionController implements ActionListener {
         }
     }
 
+    private void createNewDocument() {
+        viewer.createNewTab();
+    }
+
+    private void openDocument() {
+        File file = viewer.getFile();
+        if(file != null) {
+            currentOpenFile = file;
+            String filePath = file.getAbsolutePath();
+            String contentText = readFile(filePath);
+            String fileName = getFileNameFromPath(filePath);
+            viewer.update(contentText, fileName);
+        }
+    }
+
     private void saveDocumentAs() {
         String fileName = "";
 
@@ -150,13 +166,15 @@ public class ActionController implements ActionListener {
         }
 
         File selectedFile = viewer.getNewFileSaveLocation(fileName);
-        try {
-            Path filePath = selectedFile.toPath();
-            Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
-            currentOpenFile = selectedFile;
-            viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
-        } catch (IOException e) {
-            viewer.showError(e.toString());
+        if(selectedFile != null) {
+            try {
+                Path filePath = selectedFile.toPath();
+                Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
+                currentOpenFile = selectedFile;
+                viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
+            } catch (IOException e) {
+                viewer.showError(e.toString());
+            }
         }
     }
 
@@ -194,15 +212,20 @@ public class ActionController implements ActionListener {
     }
 
     private String readFile(String filePath) {
-        int bytesCount;
         String fileContent = "";
         try {
             Path path = Paths.get(filePath);
-            List<String> lines = Files.readAllLines(path, Charset.defaultCharset());
+            List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
             fileContent = String.join("\n", lines);
-        } catch(IOException e) {
+        } catch(UnmappableCharacterException e) {
+            viewer.showError(e.toString());
+            System.out.println("Cant encode this type of symbols");
+        }
+         catch(IOException e) {
             viewer.showError(e.toString());
         }
         return fileContent;
     }
+
+
 }
