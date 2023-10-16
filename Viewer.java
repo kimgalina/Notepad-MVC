@@ -280,23 +280,40 @@ public class Viewer {
     public void closeCurrentTab() {
         int currentTabIndex = tabPane.getSelectedIndex();
         if (currentTabIndex > 0) {
-           tabPane.removeTabAt(currentTabIndex);
-       } else if(currentTabIndex == 0 && true) { // and we have unsaved shanges
-           showExitMessage();
+            if(controller.hasUnsavedChanges()) {
+                showCloseTabMessage(currentTabIndex);
+            } else {
+                 tabPane.removeTabAt(currentTabIndex);
+            }
+       } else if(currentTabIndex == 0) {
+           if(controller.hasUnsavedChanges()) {
+               showExitMessage();
 
-       } else {
-           controller.exitProgram();
+           } else {
+               System.exit(0);
+           }
        }
     }
+    public void showCloseTabMessage(int currentTabIndex) {
+        int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
+                                                   JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+        if(result == JOptionPane.YES_OPTION) {
+            controller.saveDocument();
+            tabPane.removeTabAt(currentTabIndex);
+        } else if (result == JOptionPane.NO_OPTION) {
+            tabPane.removeTabAt(currentTabIndex);
+        }
+    }
+
     public void showExitMessage() {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
         if(result == JOptionPane.YES_OPTION) {
             controller.saveDocument();
+            System.exit(0);
         } else if (result == JOptionPane.NO_OPTION) {
-            controller.exitProgram();
+            System.exit(0);
         }
-
     }
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
         JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);

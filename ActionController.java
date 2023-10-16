@@ -119,12 +119,28 @@ public class ActionController implements ActionListener {
         }
     }
     public void exitProgram() {
-        if(true) {
+        if(!hasUnsavedChanges()) {
             System.exit(0);
         } else {
-            /// if we have no saved changes
-            ///viewer.closeProgram();
+            viewer.showExitMessage();
         }
+    }
+
+    public boolean hasUnsavedChanges() {
+        try {
+            String currentContent = viewer.getCurrentContent().getText();
+            if(currentOpenFile != null) {
+                viewer.setCurrentContent();
+                String fileContent = readFile(currentOpenFile.getAbsolutePath());
+                return (!fileContent.equals(currentContent));
+            } else if (!currentContent.equals("")) {
+                return true;
+            }
+        }
+        catch(NullPointerException e) {
+            return false;
+        }
+        return false;
     }
 
     public void saveDocument() {
