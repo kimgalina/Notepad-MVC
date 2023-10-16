@@ -228,19 +228,24 @@ public class ActionController implements ActionListener {
     }
 
     private String readFile(String filePath) {
-        String fileContent = "";
+        StringBuilder fileContent = new StringBuilder();
+
         try {
             Path path = Paths.get(filePath);
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-            fileContent = String.join("\n", lines);
-        } catch(UnmappableCharacterException e) {
+
+            for (String line : lines) {
+                fileContent.append(line).append("\n");
+                line = null;
+            }
+        } catch (UnmappableCharacterException e) {
             viewer.showError(e.toString());
-            System.out.println("Cant encode this type of symbols");
-        }
-         catch(IOException e) {
+            System.out.println("Can't encode this type of symbols");
+        } catch (IOException e) {
             viewer.showError(e.toString());
         }
-        return fileContent;
+
+        return fileContent.toString();
     }
 
 
