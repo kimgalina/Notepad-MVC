@@ -62,7 +62,6 @@ public class ActionController implements ActionListener {
         } else if(command.equals("Exit")) {
             exitProgram();
 
-
         } else if(command.equals("Cut")) {
             copyOrCutText(command);
 
@@ -119,12 +118,28 @@ public class ActionController implements ActionListener {
         }
     }
     public void exitProgram() {
-        if(true) {
+        if(!hasUnsavedChanges()) {
             System.exit(0);
         } else {
-            /// if we have no saved changes
-            ///viewer.closeProgram();
+            viewer.showExitMessage();
         }
+    }
+
+    public boolean hasUnsavedChanges() {
+        try {
+            String currentContent = viewer.getCurrentContent().getText();
+            if(currentOpenFile != null) {
+                viewer.setCurrentContent();
+                String fileContent = readFile(currentOpenFile.getAbsolutePath());
+                return (!fileContent.equals(currentContent));
+            } else if (!currentContent.equals("")) {
+                return true;
+            }
+        }
+        catch(NullPointerException e) {
+            return false;
+        }
+        return false;
     }
 
     public void saveDocument() {
@@ -132,7 +147,7 @@ public class ActionController implements ActionListener {
           try {
               String fileName = getFileNameFromPath(currentOpenFile.getAbsolutePath());
               String content = viewer.getCurrentContent().getText();
-              Files.write(currentOpenFile.toPath(), content.getBytes());
+              Files.write(currentOpenFile.toPath(), content.getBytes("UTF-8"));
           } catch (IOException e) {
               viewer.showError(e.toString());
           }
@@ -169,7 +184,7 @@ public class ActionController implements ActionListener {
         if(selectedFile != null) {
             try {
                 Path filePath = selectedFile.toPath();
-                Files.write(filePath, viewer.getCurrentContent().getText().getBytes());
+                Files.write(filePath, viewer.getCurrentContent().getText().getBytes("UTF-8"));
                 currentOpenFile = selectedFile;
                 viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
             } catch (IOException e) {
@@ -212,19 +227,24 @@ public class ActionController implements ActionListener {
     }
 
     private String readFile(String filePath) {
-        String fileContent = "";
+        StringBuilder fileContent = new StringBuilder();
+
         try {
             Path path = Paths.get(filePath);
             List<String> lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-            fileContent = String.join("\n", lines);
-        } catch(UnmappableCharacterException e) {
+
+            for (String line : lines) {
+                fileContent.append(line).append("\n");
+                line = null;
+            }
+        } catch (UnmappableCharacterException e) {
             viewer.showError(e.toString());
-            System.out.println("Cant encode this type of symbols");
-        }
-         catch(IOException e) {
+            System.out.println("Can't encode this type of symbols");
+        } catch (IOException e) {
             viewer.showError(e.toString());
         }
-        return fileContent;
+
+        return fileContent.toString();
     }
 
 
