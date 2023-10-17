@@ -62,7 +62,6 @@ public class ActionController implements ActionListener {
         } else if(command.equals("Exit")) {
             exitProgram();
 
-
         } else if(command.equals("Cut")) {
             copyOrCutText(command);
 

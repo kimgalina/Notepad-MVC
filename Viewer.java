@@ -60,6 +60,7 @@ public class Viewer {
     private JPanel statusPanel;
     private JLabel statusLabel;
 
+
     public Viewer() {
         frame = getFrame();
         controller = new ActionController(this);
@@ -195,7 +196,7 @@ public class Viewer {
 
             Font newFont = new Font(selectedFont, Font.PLAIN, fontSize);
             currentContent.setFont(newFont);
-          }
+        }
     }
 
     public void zoomIn() {
@@ -317,7 +318,7 @@ public class Viewer {
             System.exit(0);
         }
     }
-    
+
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
         JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
