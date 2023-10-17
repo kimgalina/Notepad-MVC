@@ -567,7 +567,7 @@ public class Viewer {
 
         viewItemZoomIn = createMenuItem("Zoom In", null,
                 "ZOOM_IN", submenuFont, controller);
-        viewItemZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, ActionEvent.CTRL_MASK));
+        viewItemZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, ActionEvent.CTRL_MASK));
         viewItemZoomIn.setEnabled(true);
 
         viewItemZoomOut = createMenuItem("Zoom Out", null,
