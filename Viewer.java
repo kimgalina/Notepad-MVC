@@ -163,9 +163,13 @@ public class Viewer {
     }
 
     public void update(String text, String tabName) {
-        currentContent.setText(text);
+        updateText(text);
         int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
         renameTab(tabName, tabIndex);
+    }
+
+    public void updateText(String text) {
+        currentContent.setText(text);
     }
 
     public void updateTextColor(Color color) {
@@ -316,6 +320,8 @@ public class Viewer {
             System.exit(0);
         } else if (result == JOptionPane.NO_OPTION) {
             System.exit(0);
+        } else if (result == JOptionPane.CANCEL_OPTION) {
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
     }
 
