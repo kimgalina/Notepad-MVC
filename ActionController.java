@@ -18,13 +18,15 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
-
 import java.nio.charset.StandardCharsets;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Files;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import java.util.List;
 import java.nio.charset.UnmappableCharacterException;
@@ -94,7 +96,7 @@ public class ActionController implements ActionListener, DocumentListener {
             pasteText();
 
         } else if(command.equals("Clear")) {
-            System.out.println(command);
+            viewer.updateText("");
 
         } else if(command.equals("Find")) {
             System.out.println(command);
@@ -108,8 +110,8 @@ public class ActionController implements ActionListener, DocumentListener {
         } else if(command.equals("Select_All")) {
             viewer.getCurrentContent().selectAll();
 
-        } else if(command.equals("Time and date")) {
-            System.out.println(command);
+        } else if(command.equals("Time_And_Date")) {
+            pasteTimeAndDate();
 
         } else if(command.equals("Word_Space")) {
             System.out.println(command);
@@ -135,6 +137,7 @@ public class ActionController implements ActionListener, DocumentListener {
         } else if (command.equals("Choose_Color")) {
             Color color = viewer.openColorChooser();
             viewer.updateTextColor(color);
+
         } else if (command.equals("CloseTab")) {
             viewer.closeCurrentTab();
         }
@@ -144,8 +147,9 @@ public class ActionController implements ActionListener, DocumentListener {
     public void insertUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();
         setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
-    }
 
+    }
+    
     @Override
     public void removeUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();
@@ -221,6 +225,13 @@ public class ActionController implements ActionListener, DocumentListener {
         }
     }
 
+    private void pasteTimeAndDate() {
+        LocalDateTime currentDate = LocalDateTime.now();
+        String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy"));
+        JTextArea textArea = viewer.getCurrentContent();
+        textArea.insert(formattedDate, textArea.getCaretPosition());
+    }
+
     private void createNewDocument() {
         viewer.createNewTab();
     }
@@ -234,6 +245,7 @@ public class ActionController implements ActionListener, DocumentListener {
             String filePath = file.getAbsolutePath();
             String contentText = readFile(filePath);
             String fileName = getFileNameFromPath(filePath);
+            viewer.setCurrentContent();
             viewer.update(contentText, fileName);
             setValueInToList(unsavedChangesPerTab, tabIndex, false);
         }
