@@ -9,6 +9,8 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.JTextArea;
+import javax.swing.JTabbedPane;
+import javax.swing.JOptionPane;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.Toolkit;
@@ -28,15 +30,35 @@ import java.util.List;
 import java.nio.charset.UnmappableCharacterException;
 import java.nio.charset.Charset;
 
-public class ActionController implements ActionListener {
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.util.ArrayList;
+
+public class ActionController implements ActionListener, DocumentListener {
     private Viewer viewer;
     private String contentText;
-    private File currentOpenFile;
+    private List<Boolean> unsavedChangesPerTab;
+    private List<File> filesPerTabs;
+    private int maxNumberOfTabs ;
 
     public ActionController(Viewer viewer) {
         this.viewer = viewer;
+        unsavedChangesPerTab = new ArrayList<>();
+        filesPerTabs = new ArrayList<>();
+        maxNumberOfTabs = 10;
+        fillList(unsavedChangesPerTab, maxNumberOfTabs, 0 ,false);
+        fillList(filesPerTabs, maxNumberOfTabs, 0 , null);
     }
 
+    public List<Boolean> getUnsavedChangesPerTab() {
+        return unsavedChangesPerTab;
+    }
+
+    public List<File> getFilesPerTabs() {
+        return filesPerTabs;
+    }
+
+    @Override
     public void actionPerformed(ActionEvent event) {
         viewer.setCurrentContent();
         viewer.setViewItemZoomIn(viewer.canZoomIn());
@@ -117,42 +139,85 @@ public class ActionController implements ActionListener {
             viewer.closeCurrentTab();
         }
     }
-    public void exitProgram() {
-        if(!hasUnsavedChanges()) {
-            System.exit(0);
-        } else {
-            viewer.showExitMessage();
-        }
+
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        int currentTabIndex = viewer.getCurrentTabIndex();
+        setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
     }
 
-    public boolean hasUnsavedChanges() {
-        try {
-            String currentContent = viewer.getCurrentContent().getText();
-            if(currentOpenFile != null) {
-                viewer.setCurrentContent();
-                String fileContent = readFile(currentOpenFile.getAbsolutePath());
-                return (!fileContent.equals(currentContent));
-            } else if (!currentContent.equals("")) {
-                return true;
-            }
-        }
-        catch(NullPointerException e) {
-            return false;
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        int currentTabIndex = viewer.getCurrentTabIndex();
+        setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
+
+    }
+
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        System.out.println("changed content");
+    }
+
+    public boolean hasUnsavedChanges(int tabIndex) {
+        if(unsavedChangesPerTab.get(tabIndex) != null){
+            return unsavedChangesPerTab.get(tabIndex);
         }
         return false;
     }
 
+    public <T> void removeFromList(List<T> list, int tabIndex) {
+        if(tabIndex >= 0 && tabIndex < list.size()) {
+            list.remove(tabIndex);
+        }
+    }
+
+    public void exitProgram() {
+        JTabbedPane tabPane = viewer.getTabPane();
+        int tabCount = tabPane.getTabCount();
+        for(int i = 0; i < tabCount; i++) {
+            int currentTabIndex = viewer.getCurrentTabIndex();
+            if(hasUnsavedChanges(currentTabIndex)) {
+                int result = viewer.showCloseTabMessage(currentTabIndex);
+                if(result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+                    return;
+                }
+            } else {
+                tabPane.removeTabAt(currentTabIndex);
+                filesPerTabs.set(currentTabIndex, null);
+                unsavedChangesPerTab.set(currentTabIndex, null);
+            }
+        }
+        System.exit(0);
+    }
+
     public void saveDocument() {
+        File currentOpenFile = filesPerTabs.get(viewer.getCurrentTabIndex());
         if (currentOpenFile != null) {
           try {
               String fileName = getFileNameFromPath(currentOpenFile.getAbsolutePath());
               String content = viewer.getCurrentContent().getText();
               Files.write(currentOpenFile.toPath(), content.getBytes("UTF-8"));
+              setValueInToList(unsavedChangesPerTab, viewer.getCurrentTabIndex(), false);
+
           } catch (IOException e) {
               viewer.showError(e.toString());
           }
         } else {
-            saveDocumentAs();
+             saveDocumentAs();
+        }
+    }
+    private <T> void fillList(List<T> list, int size, int index, T value) {
+        for(int i = index; i < size ; i++) {
+            list.add(i, value);
+        }
+    }
+
+    private <T> void setValueInToList(List<T> list, int currentTabIndex, T value) {
+        if(currentTabIndex < list.size()) {
+            list.set(currentTabIndex, value);
+        } else {
+            fillList(list, currentTabIndex + 1, currentTabIndex, value);
+            list.set(currentTabIndex, value);
         }
     }
 
@@ -163,17 +228,20 @@ public class ActionController implements ActionListener {
     private void openDocument() {
         File file = viewer.getFile();
         if(file != null) {
-            currentOpenFile = file;
+            int tabIndex = viewer.getCurrentTabIndex();
+            setValueInToList(filesPerTabs, tabIndex,file);
+
             String filePath = file.getAbsolutePath();
             String contentText = readFile(filePath);
             String fileName = getFileNameFromPath(filePath);
             viewer.update(contentText, fileName);
+            setValueInToList(unsavedChangesPerTab, tabIndex, false);
         }
     }
 
     private void saveDocumentAs() {
         String fileName = "";
-
+        File currentOpenFile = filesPerTabs.get(viewer.getCurrentTabIndex());
         if (currentOpenFile == null) {
             fileName = "Untitled.txt";
         } else  {
@@ -185,8 +253,9 @@ public class ActionController implements ActionListener {
             try {
                 Path filePath = selectedFile.toPath();
                 Files.write(filePath, viewer.getCurrentContent().getText().getBytes("UTF-8"));
-                currentOpenFile = selectedFile;
+                setValueInToList(filesPerTabs, viewer.getCurrentTabIndex(), selectedFile);
                 viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
+                setValueInToList(unsavedChangesPerTab, viewer.getCurrentTabIndex(), false);
             } catch (IOException e) {
                 viewer.showError(e.toString());
             }
