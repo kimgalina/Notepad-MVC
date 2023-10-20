@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
+
 import javax.swing.text.BadLocationException;
 
 public class GoDialogController implements ActionListener {
@@ -20,24 +21,23 @@ public class GoDialogController implements ActionListener {
         String command = event.getActionCommand();
 
         if (command.equals("Go")) {
-            viewer.closeGoDialog();
             goToTheLine();
-
         } else if (command.equals("Cancel")) {
             viewer.closeGoDialog();
         }
     }
 
     private void goToTheLine() {
-        int line = Integer.parseInt(textField.getText());
         JTextArea textArea = viewer.getCurrentContent();
         try {
+            int line = Integer.parseInt(textField.getText());
             int lineStartOffset = textArea.getLineStartOffset(line - 1);
+            viewer.closeGoDialog();
             textArea.setCaretPosition(lineStartOffset);
             textArea.requestFocusInWindow();
         }
-        catch (BadLocationException e) {
-            viewer.showError("Error");
+        catch (BadLocationException | NumberFormatException e) {
+            viewer.showError("Line number exceeds total number of lines");
         }
     }
 }
