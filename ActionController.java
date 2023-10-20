@@ -117,7 +117,7 @@ public class ActionController implements ActionListener, DocumentListener {
             System.out.println(command);
 
         } else if(command.equals("Font")) {
-            viewer.openFontChooser();
+            viewer.openFontDialog();
 
         } else if(command.equals("ZOOM_IN")) {
             viewer.zoomIn();
