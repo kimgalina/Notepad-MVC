@@ -150,7 +150,7 @@ public class Viewer {
         JPanel panel = new JPanel();
         panel.setLayout(null);
 
-        JLabel label = new JLabel("The string number:");
+        JLabel label = new JLabel("The line number:");
         label.setBounds(15, 10, 200, 20);
         label.setFont(font);
 
@@ -175,34 +175,8 @@ public class Viewer {
         goDialog.setVisible(true);
     }
 
-    private void filterInput(JTextField textField) {
-        PlainDocument doc = (PlainDocument) textField.getDocument();
-        IntegerFilter filter = new IntegerFilter(this);
-        doc.setDocumentFilter(filter);
-    }
-
     public void closeGoDialog() {
         goDialog.dispose();
-    }
-
-    private JButton createDialogButton(String name, String command, int x, int y, int width, int height, Font font) {
-        JButton button = new JButton(name);
-
-        button.setBounds(x, y, width, height);
-        button.setFont(font);
-        button.setActionCommand(command);
-
-        return button;
-    }
-
-    private JDialog createDialog(String title, boolean isModal, int width, int height) {
-        JDialog dialog = new JDialog(frame, title, isModal);
-
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        dialog.setLocation(frame.getX() + 150, frame.getY() + 150);
-        dialog.setSize(width, height);
-
-        return dialog;
     }
 
     public void showError(String errorMessage) {
@@ -482,6 +456,32 @@ public class Viewer {
         } else if (result == JOptionPane.CANCEL_OPTION) {
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
+    }
+
+    private void filterInput(JTextField textField) {
+        PlainDocument doc = (PlainDocument) textField.getDocument();
+        IntegerFilter filter = new IntegerFilter(this);
+        doc.setDocumentFilter(filter);
+    }
+
+    private JButton createDialogButton(String name, String command, int x, int y, int width, int height, Font font) {
+        JButton button = new JButton(name);
+
+        button.setBounds(x, y, width, height);
+        button.setFont(font);
+        button.setActionCommand(command);
+
+        return button;
+    }
+
+    private JDialog createDialog(String title, boolean isModal, int width, int height) {
+        JDialog dialog = new JDialog(frame, title, isModal);
+
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setLocation(frame.getX() + 150, frame.getY() + 150);
+        dialog.setSize(width, height);
+
+        return dialog;
     }
 
     private JLabel createLabel(String text, int x, int y) {
