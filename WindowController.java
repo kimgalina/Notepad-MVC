@@ -14,11 +14,7 @@ public class WindowController implements WindowListener {
     }
 
     public void windowClosing(WindowEvent e) {
-        if(!controller.hasUnsavedChanges()) {
-            System.exit(0);
-        } else {
-            viewer.showExitMessage();
-        }
+        controller.exitProgram();
     }
 
     public void windowClosed(WindowEvent e) {
