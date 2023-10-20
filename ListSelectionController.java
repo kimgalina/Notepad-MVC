@@ -73,7 +73,10 @@ public class ListSelectionController implements ListSelectionListener {
 
       for (Component component : components) {
           if (component instanceof JPanel) {
-              panel = (JPanel) component;
+              if("samplePanel".equals(component.getName())){
+                  panel = (JPanel) component;
+                  break;
+              }
           }
       }
 

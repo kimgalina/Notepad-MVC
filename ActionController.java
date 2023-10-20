@@ -149,7 +149,7 @@ public class ActionController implements ActionListener, DocumentListener {
         setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
 
     }
-    
+
     @Override
     public void removeUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();

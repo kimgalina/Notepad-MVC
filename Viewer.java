@@ -108,7 +108,7 @@ public class Viewer {
         int tabIndex = tabPane.indexOfComponent(panel);
         tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
     }
-    
+
     public JTabbedPane getTabPane() {
         return tabPane;
     }
@@ -251,6 +251,7 @@ public class Viewer {
         JPanel panel = new JPanel();
         panel.setBounds(235, 217, 240, 100);
         panel.setLayout(new BorderLayout());
+        panel.setName("samplePanel");
         TitledBorder border = BorderFactory.createTitledBorder("Sample");
         panel.setBorder(border);
         JLabel label = new JLabel("AaBbCc");
