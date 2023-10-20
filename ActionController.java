@@ -105,7 +105,7 @@ public class ActionController implements ActionListener, DocumentListener {
             System.out.println(command);
 
         } else if(command.equals("Go")) {
-            System.out.println(command);
+            viewer.openGoDialog();
 
         } else if(command.equals("Select_All")) {
             viewer.getCurrentContent().selectAll();
@@ -149,7 +149,7 @@ public class ActionController implements ActionListener, DocumentListener {
         setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
 
     }
-    
+
     @Override
     public void removeUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();

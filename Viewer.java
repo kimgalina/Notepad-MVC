@@ -26,9 +26,11 @@ import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.border.BevelBorder;
 import javax.swing.BoxLayout;
+import javax.swing.text.PlainDocument;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
+import javax.swing.JDialog;
 
 import java.awt.Component;
 import javax.swing.JViewport;
@@ -61,7 +63,7 @@ public class Viewer {
     private Font fontZoom;
     private JPanel statusPanel;
     private JLabel statusLabel;
-
+    private JDialog goDialog;
 
     public Viewer() {
         frame = getFrame();
@@ -104,9 +106,11 @@ public class Viewer {
         int tabIndex = tabPane.indexOfComponent(panel);
         tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
     }
+
     public JTabbedPane getTabPane() {
         return tabPane;
     }
+
     public int getCurrentTabIndex() {
         return tabPane.getSelectedIndex();
     }
@@ -136,11 +140,75 @@ public class Viewer {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
 
+    public void openGoDialog() {
+        goDialog = createDialog("Go to the line", true, 300, 150);
+        Font font = new Font("Tahoma", Font.PLAIN, 12);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+
+        JLabel label = new JLabel("The string number:");
+        label.setBounds(15, 10, 200, 20);
+        label.setFont(font);
+
+        JTextField textField = new JTextField();
+        textField.setBounds(15, 35, 250, 20);
+        filterInput(textField);
+
+        GoDialogController dialogController = new GoDialogController(this, textField);
+
+        JButton goToButton = createDialogButton("Go", "Go", 70, 70, 90, 25, font);
+        goToButton.addActionListener(dialogController);
+
+        JButton cancelButton = createDialogButton("Cancel", "Cancel", 175, 70, 90, 25, font);
+        cancelButton.addActionListener(dialogController);
+
+        panel.add(label);
+        panel.add(textField);
+        panel.add(goToButton);
+        panel.add(cancelButton);
+
+        goDialog.add(panel);
+        goDialog.setVisible(true);
+    }
+
+    private void filterInput(JTextField textField) {
+        PlainDocument doc = (PlainDocument) textField.getDocument();
+        IntegerFilter filter = new IntegerFilter(this);
+        doc.setDocumentFilter(filter);
+    }
+
+    public void closeGoDialog() {
+        goDialog.dispose();
+    }
+
+    private JButton createDialogButton(String name, String command, int x, int y, int width, int height, Font font) {
+        JButton button = new JButton(name);
+
+        button.setBounds(x, y, width, height);
+        button.setFont(font);
+        button.setActionCommand(command);
+
+        return button;
+    }
+
+    private JDialog createDialog(String title, boolean isModal, int width, int height) {
+        JDialog dialog = new JDialog(frame, title, isModal);
+
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setLocation(frame.getX() + 150, frame.getY() + 150);
+        dialog.setSize(width, height);
+
+        return dialog;
+    }
+
     public void showError(String errorMessage) {
-        JOptionPane.showMessageDialog(new JFrame(),
-        errorMessage,
-        "Error",
-        JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(
+            new JFrame(),
+            errorMessage,
+            "Error",
+            JOptionPane.ERROR_MESSAGE
+        );
     }
 
     public File getFile() {
@@ -176,7 +244,6 @@ public class Viewer {
         updateText(text);
         int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
         renameTab(tabName, tabIndex);
-
     }
 
     public void updateText(String text) {
@@ -219,7 +286,6 @@ public class Viewer {
             fontZoom = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), currentContent.getFont().getSize() + 2);
             currentContent.setFont(fontZoom);
         }
-
     }
 
     public boolean canZoomIn() {
@@ -263,7 +329,6 @@ public class Viewer {
         if (canZoomDefault()) {
             currentContent.setFont(new java.awt.Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(),
                     22));
-
         }
     }
 
@@ -349,6 +414,7 @@ public class Viewer {
         controller.removeFromList(controller.getUnsavedChangesPerTab(), tabIndex);
         controller.removeFromList(controller.getFilesPerTabs(), tabIndex);
     }
+
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
         JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
@@ -440,7 +506,6 @@ public class Viewer {
             }
         }
     }
-
 
     private JToolBar getToolBar(ActionController controller) {
         JToolBar toolBar = new JToolBar();
@@ -640,7 +705,7 @@ public class Viewer {
 
     private JFrame getFrame() {
         JFrame frame = new JFrame("Notepad MVC");
-        frame.setLocation(300, 100);
+        frame.setLocation(300, 15);
         frame.setSize(1000, 800);
 
         return frame;
