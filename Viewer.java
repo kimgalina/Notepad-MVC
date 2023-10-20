@@ -30,7 +30,6 @@ import javax.swing.text.PlainDocument;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
-import javax.swing.JDialog;
 
 import java.awt.Component;
 import javax.swing.JViewport;
@@ -43,6 +42,9 @@ import javax.swing.Box;
 import java.awt.Dimension;
 import java.awt.Container;
 
+import javax.swing.JList;
+import javax.swing.JDialog;
+import javax.swing.border.TitledBorder;
 import javax.swing.text.Document;
 
 public class Viewer {
@@ -64,6 +66,7 @@ public class Viewer {
     private JPanel statusPanel;
     private JLabel statusLabel;
     private JDialog goDialog;
+    private JDialog fontDialog;
 
     public Viewer() {
         frame = getFrame();
@@ -254,31 +257,103 @@ public class Viewer {
         currentContent.setForeground(color);
     }
 
-    public void openFontChooser() {
-        String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        JComboBox<String> fontComboBox = new JComboBox<>(fonts);
-        JTextField sizeTextField = new JTextField(5);
+    public JDialog getFontDialog() {
+        return fontDialog;
+    }
 
-        Object[] message = {
-            "Choose font:", fontComboBox,
-            "Enter font size:", sizeTextField
-        };
-
-        int option = JOptionPane.showConfirmDialog(frame, message, "Font and size choosing", JOptionPane.OK_CANCEL_OPTION);
-
-        if (option == JOptionPane.OK_OPTION) {
-            String selectedFont = (String) fontComboBox.getSelectedItem();
-            int fontSize = 24;
-
-            try {
-                fontSize = Integer.parseInt(sizeTextField.getText());
-            } catch (NumberFormatException e) {
-                showError("Font size is not correct. Using default size.");
-            }
-
-            Font newFont = new Font(selectedFont, Font.PLAIN, fontSize);
-            currentContent.setFont(newFont);
+    public void openFontDialog() {
+        if (fontDialog != null) {
+            fontDialog.setVisible(true);
+            return;
         }
+
+        FontController fontController = new FontController(this);
+        ListSelectionController ListSelectionController = new ListSelectionController(this);
+
+        String[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+        String[] styles = {"Regular", "Italic", "Bold", "Bold Italic"};
+        Integer[] sizes = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
+
+        int x = frame.getX();
+        int y = frame.getY();
+        fontDialog = new JDialog(frame, "Font", true);
+        fontDialog.setSize(500, 500);
+        fontDialog.setLocation(x + 150, y + 150);
+        fontDialog.setLayout(null);
+        fontDialog.setResizable(false);
+
+        JLabel fontLabel = createLabel("Font:", 15, 10);
+        String currentFont = currentContent.getFont().getFontName();
+        JTextField fontTextField = createTextField("fontTextField", currentFont, 15, 27, 200, 30);
+        JList<String> fontsList = new JList<>(fonts);
+        fontsList.setSelectedValue(currentFont, true);
+        fontsList.setName("FontsList");
+        fontsList.addListSelectionListener(ListSelectionController);
+        JScrollPane fontsScrollPane = new JScrollPane(fontsList);
+        fontsScrollPane.setBounds(15, 57, 200, 150);
+
+        JLabel styleLabel = createLabel("Style:", 235, 10);
+        String currentStyle = getFontStyle(currentContent.getFont().getStyle());
+        JTextField styleTextField = createTextField("styleTextField", currentStyle, 235, 27, 150, 30);
+        JList<String> stylesList = new JList<>(styles);
+        stylesList.setSelectedValue(currentStyle, true);
+        stylesList.setName("StylesList");
+        stylesList.addListSelectionListener(ListSelectionController);
+        JScrollPane stylesScrollPane = new JScrollPane(stylesList);
+        stylesScrollPane.setBounds(235, 57, 150, 150);
+
+        JLabel sizeLabel = createLabel("Size:", 405, 10);
+        int currentSize = currentContent.getFont().getSize();
+        JTextField sizeTextField = createTextField("sizeTextField", String.valueOf(currentSize), 405, 27, 70, 30);
+        JList<Integer> sizesList = new JList<>(sizes);
+        sizesList.setSelectedValue(currentSize, true);
+        sizesList.setName("SizesList");
+        sizesList.addListSelectionListener(ListSelectionController);
+        JScrollPane sizesScrollPane = new JScrollPane(sizesList);
+        sizesScrollPane.setBounds(405, 57, 70, 150);
+
+        JPanel panel = new JPanel();
+        panel.setBounds(235, 217, 240, 100);
+        panel.setLayout(new BorderLayout());
+        panel.setName("samplePanel");
+        TitledBorder border = BorderFactory.createTitledBorder("Sample");
+        panel.setBorder(border);
+        JLabel label = new JLabel("AaBbCc");
+        label.setHorizontalAlignment(JLabel.CENTER);
+        label.setFont(currentContent.getFont());
+        panel.add(label);
+
+        JButton buttonOk = new JButton("Ok");
+        buttonOk.setBounds(260, 420, 100, 30);
+        buttonOk.addActionListener(fontController);
+        buttonOk.setActionCommand("Ok");
+
+        JButton buttonCancel = new JButton("Cancel");
+        buttonCancel.setBounds(380, 420, 100, 30);
+        buttonCancel.addActionListener(fontController);
+        buttonCancel.setActionCommand("Cancel");
+
+        fontDialog.add(buttonOk);
+        fontDialog.add(buttonCancel);
+        fontDialog.add(fontLabel);
+        fontDialog.add(fontTextField);
+        fontDialog.add(fontsScrollPane);
+        fontDialog.add(styleLabel);
+        fontDialog.add(stylesScrollPane);
+        fontDialog.add(styleTextField);
+        fontDialog.add(sizeLabel);
+        fontDialog.add(sizeTextField);
+        fontDialog.add(sizesScrollPane);
+        fontDialog.add(panel);
+        fontDialog.setVisible(true);
+    }
+
+    public void setNewFontForTextArea(Font font) {
+        currentContent.setFont(font);
+    }
+
+    public void hideFontDialog() {
+        fontDialog.setVisible(false);
     }
 
     public void zoomIn() {
@@ -406,6 +481,31 @@ public class Viewer {
             System.exit(0);
         } else if (result == JOptionPane.CANCEL_OPTION) {
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        }
+    }
+
+    private JLabel createLabel(String text, int x, int y) {
+        JLabel label = new JLabel(text);
+        label.setBounds(x, y, 50, 15);
+        return label;
+    }
+
+    private JTextField createTextField(String name, String text, int x, int y, int width, int height) {
+        JTextField textField = new JTextField(text);
+        textField.setBounds(x, y, width, height);
+        textField.setName(name);
+        return textField;
+    }
+
+    private String getFontStyle(int style) {
+        if (style == Font.PLAIN) {
+            return "Regular";
+        } else if (style == Font.ITALIC) {
+            return "Italic";
+        } else if (style == Font.BOLD) {
+            return "Bold";
+        } else {
+            return "Bold Italic";
         }
     }
 
