@@ -44,6 +44,7 @@ import java.awt.Container;
 import javax.swing.JList;
 import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.Document;
 
 public class Viewer {
 
@@ -88,6 +89,7 @@ public class Viewer {
         frame.add(statusPanel, BorderLayout.SOUTH);
         frame.add(tabPane);
         frame.addWindowListener(windowController);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setVisible(true);
         frame.setIconImage(new ImageIcon("images/notepad.png").getImage());
     }
@@ -97,6 +99,7 @@ public class Viewer {
 
         JTextArea content = new JTextArea();
         content.setFont(contentFont);
+        content.getDocument().addDocumentListener(controller);
         JScrollPane scrollPane = new JScrollPane(content);
 
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -104,6 +107,14 @@ public class Viewer {
         tabPane.addTab(null, panel);
         int tabIndex = tabPane.indexOfComponent(panel);
         tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
+    }
+    
+    public JTabbedPane getTabPane() {
+        return tabPane;
+    }
+
+    public int getCurrentTabIndex() {
+        return tabPane.getSelectedIndex();
     }
 
     public void setCurrentContent() {
@@ -171,6 +182,7 @@ public class Viewer {
         updateText(text);
         int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
         renameTab(tabName, tabIndex);
+
     }
 
     public void updateText(String text) {
@@ -362,30 +374,38 @@ public class Viewer {
     public void closeCurrentTab() {
         int currentTabIndex = tabPane.getSelectedIndex();
         if (currentTabIndex > 0) {
-            if(controller.hasUnsavedChanges()) {
+            if(controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
             } else {
-                 tabPane.removeTabAt(currentTabIndex);
+                 deleteTab(currentTabIndex);
             }
-       } else if(currentTabIndex == 0) {
-           if(controller.hasUnsavedChanges()) {
-               showExitMessage();
+       } else if(currentTabIndex == 0) { // checking if there are other tabs
+           int tabCount = tabPane.getTabCount();
+           if(controller.hasUnsavedChanges(currentTabIndex) && tabCount != 1) {
+                showCloseTabMessage(currentTabIndex);
 
+           } else if(controller.hasUnsavedChanges(currentTabIndex)) {
+                showExitMessage();
+           } else if(!controller.hasUnsavedChanges(currentTabIndex) && tabCount > 1){
+                deleteTab(currentTabIndex);
            } else {
-               System.exit(0);
+                System.exit(0);
            }
        }
-    }
+   }
 
-    public void showCloseTabMessage(int currentTabIndex) {
+    public int showCloseTabMessage(int currentTabIndex) {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+
         if(result == JOptionPane.YES_OPTION) {
             controller.saveDocument();
-            tabPane.removeTabAt(currentTabIndex);
+            deleteTab(currentTabIndex);
+
         } else if (result == JOptionPane.NO_OPTION) {
-            tabPane.removeTabAt(currentTabIndex);
+            deleteTab(currentTabIndex);
         }
+        return result;
     }
 
     public void showExitMessage() {
@@ -424,6 +444,12 @@ public class Viewer {
         } else {
             return "Bold Italic";
         }
+    }
+
+    private void deleteTab(int tabIndex) {
+        tabPane.removeTabAt(tabIndex);
+        controller.removeFromList(controller.getUnsavedChangesPerTab(), tabIndex);
+        controller.removeFromList(controller.getFilesPerTabs(), tabIndex);
     }
 
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
