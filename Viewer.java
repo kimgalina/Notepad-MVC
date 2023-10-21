@@ -53,6 +53,7 @@ public class Viewer {
     private JFrame frame;
     private ActionController controller;
     private WindowController windowController;
+    private TabsController tabsController;
     private JTabbedPane tabPane;
     private Font contentFont;
     private Font submenuFont;
@@ -70,7 +71,8 @@ public class Viewer {
 
     public Viewer() {
         frame = getFrame();
-        controller = new ActionController(this);
+        tabsController = new TabsController(this);
+        controller = new ActionController(this, tabsController);
         windowController = new WindowController(controller,this);
         contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
@@ -100,7 +102,8 @@ public class Viewer {
 
         JTextArea content = new JTextArea();
         content.setFont(contentFont);
-        content.getDocument().addDocumentListener(controller);
+        content.getDocument().addDocumentListener(tabsController);
+
         JScrollPane scrollPane = new JScrollPane(content);
 
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -108,6 +111,9 @@ public class Viewer {
         tabPane.addTab(null, panel);
         int tabIndex = tabPane.indexOfComponent(panel);
         tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
+
+        tabsController.getFilesPerTabs().add(tabIndex, null);
+        tabsController.getUnsavedChangesPerTab().add(tabIndex, false);
     }
 
     public JTabbedPane getTabPane() {
@@ -418,13 +424,15 @@ public class Viewer {
             }
        } else if(currentTabIndex == 0) { // checking if there are other tabs
            int tabCount = tabPane.getTabCount();
-           if(controller.hasUnsavedChanges(currentTabIndex) && tabCount != 1) {
+           if(tabCount != 1 && controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
 
            } else if(controller.hasUnsavedChanges(currentTabIndex)) {
                 showExitMessage();
-           } else if(!controller.hasUnsavedChanges(currentTabIndex) && tabCount > 1){
+
+           } else if(tabCount > 1 && !controller.hasUnsavedChanges(currentTabIndex)){
                 deleteTab(currentTabIndex);
+
            } else {
                 System.exit(0);
            }
@@ -509,10 +517,11 @@ public class Viewer {
         }
     }
 
-    private void deleteTab(int tabIndex) {
+    public void deleteTab(int tabIndex) {
         tabPane.removeTabAt(tabIndex);
-        controller.removeFromList(controller.getUnsavedChangesPerTab(), tabIndex);
-        controller.removeFromList(controller.getFilesPerTabs(), tabIndex);
+
+        tabsController.getUnsavedChangesPerTab().remove(tabIndex);
+        tabsController.getFilesPerTabs().remove(tabIndex);
     }
 
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
