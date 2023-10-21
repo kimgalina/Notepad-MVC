@@ -100,8 +100,8 @@ public class ActionController implements ActionListener {
         } else if(command.equals("Time_And_Date")) {
             pasteTimeAndDate();
 
-        } else if(command.equals("Word_Space")) {
-            System.out.println(command);
+        } else if(command.equals("Word_Wrap")) {
+            makeWordWrap();
 
         } else if(command.equals("Font")) {
             viewer.openFontDialog();
@@ -178,6 +178,22 @@ public class ActionController implements ActionListener {
              saveDocumentAs();
         }
     }
+
+    private void makeWordWrap() {
+        JTextArea textArea = viewer.getCurrentContent();
+        if(textArea.getLineWrap()) {
+            textArea.setLineWrap(false);
+        } else {
+            textArea.setLineWrap(true);
+        }
+    }
+
+    private <T> void fillList(List<T> list, int size, int index, T value) {
+        for(int i = index; i < size ; i++) {
+            list.add(i, value);
+        }
+    }
+
 
 
     private void pasteTimeAndDate() {
