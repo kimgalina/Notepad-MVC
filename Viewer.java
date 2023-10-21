@@ -57,6 +57,7 @@ public class Viewer {
     private Font contentFont;
     private Font submenuFont;
     private Font menuFont;
+    private Font dialogFont;
     private JTextArea currentContent;
     private JMenuItem viewItemZoomIn;
     private JMenuItem viewItemZoomOut;
@@ -66,6 +67,7 @@ public class Viewer {
     private JPanel statusPanel;
     private JLabel statusLabel;
     private JDialog goDialog;
+    private JDialog findDialog;
     private JDialog fontDialog;
 
     public Viewer() {
@@ -75,6 +77,7 @@ public class Viewer {
         contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
+        dialogFont = new Font("Tahoma", Font.PLAIN, 12);
         tabPane = new JTabbedPane();
     }
 
@@ -143,16 +146,49 @@ public class Viewer {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
 
+    public void openFindDialog() {
+        findDialog = createDialog("Find", false, 480, 200);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+
+        JLabel label = new JLabel("What:");
+        label.setBounds(10, 20, 50, 20);
+        label.setFont(dialogFont);
+
+        JTextField textField = new JTextField();
+        textField.setBounds(60, 20, 270, 20);
+
+        FindDialogController dialogController = new FindDialogController(this, textField);
+
+        JButton findButton = createDialogButton("Find next", "Find_Next", 350, 20, 90, 25);
+        findButton.addActionListener(dialogController);
+
+        JButton cancelButton = createDialogButton("Cancel", "Cancel", 350, 60, 90, 25);
+        cancelButton.addActionListener(dialogController);
+
+        panel.add(label);
+        panel.add(textField);
+        panel.add(findButton);
+        panel.add(cancelButton);
+
+        findDialog.add(panel);
+        findDialog.setVisible(true);
+    }
+
+    public void closeFindDialog() {
+        findDialog.dispose();
+    }
+
     public void openGoDialog() {
         goDialog = createDialog("Go to the line", true, 300, 150);
-        Font font = new Font("Tahoma", Font.PLAIN, 12);
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
 
         JLabel label = new JLabel("The line number:");
         label.setBounds(15, 10, 200, 20);
-        label.setFont(font);
+        label.setFont(dialogFont);
 
         JTextField textField = new JTextField();
         textField.setBounds(15, 35, 250, 20);
@@ -160,10 +196,10 @@ public class Viewer {
 
         GoDialogController dialogController = new GoDialogController(this, textField);
 
-        JButton goToButton = createDialogButton("Go", "Go", 70, 70, 90, 25, font);
+        JButton goToButton = createDialogButton("Go", "Go", 70, 70, 90, 25);
         goToButton.addActionListener(dialogController);
 
-        JButton cancelButton = createDialogButton("Cancel", "Cancel", 175, 70, 90, 25, font);
+        JButton cancelButton = createDialogButton("Cancel", "Cancel", 175, 70, 90, 25);
         cancelButton.addActionListener(dialogController);
 
         panel.add(label);
@@ -464,11 +500,11 @@ public class Viewer {
         doc.setDocumentFilter(filter);
     }
 
-    private JButton createDialogButton(String name, String command, int x, int y, int width, int height, Font font) {
+    private JButton createDialogButton(String name, String command, int x, int y, int width, int height) {
         JButton button = new JButton(name);
 
         button.setBounds(x, y, width, height);
-        button.setFont(font);
+        button.setFont(dialogFont);
         button.setActionCommand(command);
 
         return button;
