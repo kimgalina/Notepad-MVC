@@ -161,7 +161,8 @@ public class ActionController implements ActionListener {
         System.exit(0);
     }
 
-    public void saveDocument() {
+
+    public int saveDocument() {
         int currentTabIndex = viewer.getCurrentTabIndex();
         File currentOpenFile = tabsController.getFilesPerTabs().get(currentTabIndex);
         if (currentOpenFile != null) {
@@ -170,12 +171,13 @@ public class ActionController implements ActionListener {
               String content = viewer.getCurrentContent().getText();
               Files.write(currentOpenFile.toPath(), content.getBytes("UTF-8"));
               tabsController.setValueInToList(tabsController.getUnsavedChangesPerTab(), currentTabIndex, false);
-
+              return 0;
           } catch (IOException e) {
               viewer.showError(e.toString());
+              return -1;
           }
         } else {
-             saveDocumentAs();
+             return saveDocumentAs();
         }
     }
 
@@ -206,19 +208,20 @@ public class ActionController implements ActionListener {
     private void openDocument() {
         File file = viewer.getFile();
         if(file != null) {
-            int tabIndex = viewer.getCurrentTabIndex();
-            tabsController.setValueInToList(tabsController.getFilesPerTabs(), tabIndex, file);
+            JTabbedPane tabPane = viewer.getTabPane();
+            int newTabIndex = viewer.createNewTab();
+            tabsController.setValueInToList(tabsController.getFilesPerTabs(), newTabIndex, file);
 
             String filePath = file.getAbsolutePath();
             String contentText = readFile(filePath);
             String fileName = getFileNameFromPath(filePath);
-            viewer.setCurrentContent();
-            viewer.update(contentText, fileName);
-            tabsController.setValueInToList(tabsController.getUnsavedChangesPerTab(), tabIndex, false);
+
+            viewer.update(contentText, fileName, newTabIndex);
+            tabsController.setValueInToList(tabsController.getUnsavedChangesPerTab(), newTabIndex, false);
         }
     }
 
-    private void saveDocumentAs() {
+    private int saveDocumentAs() {
         int currentTabIndex = viewer.getCurrentTabIndex();
         String fileName = "";
         File currentOpenFile = tabsController.getFilesPerTabs().get(currentTabIndex);
@@ -235,13 +238,16 @@ public class ActionController implements ActionListener {
                 Files.write(filePath, viewer.getCurrentContent().getText().getBytes("UTF-8"));
                 tabsController.setValueInToList(tabsController.getFilesPerTabs(), currentTabIndex, selectedFile);
 
-                viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()));
+                viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()), currentTabIndex);
 
                 tabsController.setValueInToList(tabsController.getUnsavedChangesPerTab(), currentTabIndex, false);
+                return 0;
             } catch (IOException e) {
                 viewer.showError(e.toString());
+                return -1;
             }
         }
+        return -1;
     }
 
     private void copyOrCutText(String command) {

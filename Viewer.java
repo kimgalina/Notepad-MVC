@@ -97,7 +97,7 @@ public class Viewer {
         frame.setIconImage(new ImageIcon("images/notepad.png").getImage());
     }
 
-    public void createNewTab() {
+    public int createNewTab() {
         JPanel panel = new JPanel(new BorderLayout());
 
         JTextArea content = new JTextArea();
@@ -114,6 +114,7 @@ public class Viewer {
 
         tabsController.getFilesPerTabs().add(tabIndex, null);
         tabsController.getUnsavedChangesPerTab().add(tabIndex, false);
+        return tabIndex;
     }
 
     public JTabbedPane getTabPane() {
@@ -223,14 +224,16 @@ public class Viewer {
         return null;
     }
 
-    public void update(String text, String tabName) {
+    public void update(String text, String tabName, int tabIndex) {
+        tabPane.setSelectedIndex(tabIndex);
         updateText(text);
-        int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
+        //int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
         renameTab(tabName, tabIndex);
     }
 
     public void updateText(String text) {
-        currentContent.setText(text);
+        setCurrentContent();
+        currentContent.setText(text);//////////
     }
 
     public void updateTextColor(Color color) {
@@ -444,7 +447,7 @@ public class Viewer {
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
         if(result == JOptionPane.YES_OPTION) {
-            controller.saveDocument();
+            int saveResult = controller.saveDocument();
             deleteTab(currentTabIndex);
 
         } else if (result == JOptionPane.NO_OPTION) {
