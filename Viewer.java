@@ -735,17 +735,14 @@ public class Viewer {
     }
 
     private JMenu getFormatMenu(Font menuFont, Font submenuFont, ActionController controller) {
-        JRadioButtonMenuItem wordSpase = new JRadioButtonMenuItem("Word space");
-        wordSpase.setSelected(true);
-        wordSpase.addActionListener(controller);
-        wordSpase.setActionCommand("Word_Space");
-        wordSpase.setFont(submenuFont);
+        JMenuItem wordWrap = createMenuItem("Word wrap", "", "Word_Wrap", submenuFont, controller);
+        wordWrap.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
 
         JMenuItem fontDocument = createMenuItem("Font", "images/font.png", "Font", submenuFont, controller);
         fontDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 
         JMenu formatMenu = new JMenu("Format");
-        formatMenu.add(wordSpase);
+        formatMenu.add(wordWrap);
         formatMenu.addSeparator();
         formatMenu.add(fontDocument);
         formatMenu.setFont(menuFont);
