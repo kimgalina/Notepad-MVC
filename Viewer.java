@@ -139,6 +139,14 @@ public class Viewer {
         return currentContent;
     }
 
+    public Font getCurrentFontTextArea() {
+        return getCurrentContent().getFont();
+    }
+
+    public String getCurrentContentTextArea() {
+        return currentContent.getText();
+    }
+
     public Color openColorChooser() {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
