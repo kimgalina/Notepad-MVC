@@ -53,6 +53,8 @@ public class Viewer {
     private JFrame frame;
     private ActionController controller;
     private WindowController windowController;
+    private TabsController tabsController;
+    private MouseListener mouseController;
     private JTabbedPane tabPane;
     private Font contentFont;
     private Font submenuFont;
@@ -70,7 +72,9 @@ public class Viewer {
 
     public Viewer() {
         frame = getFrame();
-        controller = new ActionController(this);
+        mouseController = new MouseListener();
+        tabsController = new TabsController(this);
+        controller = new ActionController(this, tabsController);
         windowController = new WindowController(controller,this);
         contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
@@ -95,12 +99,13 @@ public class Viewer {
         frame.setIconImage(new ImageIcon("images/notepad.png").getImage());
     }
 
-    public void createNewTab() {
+    public int createNewTab() {
         JPanel panel = new JPanel(new BorderLayout());
 
         JTextArea content = new JTextArea();
         content.setFont(contentFont);
-        content.getDocument().addDocumentListener(controller);
+        content.getDocument().addDocumentListener(tabsController);
+
         JScrollPane scrollPane = new JScrollPane(content);
 
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -108,6 +113,10 @@ public class Viewer {
         tabPane.addTab(null, panel);
         int tabIndex = tabPane.indexOfComponent(panel);
         tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
+
+        tabsController.getFilesPerTabs().add(tabIndex, null);
+        tabsController.getUnsavedChangesPerTab().add(tabIndex, false);
+        return tabIndex;
     }
 
     public JTabbedPane getTabPane() {
@@ -225,13 +234,14 @@ public class Viewer {
         return null;
     }
 
-    public void update(String text, String tabName) {
+    public void update(String text, String tabName, int tabIndex) {
+        tabPane.setSelectedIndex(tabIndex);
         updateText(text);
-        int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
         renameTab(tabName, tabIndex);
     }
 
     public void updateText(String text) {
+        setCurrentContent();
         currentContent.setText(text);
     }
 
@@ -416,6 +426,20 @@ public class Viewer {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
+    public JButton getCloseBtnFromTab(int tabIndex) {
+        Component tabComponent = tabPane.getTabComponentAt(tabIndex);
+        if (tabComponent != null && tabComponent instanceof JComponent) {
+            JComponent tabCustomComponent = (JComponent) tabComponent;
+            Component closeButtonComponent = tabCustomComponent.getComponent(3);
+
+            if (closeButtonComponent instanceof JButton) {
+                JButton closeButton = (JButton) closeButtonComponent;
+                return closeButton;
+            }
+        }
+        return null;
+    }
+
     public void closeCurrentTab() {
         int currentTabIndex = tabPane.getSelectedIndex();
         if (currentTabIndex > 0) {
@@ -426,13 +450,15 @@ public class Viewer {
             }
        } else if(currentTabIndex == 0) { // checking if there are other tabs
            int tabCount = tabPane.getTabCount();
-           if(controller.hasUnsavedChanges(currentTabIndex) && tabCount != 1) {
+           if(tabCount != 1 && controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
 
            } else if(controller.hasUnsavedChanges(currentTabIndex)) {
                 showExitMessage();
-           } else if(!controller.hasUnsavedChanges(currentTabIndex) && tabCount > 1){
+
+           } else if(tabCount > 1 && !controller.hasUnsavedChanges(currentTabIndex)){
                 deleteTab(currentTabIndex);
+
            } else {
                 System.exit(0);
            }
@@ -444,9 +470,11 @@ public class Viewer {
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
         if(result == JOptionPane.YES_OPTION) {
-            controller.saveDocument();
+            int saveResult = controller.saveDocument();
+            if(saveResult == -1) {
+                return -1;
+            }
             deleteTab(currentTabIndex);
-
         } else if (result == JOptionPane.NO_OPTION) {
             deleteTab(currentTabIndex);
         }
@@ -457,8 +485,11 @@ public class Viewer {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
         if(result == JOptionPane.YES_OPTION) {
-            controller.saveDocument();
-            System.exit(0);
+            int saveResult = controller.saveDocument();
+            if(saveResult == 0) {
+                System.exit(0);
+            }
+
         } else if (result == JOptionPane.NO_OPTION) {
             System.exit(0);
         } else if (result == JOptionPane.CANCEL_OPTION) {
@@ -517,10 +548,11 @@ public class Viewer {
         }
     }
 
-    private void deleteTab(int tabIndex) {
+    public void deleteTab(int tabIndex) {
         tabPane.removeTabAt(tabIndex);
-        controller.removeFromList(controller.getUnsavedChangesPerTab(), tabIndex);
-        controller.removeFromList(controller.getFilesPerTabs(), tabIndex);
+
+        tabsController.getUnsavedChangesPerTab().remove(tabIndex);
+        tabsController.getFilesPerTabs().remove(tabIndex);
     }
 
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
@@ -592,6 +624,7 @@ public class Viewer {
 
     private JButton createCloseTabBtn() {
         JButton closeButton = new JButton("\u00d7");
+        closeButton.addMouseListener(mouseController);
         closeButton.setFont(submenuFont);
         closeButton.setBorder(null);
         closeButton.setContentAreaFilled(false);
