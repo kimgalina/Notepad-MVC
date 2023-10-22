@@ -5,6 +5,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 import javax.swing.ButtonGroup;
 import javax.swing.JTextArea;
 import javax.swing.JMenu;
@@ -162,16 +163,21 @@ public class Viewer {
         textField.setBounds(60, 20, 270, 20);
 
         JLabel directionLabel = new JLabel("Direction");
-        directionLabel.setBounds(225, 60, 70, 20);
+        directionLabel.setBounds(215, 60, 70, 20);
         directionLabel.setFont(dialogFont);
 
         ButtonGroup direction = new ButtonGroup();
-        JRadioButton upButton = createRadioButton("Up", false, 190, 85, 60, 20);
-        JRadioButton downButton = createRadioButton("Down", true, 250, 85, 60, 20);
+        JRadioButton upButton = createRadioButton("Up", false, 180, 85, 60, 20);
+        JRadioButton downButton = createRadioButton("Down", true, 240, 85, 60, 20);
         direction.add(upButton);
         direction.add(downButton);
 
-        FindDialogController dialogController = new FindDialogController(this, textField, upButton, downButton);
+        JCheckBox caseSensitiveButton = new JCheckBox("Case sensitive");
+        caseSensitiveButton.setBounds(30, 80, 100, 25);
+        caseSensitiveButton.setFont(dialogFont);
+        caseSensitiveButton.setFocusable(false);
+
+        FindDialogController dialogController = new FindDialogController(this, textField, upButton, downButton, caseSensitiveButton);
 
         JButton findButton = createDialogButton("Find", "Find", 350, 20, 90, 25);
         findButton.setEnabled(false);
@@ -190,6 +196,7 @@ public class Viewer {
         panel.add(downButton);
         panel.add(findButton);
         panel.add(cancelButton);
+        panel.add(caseSensitiveButton);
 
         findDialog.add(panel);
         findDialog.setVisible(true);
