@@ -57,9 +57,13 @@ public class ActionController implements ActionListener {
         viewer.setStatusPanelToVisible(viewer.getStatusBarBox().isSelected());
 
         String command = event.getActionCommand();
+        if(map.containsKey(command)){
+            map.get(command).actionPerformed();
+        }
+
         if (command.equals("New_Document")) {
             viewer.createNewTab();
-            
+
         } else if (command.equals("Open_Document")) {
             openDocument();
 
@@ -70,9 +74,8 @@ public class ActionController implements ActionListener {
             saveDocumentAs();
 
         } else if(command.equals("Print")) {
-            System.out.println(command);
-            Font font = viewer.getCurrentFontTextArea();
-            String data = viewer.getCurrentContentTextArea();
+            Font font = viewer.getCurrentTextAreaFont();
+            String data = viewer.getCurrentTextAreaContent();
             Print document = new Print(data, font);
             document.printDocument();
 

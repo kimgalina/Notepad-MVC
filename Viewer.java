@@ -148,11 +148,11 @@ public class Viewer {
         return currentContent;
     }
 
-    public Font getCurrentFontTextArea() {
-        return getCurrentContent().getFont();
+    public Font getCurrentTextAreaFont() {
+        return currentContent.getFont();
     }
 
-    public String getCurrentContentTextArea() {
+    public String getCurrentTextAreaContent() {
         return currentContent.getText();
     }
 
@@ -844,7 +844,7 @@ public class Viewer {
     private JFrame getFrame() {
         JFrame frame = new JFrame("Notepad MVC");
         frame.setLocation(300, 15);
-        frame.setSize(1000, 800);
+        frame.setSize(1000, 650);
         return frame;
     }
 
