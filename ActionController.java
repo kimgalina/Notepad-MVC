@@ -39,10 +39,9 @@ import java.util.ArrayList;
 
 public class ActionController implements ActionListener, DocumentListener {
     private Viewer viewer;
-    private String contentText;
     private List<Boolean> unsavedChangesPerTab;
     private List<File> filesPerTabs;
-    private int maxNumberOfTabs ;
+    private int maxNumberOfTabs;
 
     public ActionController(Viewer viewer) {
         this.viewer = viewer;
@@ -69,6 +68,10 @@ public class ActionController implements ActionListener, DocumentListener {
         viewer.setStatusPanelToVisible(viewer.getStatusBarBox().isSelected());
 
         String command = event.getActionCommand();
+        if(map.containsKey(command)){
+            map.get(command).actionPerformed();
+        }
+
         if (command.equals("New_Document")) {
             createNewDocument();
 
@@ -82,9 +85,8 @@ public class ActionController implements ActionListener, DocumentListener {
             saveDocumentAs();
 
         } else if(command.equals("Print")) {
-            System.out.println(command);
-            Font font = viewer.getCurrentFontTextArea();
-            String data = viewer.getCurrentContentTextArea();
+            Font font = viewer.getCurrentTextAreaFont();
+            String data = viewer.getCurrentTextAreaContent();
             Print document = new Print(data, font);
             document.printDocument();
 
