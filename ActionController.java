@@ -99,7 +99,7 @@ public class ActionController implements ActionListener, DocumentListener {
             viewer.updateText("");
 
         } else if(command.equals("Find")) {
-            System.out.println(command);
+            viewer.openFindDialog();
 
         } else if(command.equals("Find more")) {
             System.out.println(command);

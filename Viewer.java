@@ -4,6 +4,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
 import javax.swing.JTextArea;
 import javax.swing.JMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -147,33 +149,58 @@ public class Viewer {
     }
 
     public void openFindDialog() {
-        findDialog = createDialog("Find", false, 480, 200);
+        findDialog = createDialog("Find", false, 480, 170);
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
 
-        JLabel label = new JLabel("What:");
-        label.setBounds(10, 20, 50, 20);
+        JLabel label = new JLabel(new ImageIcon("images/find.png"));
+        label.setBounds(5, 15, 50, 30);
         label.setFont(dialogFont);
 
         JTextField textField = new JTextField();
         textField.setBounds(60, 20, 270, 20);
 
-        FindDialogController dialogController = new FindDialogController(this, textField);
+        JLabel directionLabel = new JLabel("Direction");
+        directionLabel.setBounds(225, 60, 70, 20);
+        directionLabel.setFont(dialogFont);
 
-        JButton findButton = createDialogButton("Find next", "Find_Next", 350, 20, 90, 25);
+        ButtonGroup direction = new ButtonGroup();
+        JRadioButton upButton = createRadioButton("Up", false, 190, 85, 60, 20);
+        JRadioButton downButton = createRadioButton("Down", true, 250, 85, 60, 20);
+        direction.add(upButton);
+        direction.add(downButton);
+
+        FindDialogController dialogController = new FindDialogController(this, textField, upButton, downButton);
+
+        JButton findButton = createDialogButton("Find", "Find", 350, 20, 90, 25);
+        findButton.setEnabled(false);
         findButton.addActionListener(dialogController);
 
-        JButton cancelButton = createDialogButton("Cancel", "Cancel", 350, 60, 90, 25);
+        TextFieldController textFieldController = new TextFieldController(textField, findButton);
+        textField.getDocument().addDocumentListener(textFieldController);
+
+        JButton cancelButton = createDialogButton("Cancel", "Cancel", 350, 78, 90, 25);
         cancelButton.addActionListener(dialogController);
 
         panel.add(label);
         panel.add(textField);
+        panel.add(directionLabel);
+        panel.add(upButton);
+        panel.add(downButton);
         panel.add(findButton);
         panel.add(cancelButton);
 
         findDialog.add(panel);
         findDialog.setVisible(true);
+    }
+
+    private JRadioButton createRadioButton(String name, boolean isSelected, int x, int y, int width, int height) {
+        JRadioButton radioButton = new JRadioButton(name, isSelected);
+        radioButton.setBounds(x, y, width, height);
+        radioButton.setFont(dialogFont);
+        radioButton.setFocusable(false);
+        return radioButton;
     }
 
     public void closeFindDialog() {
@@ -505,6 +532,7 @@ public class Viewer {
 
         button.setBounds(x, y, width, height);
         button.setFont(dialogFont);
+        button.setFocusable(false);
         button.setActionCommand(command);
 
         return button;
