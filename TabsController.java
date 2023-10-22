@@ -5,14 +5,19 @@ import java.util.List;
 import java.io.File;
 
 public class TabsController implements DocumentListener {
-    private List<Boolean> unsavedChangesPerTab;
+    //private List<Boolean> unsavedChangesPerTab;
+    private ListWithListener<Boolean> unsavedChangesPerTab;
     private List<File> filesPerTabs;
+    private ListChangeListener listListener;
     private Viewer viewer;
 
     public TabsController(Viewer viewer) {
-        unsavedChangesPerTab = new ArrayList<>();
+        //unsavedChangesPerTab = new ArrayList<>();
+        unsavedChangesPerTab = new ListWithListener<>();
         filesPerTabs = new ArrayList<>();
         this.viewer = viewer;
+        listListener = new ListChangeListener(viewer);
+        unsavedChangesPerTab.addListChangeListener(listListener);
     }
 
     public List<Boolean> getUnsavedChangesPerTab() {

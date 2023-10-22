@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import javax.swing.JTextArea;
 import javax.swing.JTabbedPane;
 import javax.swing.JOptionPane;
+import javax.swing.JButton;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.Toolkit;
@@ -57,7 +58,7 @@ public class ActionController implements ActionListener {
         String command = event.getActionCommand();
         if (command.equals("New_Document")) {
             viewer.createNewTab();
-
+            
         } else if (command.equals("Open_Document")) {
             openDocument();
 
@@ -148,9 +149,11 @@ public class ActionController implements ActionListener {
         int tabCount = tabPane.getTabCount();
         for(int i = 0; i < tabCount; i++) {
             int currentTabIndex = viewer.getCurrentTabIndex();
+
             if(hasUnsavedChanges(currentTabIndex)) {
                 int result = viewer.showCloseTabMessage(currentTabIndex);
-                if(result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+
+                if(result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION || result == -1) {
                     return;
                 }
             } else {
