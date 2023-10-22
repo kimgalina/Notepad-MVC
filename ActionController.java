@@ -1,5 +1,6 @@
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Font;
 import java.awt.Color;
 
 import java.io.File;
@@ -69,6 +70,10 @@ public class ActionController implements ActionListener {
 
         } else if(command.equals("Print")) {
             System.out.println(command);
+            Font font = viewer.getCurrentFontTextArea();
+            String data = viewer.getCurrentContentTextArea();
+            Print document = new Print(data, font);
+            document.printDocument();
 
         } else if(command.equals("Exit")) {
             exitProgram();

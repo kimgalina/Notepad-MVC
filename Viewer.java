@@ -146,6 +146,14 @@ public class Viewer {
         return currentContent;
     }
 
+    public Font getCurrentFontTextArea() {
+        return getCurrentContent().getFont();
+    }
+
+    public String getCurrentContentTextArea() {
+        return currentContent.getText();
+    }
+
     public Color openColorChooser() {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
@@ -816,7 +824,6 @@ public class Viewer {
         JFrame frame = new JFrame("Notepad MVC");
         frame.setLocation(300, 15);
         frame.setSize(1000, 800);
-
         return frame;
     }
 
