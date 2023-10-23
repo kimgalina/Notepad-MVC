@@ -80,6 +80,8 @@ public class Viewer {
         menuFont = new Font("Tahoma", Font.BOLD, 20);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
         tabPane = new JTabbedPane();
+        fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text files (*.txt)", "txt"));
     }
 
     public void startApplication() {
@@ -206,9 +208,6 @@ public class Viewer {
     }
 
     public File getFile() {
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-        }
         int returnVal = fileChooser.showOpenDialog(new JFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
            File file = fileChooser.getSelectedFile();
@@ -218,14 +217,9 @@ public class Viewer {
     }
 
     public File getNewFileSaveLocation(String fileName){
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-        }
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files (*.txt)", "txt");
         if (!fileName.equals("Untitled.txt")) {
           fileChooser.setSelectedFile(new File(fileName));
         }
-        fileChooser.setFileFilter(filter);
         int returnValue = fileChooser.showSaveDialog(new JFrame());
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
