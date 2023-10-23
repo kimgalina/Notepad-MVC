@@ -31,6 +31,19 @@ public class ActionController implements ActionListener {
         }
     }
 
+    public Map<String, ActionHandler> getActionHandlers() {
+        return actionHandlers;
+    }
+
+    public boolean hasUnsavedChanges(int tabIndex) {
+        Boolean hasChanges = tabsController.getUnsavedChangesPerTab().get(tabIndex);
+        if(hasChanges != null){
+            System.out.println("hasChanges = " + hasChanges);
+            return hasChanges;
+        }
+        return false;
+    }
+
     private void initializeActionHandlers() {
         actionHandlers.put("New_Document", new NewDocumentActionHandler(viewer));
         actionHandlers.put("Open_Document", new OpenDocumentActionHandler(viewer, tabsController));
@@ -56,18 +69,5 @@ public class ActionController implements ActionListener {
         actionHandlers.put("About", new ViewActionHandler(viewer));
         actionHandlers.put("CloseTab", new ExitActionHandler(this, viewer, tabsController));
         actionHandlers.put("Choose_Color", new FormatActionHandler(viewer));
-    }
-
-    public Map<String, ActionHandler> getActionHandlers() {
-        return actionHandlers;
-    }
-
-    public boolean hasUnsavedChanges(int tabIndex) {
-        Boolean hasChanges = tabsController.getUnsavedChangesPerTab().get(tabIndex);
-        if(hasChanges != null){
-            System.out.println("hasChanges = " + hasChanges);
-            return hasChanges;
-        }
-        return false;
     }
 }
