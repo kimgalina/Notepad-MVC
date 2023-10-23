@@ -75,6 +75,4 @@ public class SaveDocumentActionHandler implements ActionHandler {
         String[] directories = path.split("\\\\");
         return directories[directories.length - 1];
     }
-
-
 }
