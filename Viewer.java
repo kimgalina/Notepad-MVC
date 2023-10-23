@@ -47,6 +47,9 @@ import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.Document;
 
+import java.awt.Cursor;
+
+
 public class Viewer {
 
     private JFileChooser fileChooser;
@@ -55,6 +58,7 @@ public class Viewer {
     private WindowController windowController;
     private TabsController tabsController;
     private MouseListener mouseController;
+    private HelpMouseListener helpMouseController;
     private JTabbedPane tabPane;
     private Font contentFont;
     private Font submenuFont;
@@ -69,10 +73,12 @@ public class Viewer {
     private JLabel statusLabel;
     private JDialog goDialog;
     private JDialog fontDialog;
+    private JDialog helpDialog;
 
     public Viewer() {
         frame = getFrame();
         mouseController = new MouseListener();
+        helpMouseController = new HelpMouseListener();
         tabsController = new TabsController(this);
         controller = new ActionController(this, tabsController);
         windowController = new WindowController(controller,this);
@@ -419,11 +425,45 @@ public class Viewer {
         statusPanel.setVisible(visible);
     }
 
-    public void getMessageAbout() {
-        JOptionPane.showMessageDialog(frame,
-                new MessageWithLink("<div>Notepad Template Method Design Pattern team<div>" +
-                        "<a href=\"\">See the development process</a>"), "About Notepad",
-                JOptionPane.INFORMATION_MESSAGE);
+    public void openHelpDialog() {
+        if (helpDialog != null) {
+            helpDialog.setVisible(true);
+            return;
+        }
+
+        HelpController helpController = new HelpController(this);
+
+        int x = frame.getX();
+        int y = frame.getY();
+        helpDialog = new JDialog(frame, "About Notepad", true);
+        helpDialog.setSize(500, 250);
+        helpDialog.setLocation(x + 150, y + 150);
+        helpDialog.setLayout(null);
+        helpDialog.setResizable(false);
+
+        JLabel helpLabel = new JLabel("Notepad Template Method Design Pattern team");
+        helpLabel.setBounds(90, 70, 300, 15);
+
+        JLabel linkLabel = new JLabel("See the development process");
+        linkLabel.setForeground(Color.BLUE);
+        linkLabel.setBounds(90, 90, 300, 15);
+        linkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        linkLabel.addMouseListener(helpMouseController);
+
+        JButton buttonOk = new JButton("Ok");
+        buttonOk.setBounds(370, 180, 100, 30);
+        buttonOk.addActionListener(helpController);
+        buttonOk.setActionCommand("Ok");
+
+        helpDialog.add(helpLabel);
+        helpDialog.add(linkLabel);
+        helpDialog.add(buttonOk);
+
+        helpDialog.setVisible(true);
+    }
+
+    public void hideHelpDialog() {
+        helpDialog.setVisible(false);
     }
 
     public JButton getCloseBtnFromTab(int tabIndex) {
