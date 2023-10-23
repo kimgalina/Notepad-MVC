@@ -448,7 +448,7 @@ public class Viewer {
             } else {
                  deleteTab(currentTabIndex);
             }
-       } else if(currentTabIndex == 0) { // checking if there are other tabs
+       } else if(currentTabIndex == 0) {
            int tabCount = tabPane.getTabCount();
            if(tabCount != 1 && controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
@@ -470,7 +470,7 @@ public class Viewer {
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
         if(result == JOptionPane.YES_OPTION) {
-            int saveResult = controller.saveDocument();
+            int saveResult = ((SaveDocumentActionHandler) controller.getActionHandlers().get("Save")).saveDocument();
             if(saveResult == -1) {
                 return -1;
             }
@@ -485,7 +485,7 @@ public class Viewer {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
         if(result == JOptionPane.YES_OPTION) {
-            int saveResult = controller.saveDocument();
+            int saveResult = ((SaveDocumentActionHandler) controller.getActionHandlers().get("Save")).saveDocument();
             if(saveResult == 0) {
                 System.exit(0);
             }
