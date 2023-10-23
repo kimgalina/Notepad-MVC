@@ -47,16 +47,13 @@ import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.Document;
 
-<<<<<<< HEAD
 import javax.swing.UIManager;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.ColorUIResource;
-=======
 import java.awt.Cursor;
 
->>>>>>> 73be62291067760763a5b890fa6df710915e6442
 
 public class Viewer {
 
@@ -81,11 +78,8 @@ public class Viewer {
     private JLabel statusLabel;
     private JDialog goDialog;
     private JDialog fontDialog;
-<<<<<<< HEAD
-    private boolean isLightTheme;
-=======
     private JDialog helpDialog;
->>>>>>> 73be62291067760763a5b890fa6df710915e6442
+    private boolean isLightTheme;
 
     public Viewer() {
         frame = getFrame();

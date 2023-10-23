@@ -67,6 +67,7 @@ public class ActionController implements ActionListener {
         actionHandlers.put("ZOOM_DEFAULT", new ViewActionHandler(viewer));
         actionHandlers.put("View_Help", new ViewActionHandler(viewer));
         actionHandlers.put("About", new ViewActionHandler(viewer));
+        actionHandlers.put("Change_Theme", new ViewActionHandler(viewer));
         actionHandlers.put("CloseTab", new ExitActionHandler(this, viewer, tabsController));
         actionHandlers.put("Choose_Color", new FormatActionHandler(viewer));
     }
