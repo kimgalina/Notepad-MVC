@@ -3,21 +3,17 @@ import javax.swing.event.DocumentListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
+import javax.swing.JButton;
 
 public class TabsController implements DocumentListener {
-    //private List<Boolean> unsavedChangesPerTab;
-    private ListWithListener<Boolean> unsavedChangesPerTab;
+    private List<Boolean> unsavedChangesPerTab;
     private List<File> filesPerTabs;
-    private ListChangeListener listListener;
     private Viewer viewer;
 
     public TabsController(Viewer viewer) {
-        //unsavedChangesPerTab = new ArrayList<>();
-        unsavedChangesPerTab = new ListWithListener<>();
+        unsavedChangesPerTab = new ArrayList<>();
         filesPerTabs = new ArrayList<>();
         this.viewer = viewer;
-        listListener = new ListChangeListener(viewer);
-        unsavedChangesPerTab.addListChangeListener(listListener);
     }
 
     public List<Boolean> getUnsavedChangesPerTab() {
@@ -32,6 +28,8 @@ public class TabsController implements DocumentListener {
     public void insertUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();
         setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
+        JButton closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
+        closeBtn.setText("\u2022");
 
     }
 
@@ -39,6 +37,8 @@ public class TabsController implements DocumentListener {
     public void removeUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();
         setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
+        JButton closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
+        closeBtn.setText("\u2022");
 
     }
 
