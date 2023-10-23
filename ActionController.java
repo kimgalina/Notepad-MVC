@@ -122,10 +122,10 @@ public class ActionController implements ActionListener {
             viewer.zoomDefault();
 
         } else if(command.equals("View_Help")) {
-            viewer.getMessageAbout();
+            viewer.openHelpDialog();
 
         } else if(command.equals("About")) {
-            viewer.getMessageAbout();
+            viewer.openHelpDialog();
 
         } else if (command.equals("Choose_Color")) {
             Color color = viewer.openColorChooser();
