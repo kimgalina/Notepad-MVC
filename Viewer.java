@@ -47,6 +47,12 @@ import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.Document;
 
+import javax.swing.UIManager;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.ColorUIResource;
+
 public class Viewer {
 
     private JFileChooser fileChooser;
@@ -69,17 +75,19 @@ public class Viewer {
     private JLabel statusLabel;
     private JDialog goDialog;
     private JDialog fontDialog;
+    private boolean isLightTheme;
 
     public Viewer() {
         frame = getFrame();
         mouseController = new MouseListener();
         tabsController = new TabsController(this);
         controller = new ActionController(this, tabsController);
-        windowController = new WindowController(controller,this);
+        windowController = new WindowController(controller, this);
         contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
         tabPane = new JTabbedPane();
+        isLightTheme = true;
         fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text files (*.txt)", "txt"));
     }
@@ -87,10 +95,8 @@ public class Viewer {
     public void startApplication() {
         JMenuBar menuBar = getJMenuBar(menuFont, submenuFont, controller);
         JToolBar toolBar = getToolBar(controller);
-
         createNewTab();
         initStatusPanel();
-
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
         frame.add(statusPanel, BorderLayout.SOUTH);
@@ -152,6 +158,22 @@ public class Viewer {
 
     public Font getCurrentTextAreaFont() {
         return currentContent.getFont();
+    }
+
+    public void changeTheme() {
+        CustomThemeMaker customTheme = new CustomThemeMaker(isLightTheme);
+        MetalLookAndFeel.setCurrentTheme(customTheme);
+        customTheme.refreshTheme();
+
+        SwingUtilities.updateComponentTreeUI(tabPane);
+        SwingUtilities.updateComponentTreeUI(fileChooser);
+        SwingUtilities.updateComponentTreeUI(frame);
+        SwingUtilities.updateComponentTreeUI((JToolBar) frame.getContentPane().getComponent(0));
+        SwingUtilities.updateComponentTreeUI((JPanel) frame.getContentPane().getComponent(1));
+        SwingUtilities.updateComponentTreeUI((JTabbedPane) frame.getContentPane().getComponent(2));
+
+        customTheme = null;
+        //isLightTheme = !isLightTheme; //METHOD DOES NOT CHANGE STATUS UNTIL THE BUG WILL BE FIXED
     }
 
     public String getCurrentTextAreaContent() {
@@ -652,6 +674,7 @@ public class Viewer {
         JButton buttonCopy = createButton("images/copy.png", "Copy", controller);
         JButton buttonPaste = createButton("images/paste.png", "Paste", controller);
         JButton buttonColor = createButton("images/color.png", "Choose_Color", controller);
+        JButton buttonChangeTheme = createButton("images/change-theme.png", "Change_Theme", controller);
 
         toolBar.add(buttonNew);
         toolBar.add(buttonOpen);
@@ -661,6 +684,8 @@ public class Viewer {
         toolBar.add(buttonCopy);
         toolBar.add(buttonPaste);
         toolBar.add(buttonColor);
+        toolBar.addSeparator();
+        toolBar.add(buttonChangeTheme);
         toolBar.setFloatable(true);
         toolBar.setRollover(true);
 

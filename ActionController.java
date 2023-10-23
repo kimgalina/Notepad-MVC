@@ -57,9 +57,9 @@ public class ActionController implements ActionListener {
         viewer.setStatusPanelToVisible(viewer.getStatusBarBox().isSelected());
 
         String command = event.getActionCommand();
-        if(map.containsKey(command)){
-            map.get(command).actionPerformed();
-        }
+        // if(map.containsKey(command)){
+        //     map.get(command).actionPerformed();
+        // }
 
         if (command.equals("New_Document")) {
             viewer.createNewTab();
@@ -136,6 +136,8 @@ public class ActionController implements ActionListener {
 
         } else if (command.equals("CloseTab")) {
             viewer.closeCurrentTab();
+        } else if (command.equals("Change_Theme")) {
+            viewer.changeTheme();
         }
     }
 
