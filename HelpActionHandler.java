@@ -10,10 +10,10 @@ public class HelpActionHandler implements ActionHandler {
     public void handleAction(String command) {
         switch (command) {
             case "View_Help":
-                viewer.getMessageAbout();
+                viewer.openHelpDialog();
                 break;
             case "About":
-                viewer.getMessageAbout();
+                viewer.openHelpDialog();
                 break;
         }
     }

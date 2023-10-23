@@ -20,10 +20,13 @@ public class ViewActionHandler implements ActionHandler {
                 viewer.zoomDefault();
                 break;
             case "View_Help":
-                viewer.getMessageAbout();
+                viewer.openHelpDialog();
                 break;
             case "About":
-                viewer.getMessageAbout();
+                viewer.openHelpDialog();
+                break;
+            case "Change_Theme":
+                viewer.changeTheme();
                 break;
         }
     }
