@@ -1,5 +1,4 @@
 import javax.swing.text.DocumentFilter;
-import javax.swing.text.Document;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
@@ -12,14 +11,9 @@ public class IntegerFilter extends DocumentFilter {
     }
 
     @Override
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-        Document doc = fb.getDocument();
-        StringBuilder sb = new StringBuilder();
-        sb.append(doc.getText(0, doc.getLength()));
-        sb.insert(offset, string);
-
-        if (isDigit(sb.toString())) {
-            super.insertString(fb, offset, string, attr);
+    public void insertString(FilterBypass fb, int offset, String text, AttributeSet attr) throws BadLocationException {
+        if (isDigit(text)) {
+            super.insertString(fb, offset, text, attr);
         } else {
             viewer.showError("The string can't be entered");
         }
@@ -27,33 +21,10 @@ public class IntegerFilter extends DocumentFilter {
 
     @Override
     public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-        Document doc = fb.getDocument();
-        StringBuilder sb = new StringBuilder();
-        sb.append(doc.getText(0, doc.getLength()));
-        sb.replace(offset, offset + length, text);
-
-        if (isDigit(sb.toString())) {
+        if (isDigit(text)) {
             super.replace(fb, offset, length, text, attrs);
         } else {
             viewer.showError("The string can't be entered");
-        }
-    }
-
-    @Override
-    public void remove(FilterBypass fb, int offset, int length) throws BadLocationException {
-        Document doc = fb.getDocument();
-        StringBuilder sb = new StringBuilder();
-        sb.append(doc.getText(0, doc.getLength()));
-        sb.delete(offset, offset + length);
-
-        if (sb.toString().length() == 0) {
-            super.replace(fb, offset, length, "", null);
-        } else {
-            if (isDigit(sb.toString())) {
-                super.remove(fb, offset, length);
-            } else {
-                viewer.showError("The string can't be entered");
-            }
         }
     }
 

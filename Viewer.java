@@ -4,6 +4,9 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
+import javax.swing.ButtonGroup;
 import javax.swing.JTextArea;
 import javax.swing.JMenu;
 import javax.swing.JRadioButtonMenuItem;
@@ -68,6 +71,7 @@ public class Viewer {
     private Font contentFont;
     private Font submenuFont;
     private Font menuFont;
+    private Font dialogFont;
     private JTextArea currentContent;
     private JMenuItem viewItemZoomIn;
     private JMenuItem viewItemZoomOut;
@@ -77,6 +81,7 @@ public class Viewer {
     private JPanel statusPanel;
     private JLabel statusLabel;
     private JDialog goDialog;
+    private JDialog findDialog;
     private JDialog fontDialog;
     private JDialog helpDialog;
     private boolean isLightTheme;
@@ -91,6 +96,7 @@ public class Viewer {
         contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
+        dialogFont = new Font("Tahoma", Font.PLAIN, 12);
         tabPane = new JTabbedPane();
         isLightTheme = true;
         fileChooser = new JFileChooser();
@@ -189,16 +195,80 @@ public class Viewer {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
 
+    public void openFindDialog() {
+        findDialog = createDialog("Find", false, 480, 170);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+
+        JLabel label = new JLabel(new ImageIcon("images/find.png"));
+        label.setBounds(5, 15, 50, 30);
+        label.setFont(dialogFont);
+
+        JTextField textField = new JTextField();
+        textField.setBounds(60, 20, 270, 20);
+
+        JLabel directionLabel = new JLabel("Direction");
+        directionLabel.setBounds(215, 60, 70, 20);
+        directionLabel.setFont(dialogFont);
+
+        ButtonGroup direction = new ButtonGroup();
+        JRadioButton upButton = createRadioButton("Up", false, 180, 85, 60, 20);
+        JRadioButton downButton = createRadioButton("Down", true, 240, 85, 60, 20);
+        direction.add(upButton);
+        direction.add(downButton);
+
+        JCheckBox caseSensitiveButton = new JCheckBox("Case sensitive");
+        caseSensitiveButton.setBounds(30, 80, 100, 25);
+        caseSensitiveButton.setFont(dialogFont);
+        caseSensitiveButton.setFocusable(false);
+
+        FindDialogController dialogController = new FindDialogController(this, textField, downButton, caseSensitiveButton);
+
+        JButton findButton = createDialogButton("Find", "Find", 350, 20, 90, 25);
+        findButton.setEnabled(false);
+        findButton.addActionListener(dialogController);
+
+        TextFieldController textFieldController = new TextFieldController(textField, findButton);
+        textField.getDocument().addDocumentListener(textFieldController);
+
+        JButton cancelButton = createDialogButton("Cancel", "Cancel", 350, 78, 90, 25);
+        cancelButton.addActionListener(dialogController);
+
+        panel.add(label);
+        panel.add(textField);
+        panel.add(directionLabel);
+        panel.add(upButton);
+        panel.add(downButton);
+        panel.add(findButton);
+        panel.add(cancelButton);
+        panel.add(caseSensitiveButton);
+
+        findDialog.add(panel);
+        findDialog.setVisible(true);
+    }
+
+    private JRadioButton createRadioButton(String name, boolean isSelected, int x, int y, int width, int height) {
+        JRadioButton radioButton = new JRadioButton(name, isSelected);
+        radioButton.setBounds(x, y, width, height);
+        radioButton.setFont(dialogFont);
+        radioButton.setFocusable(false);
+        return radioButton;
+    }
+
+    public void closeFindDialog() {
+        findDialog.dispose();
+    }
+
     public void openGoDialog() {
         goDialog = createDialog("Go to the line", true, 300, 150);
-        Font font = new Font("Tahoma", Font.PLAIN, 12);
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
 
         JLabel label = new JLabel("The line number:");
         label.setBounds(15, 10, 200, 20);
-        label.setFont(font);
+        label.setFont(dialogFont);
 
         JTextField textField = new JTextField();
         textField.setBounds(15, 35, 250, 20);
@@ -206,10 +276,10 @@ public class Viewer {
 
         GoDialogController dialogController = new GoDialogController(this, textField);
 
-        JButton goToButton = createDialogButton("Go", "Go", 70, 70, 90, 25, font);
+        JButton goToButton = createDialogButton("Go", "Go", 70, 70, 90, 25);
         goToButton.addActionListener(dialogController);
 
-        JButton cancelButton = createDialogButton("Cancel", "Cancel", 175, 70, 90, 25, font);
+        JButton cancelButton = createDialogButton("Cancel", "Cancel", 175, 70, 90, 25);
         cancelButton.addActionListener(dialogController);
 
         panel.add(label);
@@ -572,11 +642,12 @@ public class Viewer {
         doc.setDocumentFilter(filter);
     }
 
-    private JButton createDialogButton(String name, String command, int x, int y, int width, int height, Font font) {
+    private JButton createDialogButton(String name, String command, int x, int y, int width, int height) {
         JButton button = new JButton(name);
 
         button.setBounds(x, y, width, height);
-        button.setFont(font);
+        button.setFont(dialogFont);
+        button.setFocusable(false);
         button.setActionCommand(command);
 
         return button;
