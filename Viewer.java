@@ -54,6 +54,11 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.Cursor;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
+import javax.swing.text.BadLocationException;
+
 
 public class Viewer {
 
@@ -187,6 +192,11 @@ public class Viewer {
 
     public Color getCurrentTextAreaColor() {
         return currentContent.getForeground();
+    }
+
+    public void showDialogFinishPrintDocument() {
+        JOptionPane.showMessageDialog(frame, "The document has been printed.", "Notepad MVC",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     public Color openColorChooser() {
