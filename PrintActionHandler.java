@@ -1,4 +1,5 @@
 import java.awt.Font;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 public class PrintActionHandler implements ActionHandler {
@@ -12,7 +13,8 @@ public class PrintActionHandler implements ActionHandler {
     public void handleAction(String command, ActionEvent event) {
         Font font = viewer.getCurrentTextAreaFont();
         String data = viewer.getCurrentTextAreaContent();
-        Print document = new Print(data, font);
+        Color textColor = viewer.getCurrentTextAreaColor();
+        Print document = new Print(data, font, textColor);
         document.printDocument();
     }
 }

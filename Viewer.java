@@ -185,6 +185,10 @@ public class Viewer {
         return currentContent.getText();
     }
 
+    public Color getCurrentTextAreaColor() {
+        return currentContent.getForeground();
+    }
+
     public Color openColorChooser() {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
@@ -553,7 +557,7 @@ public class Viewer {
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
     }
-    
+
     private int findTabIndexByCloseButton(JButton closeBtn) {
          Container tabPanel = closeBtn.getParent();
          if (tabPanel != null) {

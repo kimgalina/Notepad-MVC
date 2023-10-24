@@ -6,6 +6,7 @@ import java.awt.print.PageFormat;
 import java.awt.Graphics2D;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,12 @@ public class Print implements Printable {
     private List<String> textLines;
 
     private Font font;
+    private Color textColor;
 
-    public Print(String data, Font font) {
+    public Print(String data, Font font, Color textColor) {
         this.font = font;
         this.data = data;
+        this.textColor = textColor;
     }
 
     private void initTextLines(FontMetrics metrics, int pageHeight, int pageWidth) {
@@ -39,7 +42,7 @@ public class Print implements Printable {
                 if (textWidth > pageWidth) {
                     // The text does not fit on the width of the page, move it to a new line
                     while (textWidth > pageWidth) {
-                        int cutoff = (text.length() * (pageWidth - 100)) / textWidth;
+                        int cutoff = (text.length() * (pageWidth - 150)) / textWidth;
                         if (cutoff == 0) {
                             cutoff = 1;
                         }
@@ -75,6 +78,11 @@ public class Print implements Printable {
 
     public int print(Graphics g, PageFormat pf, int pageIndex) {
         g.setFont(font);
+
+        if(textColor.equals(new Color(205, 205, 205)) || textColor.equals(Color.WHITE)){
+            textColor = Color.BLACK;
+        }
+        g.setColor(textColor);
         FontMetrics metrics = g.getFontMetrics(font);
         int lineHeight = metrics.getHeight();
         int pageHeight = (int) pf.getImageableHeight();
@@ -112,31 +120,15 @@ public class Print implements Printable {
                 ? textLines.size() : pageBreaks[pageIndex];
 
         for (int line = start; line < end; line++) {
-            String text = textLines.get(line);
-            // int textWidth = metrics.stringWidth(text);
-            //
-            // if (textWidth > pageWidth) {
-            //     // The text does not fit on the width of the page, move it to a new line
-            //     while (textWidth > pageWidth) {
-            //         int cutoff = (text.length() * pageWidth) / textWidth;
-            //         String lineText = text.substring(0, cutoff);
-            //         g.drawString(lineText, x, y);
-            //         y += lineHeight;
-            //         text = text.substring(cutoff);
-            //         textWidth = metrics.stringWidth(text);
-            //     }
-            // }
-
-            g.drawString(text, x, y);
-            System.out.println("text drawString:  " + text);
+            g.drawString(textLines.get(line), x, y);
             y += lineHeight;
         }
 
-        Font fontColumnar = new Font("Serif", Font.PLAIN, 12);
+        Font fontColumnar = new Font("Arial", Font.PLAIN, 12);
         g.setFont(fontColumnar);
-        g.drawString("Nurs " + (pageIndex + 1), ((int)pf.getImageableWidth() / 2), 20);
-        System.out.println("Nurs " + pageIndex + 1);
-        g.drawString("Number of page: " + (pageIndex + 1), ((int)pf.getImageableWidth() / 2), ((int)pf.getImageableHeight() - 20));
+        g.setColor(Color.BLACK);
+        g.drawString("Template Method Design Pattern " + (pageIndex + 1), ((int)pf.getImageableWidth() / 2) - (metrics.stringWidth("Template Method Design Pattern 1") / 4), 20);
+        g.drawString("Number of page: " + (pageIndex + 1), ((int)pf.getImageableWidth() / 2) - (metrics.stringWidth("Number of page: 1") / 4), ((int)pf.getImageableHeight() - 20));
         /* tell the caller that this page is part of the printed document */
         // if (end < textLines.size()) {
         //     return Printable.PAGE_EXISTS;
