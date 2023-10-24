@@ -30,27 +30,28 @@ public class Print implements Printable {
         if (textLines == null) {
             textLines = new ArrayList<>();
             String[] lines = data.split("\n");
-            System.out.println("lines " + lines.length);
 
             for (int line = 0; line < lines.length; line++) {
-                System.out.println("line " + line);
+                System.out.println("line " + lines[line]);
                 String text = lines[line];
                 int textWidth = metrics.stringWidth(text);
 
-                // if (textWidth > pageWidth) {
-                //     // The text does not fit on the width of the page, move it to a new line
-                //     while (textWidth > pageWidth) {
-                //         int cutoff = (text.length() * pageWidth) / textWidth;
-                //
-                //         String lineText = text.substring(0, cutoff);
-                //         System.out.println("lineText " + lineText);
-                //
-                //         textLines.add(lineText);
-                //
-                //         text = text.substring(cutoff);
-                //         textWidth = metrics.stringWidth(text);
-                //     }
-                // }
+                if (textWidth > pageWidth) {
+                    // The text does not fit on the width of the page, move it to a new line
+                    while (textWidth > pageWidth) {
+                        int cutoff = (text.length() * (pageWidth - 100)) / textWidth;
+                        if (cutoff == 0) {
+                            cutoff = 1;
+                        }
+                        String lineText = text.substring(0, cutoff);
+                        System.out.println("lineText " + lineText);
+
+                        textLines.add(lineText);
+
+                        text = text.substring(cutoff);
+                        textWidth = metrics.stringWidth(text);
+                    }
+                }
                 textLines.add(text);
                 System.out.println("textLines size " + textLines.size());
             }
@@ -81,7 +82,7 @@ public class Print implements Printable {
 
         if (pageBreaks == null) {
             initTextLines(metrics, pageHeight, pageWidth);
-            int linesPerPage = ((int) (pf.getImageableHeight()) - 100) / lineHeight;
+            int linesPerPage = ((int)pf.getImageableHeight() - 100) / lineHeight;
             int numBreaks = (textLines.size() - 1) / linesPerPage;
             pageBreaks = new int[numBreaks];
             for (int b = 0; b < numBreaks; b++) {
@@ -89,9 +90,9 @@ public class Print implements Printable {
             }
         }
 
-        // if (pageIndex >= pageBreaks.length) {
-        //     return Printable.NO_SUCH_PAGE;
-        // }
+        if (pageIndex > pageBreaks.length) {
+            return Printable.NO_SUCH_PAGE;
+        }
 
         /* User (0,0) is typically outside the imageable area, so we must
         * translate by the X and Y values in the PageFormat to avoid clipping
@@ -105,40 +106,43 @@ public class Print implements Printable {
         */
         int y = 50;
         int x = 50;
-        int start = (pageIndex == 0) ? 0 : pageBreaks[pageIndex-1];
+        int start = (pageIndex == 0) ? 0 : pageBreaks[pageIndex - 1];
 
         int end = (pageIndex == pageBreaks.length)
                 ? textLines.size() : pageBreaks[pageIndex];
 
         for (int line = start; line < end; line++) {
             String text = textLines.get(line);
-            int textWidth = metrics.stringWidth(text);
-            
-            if (textWidth > pageWidth) {
-                // The text does not fit on the width of the page, move it to a new line
-                while (textWidth > pageWidth) {
-                    int cutoff = (text.length() * pageWidth) / textWidth;
-                    String lineText = text.substring(0, cutoff);
-                    g.drawString(lineText, x, y);
-                    y += lineHeight;
-                    text = text.substring(cutoff);
-                    textWidth = metrics.stringWidth(text);
-                }
-            }
+            // int textWidth = metrics.stringWidth(text);
+            //
+            // if (textWidth > pageWidth) {
+            //     // The text does not fit on the width of the page, move it to a new line
+            //     while (textWidth > pageWidth) {
+            //         int cutoff = (text.length() * pageWidth) / textWidth;
+            //         String lineText = text.substring(0, cutoff);
+            //         g.drawString(lineText, x, y);
+            //         y += lineHeight;
+            //         text = text.substring(cutoff);
+            //         textWidth = metrics.stringWidth(text);
+            //     }
+            // }
 
             g.drawString(text, x, y);
+            System.out.println("text drawString:  " + text);
             y += lineHeight;
         }
 
         Font fontColumnar = new Font("Serif", Font.PLAIN, 12);
         g.setFont(fontColumnar);
         g.drawString("Nurs " + (pageIndex + 1), ((int)pf.getImageableWidth() / 2), 20);
+        System.out.println("Nurs " + pageIndex + 1);
         g.drawString("Number of page: " + (pageIndex + 1), ((int)pf.getImageableWidth() / 2), ((int)pf.getImageableHeight() - 20));
         /* tell the caller that this page is part of the printed document */
-        if (end < textLines.size()) {
-            return Printable.PAGE_EXISTS;
-        } else {
-            return Printable.NO_SUCH_PAGE;
-        }
+        // if (end < textLines.size()) {
+        //     return Printable.PAGE_EXISTS;
+        // } else {
+        //     return Printable.NO_SUCH_PAGE;
+        // }
+        return Printable.PAGE_EXISTS;
     }
 }
