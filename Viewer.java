@@ -495,8 +495,10 @@ public class Viewer {
         return null;
     }
 
-    public void closeCurrentTab() {
-        int currentTabIndex = tabPane.getSelectedIndex();
+    public void closeCurrentTab(JButton closeBtn) {
+        int foundIndex = findTabIndexByCloseButton(closeBtn);
+        int currentTabIndex = foundIndex != -1 ? foundIndex : tabPane.getSelectedIndex();
+        tabPane.setSelectedIndex(currentTabIndex);
         if (currentTabIndex > 0) {
             if(controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
@@ -550,6 +552,18 @@ public class Viewer {
         } else if (result == JOptionPane.CANCEL_OPTION) {
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
+    }
+    
+    private int findTabIndexByCloseButton(JButton closeBtn) {
+         Container tabPanel = closeBtn.getParent();
+         if (tabPanel != null) {
+                 int tabIndex = tabPane.indexOfTabComponent(tabPanel);
+
+                 if (tabIndex != -1) {
+                     return tabIndex;
+                 }
+         }
+         return -1;
     }
 
     private void filterInput(JTextField textField) {

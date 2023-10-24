@@ -1,3 +1,4 @@
+import java.awt.event.ActionEvent;
 public class NewDocumentActionHandler implements ActionHandler {
     private Viewer viewer;
 
@@ -6,7 +7,7 @@ public class NewDocumentActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
         viewer.createNewTab();
     }
 }

@@ -1,6 +1,7 @@
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JTextArea;
+import java.awt.event.ActionEvent;
 
 public class GoAndFindActionHandler implements ActionHandler {
     private Viewer viewer;
@@ -10,7 +11,7 @@ public class GoAndFindActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
         switch (command) {
             case "Go":
                 viewer.openGoDialog();

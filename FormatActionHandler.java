@@ -1,5 +1,6 @@
 import javax.swing.JTextArea;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
 
 public class FormatActionHandler implements ActionHandler {
     private Viewer viewer;
@@ -9,7 +10,7 @@ public class FormatActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
         switch (command) {
             case "Font":
                 viewer.openFontDialog();

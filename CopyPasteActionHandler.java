@@ -6,6 +6,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.awt.event.ActionEvent;
 
 public class CopyPasteActionHandler implements ActionHandler {
     private Viewer viewer;
@@ -15,7 +16,7 @@ public class CopyPasteActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
         switch (command) {
             case "Paste":
                 pasteText();

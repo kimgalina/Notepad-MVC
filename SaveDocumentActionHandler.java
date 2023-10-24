@@ -3,6 +3,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.io.IOException;
+import java.awt.event.ActionEvent;
 
 public class SaveDocumentActionHandler implements ActionHandler {
     private Viewer viewer;
@@ -14,7 +15,7 @@ public class SaveDocumentActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
         if ("Save".equals(command)) {
             saveDocument();
         } else {

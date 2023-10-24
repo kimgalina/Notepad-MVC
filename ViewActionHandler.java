@@ -1,4 +1,5 @@
 import javax.swing.JTextArea;
+import java.awt.event.ActionEvent;
 
 public class ViewActionHandler implements ActionHandler {
     private Viewer viewer;
@@ -8,7 +9,7 @@ public class ViewActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
         switch (command) {
             case "ZOOM_IN":
                 viewer.zoomIn();

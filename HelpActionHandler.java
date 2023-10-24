@@ -1,4 +1,4 @@
-
+import java.awt.event.ActionEvent;
 public class HelpActionHandler implements ActionHandler {
     private Viewer viewer;
 
@@ -7,7 +7,7 @@ public class HelpActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
         switch (command) {
             case "View_Help":
                 viewer.openHelpDialog();

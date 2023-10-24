@@ -27,7 +27,7 @@ public class ActionController implements ActionListener {
         String command = event.getActionCommand();
 
         if (actionHandlers.containsKey(command)) {
-            actionHandlers.get(command).handleAction(command);
+            actionHandlers.get(command).handleAction(command, event);
         }
     }
 

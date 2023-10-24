@@ -1,6 +1,7 @@
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
-
+import javax.swing.JButton;
+import java.awt.event.ActionEvent;
 
 public class ExitActionHandler implements ActionHandler {
     private Viewer viewer;
@@ -14,14 +15,14 @@ public class ExitActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
 
         switch (command) {
             case "Exit":
                 exit();
                 break;
             case "CloseTab":
-                viewer.closeCurrentTab();
+                viewer.closeCurrentTab((JButton) event.getSource());
                 break;
         }
     }

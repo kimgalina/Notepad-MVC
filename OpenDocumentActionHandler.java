@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import javax.swing.JTabbedPane;
 import java.nio.charset.UnmappableCharacterException;
 import java.io.IOException;
+import java.awt.event.ActionEvent;
 
 public class OpenDocumentActionHandler implements ActionHandler {
     private Viewer viewer;
@@ -18,7 +19,7 @@ public class OpenDocumentActionHandler implements ActionHandler {
     }
 
     @Override
-    public void handleAction(String command) {
+    public void handleAction(String command, ActionEvent event) {
         File file = viewer.getFile();
 
         if(file != null) {
