@@ -14,7 +14,7 @@ public class WindowController implements WindowListener {
     }
 
     public void windowClosing(WindowEvent e) {
-        controller.exitProgram();
+        controller.getActionHandlers().get("Exit").handleAction("Exit", null);
     }
 
     public void windowClosed(WindowEvent e) {

@@ -50,12 +50,23 @@ import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.Document;
 
+import javax.swing.UIManager;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.ColorUIResource;
+import java.awt.Cursor;
+
+
 public class Viewer {
 
     private JFileChooser fileChooser;
     private JFrame frame;
     private ActionController controller;
     private WindowController windowController;
+    private TabsController tabsController;
+    private MouseListener mouseController;
+    private HelpMouseListener helpMouseController;
     private JTabbedPane tabPane;
     private Font contentFont;
     private Font submenuFont;
@@ -72,25 +83,31 @@ public class Viewer {
     private JDialog goDialog;
     private JDialog findDialog;
     private JDialog fontDialog;
+    private JDialog helpDialog;
+    private boolean isLightTheme;
 
     public Viewer() {
         frame = getFrame();
-        controller = new ActionController(this);
-        windowController = new WindowController(controller,this);
+        mouseController = new MouseListener();
+        helpMouseController = new HelpMouseListener();
+        tabsController = new TabsController(this);
+        controller = new ActionController(this, tabsController);
+        windowController = new WindowController(controller, this);
         contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
         dialogFont = new Font("Tahoma", Font.PLAIN, 12);
         tabPane = new JTabbedPane();
+        isLightTheme = true;
+        fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text files (*.txt)", "txt"));
     }
 
     public void startApplication() {
         JMenuBar menuBar = getJMenuBar(menuFont, submenuFont, controller);
         JToolBar toolBar = getToolBar(controller);
-
         createNewTab();
         initStatusPanel();
-
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
         frame.add(statusPanel, BorderLayout.SOUTH);
@@ -101,12 +118,13 @@ public class Viewer {
         frame.setIconImage(new ImageIcon("images/notepad.png").getImage());
     }
 
-    public void createNewTab() {
+    public int createNewTab() {
         JPanel panel = new JPanel(new BorderLayout());
 
         JTextArea content = new JTextArea();
         content.setFont(contentFont);
-        content.getDocument().addDocumentListener(controller);
+        content.getDocument().addDocumentListener(tabsController);
+
         JScrollPane scrollPane = new JScrollPane(content);
 
         panel.add(scrollPane, BorderLayout.CENTER);
@@ -114,6 +132,10 @@ public class Viewer {
         tabPane.addTab(null, panel);
         int tabIndex = tabPane.indexOfComponent(panel);
         tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
+
+        tabsController.getFilesPerTabs().add(tabIndex, null);
+        tabsController.getUnsavedChangesPerTab().add(tabIndex, false);
+        return tabIndex;
     }
 
     public JTabbedPane getTabPane() {
@@ -143,6 +165,30 @@ public class Viewer {
 
     public JTextArea getCurrentContent() {
         return currentContent;
+    }
+
+    public Font getCurrentTextAreaFont() {
+        return currentContent.getFont();
+    }
+
+    public void changeTheme() {
+        CustomThemeMaker customTheme = new CustomThemeMaker(isLightTheme);
+        MetalLookAndFeel.setCurrentTheme(customTheme);
+        customTheme.refreshTheme();
+
+        SwingUtilities.updateComponentTreeUI(tabPane);
+        SwingUtilities.updateComponentTreeUI(fileChooser);
+        SwingUtilities.updateComponentTreeUI(frame);
+        SwingUtilities.updateComponentTreeUI((JToolBar) frame.getContentPane().getComponent(0));
+        SwingUtilities.updateComponentTreeUI((JPanel) frame.getContentPane().getComponent(1));
+        SwingUtilities.updateComponentTreeUI((JTabbedPane) frame.getContentPane().getComponent(2));
+
+        customTheme = null;
+        //isLightTheme = !isLightTheme; //METHOD DOES NOT CHANGE STATUS UNTIL THE BUG WILL BE FIXED
+    }
+
+    public String getCurrentTextAreaContent() {
+        return currentContent.getText();
     }
 
     public Color openColorChooser() {
@@ -259,9 +305,6 @@ public class Viewer {
     }
 
     public File getFile() {
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-        }
         int returnVal = fileChooser.showOpenDialog(new JFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
            File file = fileChooser.getSelectedFile();
@@ -271,14 +314,9 @@ public class Viewer {
     }
 
     public File getNewFileSaveLocation(String fileName){
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-        }
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files (*.txt)", "txt");
         if (!fileName.equals("Untitled.txt")) {
           fileChooser.setSelectedFile(new File(fileName));
         }
-        fileChooser.setFileFilter(filter);
         int returnValue = fileChooser.showSaveDialog(new JFrame());
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
@@ -287,13 +325,14 @@ public class Viewer {
         return null;
     }
 
-    public void update(String text, String tabName) {
+    public void update(String text, String tabName, int tabIndex) {
+        tabPane.setSelectedIndex(tabIndex);
         updateText(text);
-        int tabIndex = tabPane.indexOfComponent(getCurrentPanel());
         renameTab(tabName, tabIndex);
     }
 
     public void updateText(String text) {
+        setCurrentContent();
         currentContent.setText(text);
     }
 
@@ -471,30 +510,82 @@ public class Viewer {
         statusPanel.setVisible(visible);
     }
 
-    public void getMessageAbout() {
-        JOptionPane.showMessageDialog(frame,
-                new MessageWithLink("<div>Notepad Template Method Design Pattern team<div>" +
-                        "<a href=\"\">See the development process</a>"), "About Notepad",
-                JOptionPane.INFORMATION_MESSAGE);
+    public void openHelpDialog() {
+        if (helpDialog != null) {
+            helpDialog.setVisible(true);
+            return;
+        }
+
+        HelpController helpController = new HelpController(this);
+
+        int x = frame.getX();
+        int y = frame.getY();
+        helpDialog = new JDialog(frame, "About Notepad", true);
+        helpDialog.setSize(500, 250);
+        helpDialog.setLocation(x + 150, y + 150);
+        helpDialog.setLayout(null);
+        helpDialog.setResizable(false);
+
+        JLabel helpLabel = new JLabel("Notepad Template Method Design Pattern team");
+        helpLabel.setBounds(90, 70, 300, 15);
+
+        JLabel linkLabel = new JLabel("See the development process");
+        linkLabel.setForeground(Color.BLUE);
+        linkLabel.setBounds(90, 90, 300, 15);
+        linkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        linkLabel.addMouseListener(helpMouseController);
+
+        JButton buttonOk = new JButton("Ok");
+        buttonOk.setBounds(370, 180, 100, 30);
+        buttonOk.addActionListener(helpController);
+        buttonOk.setActionCommand("Ok");
+
+        helpDialog.add(helpLabel);
+        helpDialog.add(linkLabel);
+        helpDialog.add(buttonOk);
+
+        helpDialog.setVisible(true);
     }
 
-    public void closeCurrentTab() {
-        int currentTabIndex = tabPane.getSelectedIndex();
+    public void hideHelpDialog() {
+        helpDialog.setVisible(false);
+    }
+
+    public JButton getCloseBtnFromTab(int tabIndex) {
+        Component tabComponent = tabPane.getTabComponentAt(tabIndex);
+        if (tabComponent != null && tabComponent instanceof JComponent) {
+            JComponent tabCustomComponent = (JComponent) tabComponent;
+            Component closeButtonComponent = tabCustomComponent.getComponent(3);
+
+            if (closeButtonComponent instanceof JButton) {
+                JButton closeButton = (JButton) closeButtonComponent;
+                return closeButton;
+            }
+        }
+        return null;
+    }
+
+    public void closeCurrentTab(JButton closeBtn) {
+        int foundIndex = findTabIndexByCloseButton(closeBtn);
+        int currentTabIndex = foundIndex != -1 ? foundIndex : tabPane.getSelectedIndex();
+        tabPane.setSelectedIndex(currentTabIndex);
         if (currentTabIndex > 0) {
             if(controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
             } else {
                  deleteTab(currentTabIndex);
             }
-       } else if(currentTabIndex == 0) { // checking if there are other tabs
+       } else if(currentTabIndex == 0) {
            int tabCount = tabPane.getTabCount();
-           if(controller.hasUnsavedChanges(currentTabIndex) && tabCount != 1) {
+           if(tabCount != 1 && controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
 
            } else if(controller.hasUnsavedChanges(currentTabIndex)) {
                 showExitMessage();
-           } else if(!controller.hasUnsavedChanges(currentTabIndex) && tabCount > 1){
+
+           } else if(tabCount > 1 && !controller.hasUnsavedChanges(currentTabIndex)){
                 deleteTab(currentTabIndex);
+
            } else {
                 System.exit(0);
            }
@@ -506,9 +597,11 @@ public class Viewer {
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
         if(result == JOptionPane.YES_OPTION) {
-            controller.saveDocument();
+            int saveResult = ((SaveDocumentActionHandler) controller.getActionHandlers().get("Save")).saveDocument();
+            if(saveResult == -1) {
+                return -1;
+            }
             deleteTab(currentTabIndex);
-
         } else if (result == JOptionPane.NO_OPTION) {
             deleteTab(currentTabIndex);
         }
@@ -519,13 +612,28 @@ public class Viewer {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
         if(result == JOptionPane.YES_OPTION) {
-            controller.saveDocument();
-            System.exit(0);
+            int saveResult = ((SaveDocumentActionHandler) controller.getActionHandlers().get("Save")).saveDocument();
+            if(saveResult == 0) {
+                System.exit(0);
+            }
+
         } else if (result == JOptionPane.NO_OPTION) {
             System.exit(0);
         } else if (result == JOptionPane.CANCEL_OPTION) {
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
+    }
+    
+    private int findTabIndexByCloseButton(JButton closeBtn) {
+         Container tabPanel = closeBtn.getParent();
+         if (tabPanel != null) {
+                 int tabIndex = tabPane.indexOfTabComponent(tabPanel);
+
+                 if (tabIndex != -1) {
+                     return tabIndex;
+                 }
+         }
+         return -1;
     }
 
     private void filterInput(JTextField textField) {
@@ -580,10 +688,11 @@ public class Viewer {
         }
     }
 
-    private void deleteTab(int tabIndex) {
+    public void deleteTab(int tabIndex) {
         tabPane.removeTabAt(tabIndex);
-        controller.removeFromList(controller.getUnsavedChangesPerTab(), tabIndex);
-        controller.removeFromList(controller.getFilesPerTabs(), tabIndex);
+
+        tabsController.getUnsavedChangesPerTab().remove(tabIndex);
+        tabsController.getFilesPerTabs().remove(tabIndex);
     }
 
     private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
@@ -655,6 +764,7 @@ public class Viewer {
 
     private JButton createCloseTabBtn() {
         JButton closeButton = new JButton("\u00d7");
+        closeButton.addMouseListener(mouseController);
         closeButton.setFont(submenuFont);
         closeButton.setBorder(null);
         closeButton.setContentAreaFilled(false);
@@ -688,6 +798,7 @@ public class Viewer {
         JButton buttonCopy = createButton("images/copy.png", "Copy", controller);
         JButton buttonPaste = createButton("images/paste.png", "Paste", controller);
         JButton buttonColor = createButton("images/color.png", "Choose_Color", controller);
+        JButton buttonChangeTheme = createButton("images/change-theme.png", "Change_Theme", controller);
 
         toolBar.add(buttonNew);
         toolBar.add(buttonOpen);
@@ -697,6 +808,8 @@ public class Viewer {
         toolBar.add(buttonCopy);
         toolBar.add(buttonPaste);
         toolBar.add(buttonColor);
+        toolBar.addSeparator();
+        toolBar.add(buttonChangeTheme);
         toolBar.setFloatable(true);
         toolBar.setRollover(true);
 
@@ -806,17 +919,14 @@ public class Viewer {
     }
 
     private JMenu getFormatMenu(Font menuFont, Font submenuFont, ActionController controller) {
-        JRadioButtonMenuItem wordSpase = new JRadioButtonMenuItem("Word space");
-        wordSpase.setSelected(true);
-        wordSpase.addActionListener(controller);
-        wordSpase.setActionCommand("Word_Space");
-        wordSpase.setFont(submenuFont);
+        JMenuItem wordWrap = createMenuItem("Word wrap", "", "Word_Wrap", submenuFont, controller);
+        wordWrap.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
 
         JMenuItem fontDocument = createMenuItem("Font", "images/font.png", "Font", submenuFont, controller);
         fontDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 
         JMenu formatMenu = new JMenu("Format");
-        formatMenu.add(wordSpase);
+        formatMenu.add(wordWrap);
         formatMenu.addSeparator();
         formatMenu.add(fontDocument);
         formatMenu.setFont(menuFont);
@@ -877,8 +987,7 @@ public class Viewer {
     private JFrame getFrame() {
         JFrame frame = new JFrame("Notepad MVC");
         frame.setLocation(300, 15);
-        frame.setSize(1000, 800);
-
+        frame.setSize(1000, 650);
         return frame;
     }
 
