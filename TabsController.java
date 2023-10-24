@@ -9,11 +9,14 @@ public class TabsController implements DocumentListener {
     private List<Boolean> unsavedChangesPerTab;
     private List<File> filesPerTabs;
     private Viewer viewer;
+    private JButton closeBtn;
+    private boolean isFileOpening;
 
     public TabsController(Viewer viewer) {
         unsavedChangesPerTab = new ArrayList<>();
         filesPerTabs = new ArrayList<>();
         this.viewer = viewer;
+        isFileOpening = false;
     }
 
     public List<Boolean> getUnsavedChangesPerTab() {
@@ -24,20 +27,25 @@ public class TabsController implements DocumentListener {
         return filesPerTabs;
     }
 
+    public void setIsFileOpening(boolean value) {
+        isFileOpening = value;
+    }
+
     @Override
     public void insertUpdate(DocumentEvent e) {
-        int currentTabIndex = viewer.getCurrentTabIndex();
-        setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
-        JButton closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
-        closeBtn.setText("\u2022");
-
+        if(!isFileOpening) {
+            int currentTabIndex = viewer.getCurrentTabIndex();
+            setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
+            closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
+            closeBtn.setText("\u2022");
+        }
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();
         setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
-        JButton closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
+        closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
         closeBtn.setText("\u2022");
 
     }

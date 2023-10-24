@@ -30,8 +30,10 @@ public class OpenDocumentActionHandler implements ActionHandler {
             String contentText = readFile(filePath);
             String fileName = getFileNameFromPath(filePath);
 
+            tabsController.setIsFileOpening(true);
             viewer.update(contentText, fileName, newTabIndex);
             tabsController.setValueInToList(tabsController.getUnsavedChangesPerTab(), newTabIndex, false);
+            tabsController.setIsFileOpening(false);
         }
     }
 
