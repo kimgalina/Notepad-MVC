@@ -51,11 +51,11 @@ public class ActionController implements ActionListener {
         actionHandlers.put("Save_As", new SaveDocumentActionHandler(viewer, tabsController));
         actionHandlers.put("Print", new PrintActionHandler(viewer));
         actionHandlers.put("Exit", new ExitActionHandler(this, viewer));
-        actionHandlers.put("Copy", new CopyPasteActionHandler(viewer));
-        actionHandlers.put("Cut", new CopyPasteActionHandler(viewer));
-        actionHandlers.put("Paste", new CopyPasteActionHandler(viewer));
-        actionHandlers.put("Clear", new CopyPasteActionHandler(viewer));
-        actionHandlers.put("Select_All", new CopyPasteActionHandler(viewer));
+        actionHandlers.put("Copy", new EditActionHandler(viewer));
+        actionHandlers.put("Cut", new EditActionHandler(viewer));
+        actionHandlers.put("Paste", new EditActionHandler(viewer));
+        actionHandlers.put("Clear", new EditActionHandler(viewer));
+        actionHandlers.put("Select_All", new EditActionHandler(viewer));
         actionHandlers.put("Find", new GoAndFindActionHandler(viewer));
         actionHandlers.put("Find more", new GoAndFindActionHandler(viewer));
         actionHandlers.put("Go", new GoAndFindActionHandler(viewer));
