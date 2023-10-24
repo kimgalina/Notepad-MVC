@@ -8,10 +8,10 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
-public class CopyPasteActionHandler implements ActionHandler {
+public class EditActionHandler implements ActionHandler {
     private Viewer viewer;
 
-    public CopyPasteActionHandler(Viewer viewer) {
+    public EditActionHandler(Viewer viewer) {
         this.viewer = viewer;
     }
 
