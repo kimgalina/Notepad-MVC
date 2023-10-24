@@ -6,11 +6,9 @@ import java.awt.event.ActionEvent;
 public class ExitActionHandler implements ActionHandler {
     private Viewer viewer;
     private ActionController actionController;
-    private TabsController tabsController;
 
-    public ExitActionHandler(ActionController actionController, Viewer viewer, TabsController tabsController) {
+    public ExitActionHandler(ActionController actionController, Viewer viewer) {
         this.viewer = viewer;
-        this.tabsController = tabsController;
         this.actionController = actionController;
     }
 

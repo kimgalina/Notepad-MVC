@@ -50,7 +50,7 @@ public class ActionController implements ActionListener {
         actionHandlers.put("Save", new SaveDocumentActionHandler(viewer, tabsController));
         actionHandlers.put("Save_As", new SaveDocumentActionHandler(viewer, tabsController));
         actionHandlers.put("Print", new PrintActionHandler(viewer));
-        actionHandlers.put("Exit", new ExitActionHandler(this, viewer, tabsController));
+        actionHandlers.put("Exit", new ExitActionHandler(this, viewer));
         actionHandlers.put("Copy", new CopyPasteActionHandler(viewer));
         actionHandlers.put("Cut", new CopyPasteActionHandler(viewer));
         actionHandlers.put("Paste", new CopyPasteActionHandler(viewer));
@@ -68,7 +68,7 @@ public class ActionController implements ActionListener {
         actionHandlers.put("View_Help", new ViewActionHandler(viewer));
         actionHandlers.put("About", new ViewActionHandler(viewer));
         actionHandlers.put("Change_Theme", new ViewActionHandler(viewer));
-        actionHandlers.put("CloseTab", new ExitActionHandler(this, viewer, tabsController));
+        actionHandlers.put("CloseTab", new ExitActionHandler(this, viewer));
         actionHandlers.put("Choose_Color", new FormatActionHandler(viewer));
     }
 }
