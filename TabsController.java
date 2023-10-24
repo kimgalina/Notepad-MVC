@@ -3,21 +3,20 @@ import javax.swing.event.DocumentListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
+import javax.swing.JButton;
 
 public class TabsController implements DocumentListener {
-    //private List<Boolean> unsavedChangesPerTab;
-    private ListWithListener<Boolean> unsavedChangesPerTab;
+    private List<Boolean> unsavedChangesPerTab;
     private List<File> filesPerTabs;
-    private ListChangeListener listListener;
     private Viewer viewer;
+    private JButton closeBtn;
+    private boolean isFileOpening;
 
     public TabsController(Viewer viewer) {
-        //unsavedChangesPerTab = new ArrayList<>();
-        unsavedChangesPerTab = new ListWithListener<>();
+        unsavedChangesPerTab = new ArrayList<>();
         filesPerTabs = new ArrayList<>();
         this.viewer = viewer;
-        listListener = new ListChangeListener(viewer);
-        unsavedChangesPerTab.addListChangeListener(listListener);
+        isFileOpening = false;
     }
 
     public List<Boolean> getUnsavedChangesPerTab() {
@@ -28,17 +27,26 @@ public class TabsController implements DocumentListener {
         return filesPerTabs;
     }
 
+    public void setIsFileOpening(boolean value) {
+        isFileOpening = value;
+    }
+
     @Override
     public void insertUpdate(DocumentEvent e) {
-        int currentTabIndex = viewer.getCurrentTabIndex();
-        setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
-
+        if(!isFileOpening) {
+            int currentTabIndex = viewer.getCurrentTabIndex();
+            setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
+            closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
+            closeBtn.setText("\u2022");
+        }
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();
         setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
+        closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
+        closeBtn.setText("\u2022");
 
     }
 

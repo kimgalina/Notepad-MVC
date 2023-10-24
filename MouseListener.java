@@ -7,7 +7,6 @@ public class MouseListener extends MouseAdapter {
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        System.out.println("mouse entered");
         JButton closeBtn = (JButton) e.getSource();
         btnText = closeBtn.getText();
         closeBtn.setText("\u00d7");
@@ -15,7 +14,6 @@ public class MouseListener extends MouseAdapter {
 
     @Override
     public void mouseExited(MouseEvent e) {
-        System.out.println("Mouse exited");
         JButton closeBtn = (JButton) e.getSource();
         closeBtn.setText(btnText);
     }

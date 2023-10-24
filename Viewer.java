@@ -47,6 +47,14 @@ import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.Document;
 
+import javax.swing.UIManager;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.ColorUIResource;
+import java.awt.Cursor;
+
+
 public class Viewer {
 
     private JFileChooser fileChooser;
@@ -55,6 +63,7 @@ public class Viewer {
     private WindowController windowController;
     private TabsController tabsController;
     private MouseListener mouseController;
+    private HelpMouseListener helpMouseController;
     private JTabbedPane tabPane;
     private Font contentFont;
     private Font submenuFont;
@@ -69,26 +78,30 @@ public class Viewer {
     private JLabel statusLabel;
     private JDialog goDialog;
     private JDialog fontDialog;
+    private JDialog helpDialog;
+    private boolean isLightTheme;
 
     public Viewer() {
         frame = getFrame();
         mouseController = new MouseListener();
+        helpMouseController = new HelpMouseListener();
         tabsController = new TabsController(this);
         controller = new ActionController(this, tabsController);
-        windowController = new WindowController(controller,this);
+        windowController = new WindowController(controller, this);
         contentFont = new Font("Consolas", Font.PLAIN, 22);
         menuFont = new Font("Tahoma", Font.BOLD, 20);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
         tabPane = new JTabbedPane();
+        isLightTheme = true;
+        fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Text files (*.txt)", "txt"));
     }
 
     public void startApplication() {
         JMenuBar menuBar = getJMenuBar(menuFont, submenuFont, controller);
         JToolBar toolBar = getToolBar(controller);
-
         createNewTab();
         initStatusPanel();
-
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
         frame.add(statusPanel, BorderLayout.SOUTH);
@@ -152,6 +165,22 @@ public class Viewer {
         return currentContent.getFont();
     }
 
+    public void changeTheme() {
+        CustomThemeMaker customTheme = new CustomThemeMaker(isLightTheme);
+        MetalLookAndFeel.setCurrentTheme(customTheme);
+        customTheme.refreshTheme();
+
+        SwingUtilities.updateComponentTreeUI(tabPane);
+        SwingUtilities.updateComponentTreeUI(fileChooser);
+        SwingUtilities.updateComponentTreeUI(frame);
+        SwingUtilities.updateComponentTreeUI((JToolBar) frame.getContentPane().getComponent(0));
+        SwingUtilities.updateComponentTreeUI((JPanel) frame.getContentPane().getComponent(1));
+        SwingUtilities.updateComponentTreeUI((JTabbedPane) frame.getContentPane().getComponent(2));
+
+        customTheme = null;
+        //isLightTheme = !isLightTheme; //METHOD DOES NOT CHANGE STATUS UNTIL THE BUG WILL BE FIXED
+    }
+
     public String getCurrentTextAreaContent() {
         return currentContent.getText();
     }
@@ -206,9 +235,6 @@ public class Viewer {
     }
 
     public File getFile() {
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-        }
         int returnVal = fileChooser.showOpenDialog(new JFrame());
         if (returnVal == JFileChooser.APPROVE_OPTION) {
            File file = fileChooser.getSelectedFile();
@@ -218,14 +244,9 @@ public class Viewer {
     }
 
     public File getNewFileSaveLocation(String fileName){
-        if (fileChooser == null) {
-            fileChooser = new JFileChooser();
-        }
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Text files (*.txt)", "txt");
         if (!fileName.equals("Untitled.txt")) {
           fileChooser.setSelectedFile(new File(fileName));
         }
-        fileChooser.setFileFilter(filter);
         int returnValue = fileChooser.showSaveDialog(new JFrame());
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
@@ -419,11 +440,45 @@ public class Viewer {
         statusPanel.setVisible(visible);
     }
 
-    public void getMessageAbout() {
-        JOptionPane.showMessageDialog(frame,
-                new MessageWithLink("<div>Notepad Template Method Design Pattern team<div>" +
-                        "<a href=\"\">See the development process</a>"), "About Notepad",
-                JOptionPane.INFORMATION_MESSAGE);
+    public void openHelpDialog() {
+        if (helpDialog != null) {
+            helpDialog.setVisible(true);
+            return;
+        }
+
+        HelpController helpController = new HelpController(this);
+
+        int x = frame.getX();
+        int y = frame.getY();
+        helpDialog = new JDialog(frame, "About Notepad", true);
+        helpDialog.setSize(500, 250);
+        helpDialog.setLocation(x + 150, y + 150);
+        helpDialog.setLayout(null);
+        helpDialog.setResizable(false);
+
+        JLabel helpLabel = new JLabel("Notepad Template Method Design Pattern team");
+        helpLabel.setBounds(90, 70, 300, 15);
+
+        JLabel linkLabel = new JLabel("See the development process");
+        linkLabel.setForeground(Color.BLUE);
+        linkLabel.setBounds(90, 90, 300, 15);
+        linkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        linkLabel.addMouseListener(helpMouseController);
+
+        JButton buttonOk = new JButton("Ok");
+        buttonOk.setBounds(370, 180, 100, 30);
+        buttonOk.addActionListener(helpController);
+        buttonOk.setActionCommand("Ok");
+
+        helpDialog.add(helpLabel);
+        helpDialog.add(linkLabel);
+        helpDialog.add(buttonOk);
+
+        helpDialog.setVisible(true);
+    }
+
+    public void hideHelpDialog() {
+        helpDialog.setVisible(false);
     }
 
     public JButton getCloseBtnFromTab(int tabIndex) {
@@ -440,15 +495,17 @@ public class Viewer {
         return null;
     }
 
-    public void closeCurrentTab() {
-        int currentTabIndex = tabPane.getSelectedIndex();
+    public void closeCurrentTab(JButton closeBtn) {
+        int foundIndex = findTabIndexByCloseButton(closeBtn);
+        int currentTabIndex = foundIndex != -1 ? foundIndex : tabPane.getSelectedIndex();
+        tabPane.setSelectedIndex(currentTabIndex);
         if (currentTabIndex > 0) {
             if(controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
             } else {
                  deleteTab(currentTabIndex);
             }
-       } else if(currentTabIndex == 0) { // checking if there are other tabs
+       } else if(currentTabIndex == 0) {
            int tabCount = tabPane.getTabCount();
            if(tabCount != 1 && controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
@@ -470,7 +527,7 @@ public class Viewer {
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
         if(result == JOptionPane.YES_OPTION) {
-            int saveResult = controller.saveDocument();
+            int saveResult = ((SaveDocumentActionHandler) controller.getActionHandlers().get("Save")).saveDocument();
             if(saveResult == -1) {
                 return -1;
             }
@@ -485,7 +542,7 @@ public class Viewer {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
         if(result == JOptionPane.YES_OPTION) {
-            int saveResult = controller.saveDocument();
+            int saveResult = ((SaveDocumentActionHandler) controller.getActionHandlers().get("Save")).saveDocument();
             if(saveResult == 0) {
                 System.exit(0);
             }
@@ -495,6 +552,18 @@ public class Viewer {
         } else if (result == JOptionPane.CANCEL_OPTION) {
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
+    }
+    
+    private int findTabIndexByCloseButton(JButton closeBtn) {
+         Container tabPanel = closeBtn.getParent();
+         if (tabPanel != null) {
+                 int tabIndex = tabPane.indexOfTabComponent(tabPanel);
+
+                 if (tabIndex != -1) {
+                     return tabIndex;
+                 }
+         }
+         return -1;
     }
 
     private void filterInput(JTextField textField) {
@@ -658,6 +727,7 @@ public class Viewer {
         JButton buttonCopy = createButton("images/copy.png", "Copy", controller);
         JButton buttonPaste = createButton("images/paste.png", "Paste", controller);
         JButton buttonColor = createButton("images/color.png", "Choose_Color", controller);
+        JButton buttonChangeTheme = createButton("images/change-theme.png", "Change_Theme", controller);
 
         toolBar.add(buttonNew);
         toolBar.add(buttonOpen);
@@ -667,6 +737,8 @@ public class Viewer {
         toolBar.add(buttonCopy);
         toolBar.add(buttonPaste);
         toolBar.add(buttonColor);
+        toolBar.addSeparator();
+        toolBar.add(buttonChangeTheme);
         toolBar.setFloatable(true);
         toolBar.setRollover(true);
 
