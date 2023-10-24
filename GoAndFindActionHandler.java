@@ -20,7 +20,7 @@ public class GoAndFindActionHandler implements ActionHandler {
                 pasteTimeAndDate();
                 break;
             case "Find":
-
+                viewer.openFindDialog();
                 break;
             case "Find more":
 
