@@ -24,6 +24,9 @@ public class CopyPasteActionHandler implements ActionHandler {
             case "Copy":
                 copyOrCut(command);
                 break;
+            case "Cut":
+                copyOrCut(command);
+                break;
             case "Clear":
                 viewer.updateText("");
                 break;
