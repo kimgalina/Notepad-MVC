@@ -177,7 +177,7 @@ public class Viewer {
         caseSensitiveButton.setFont(dialogFont);
         caseSensitiveButton.setFocusable(false);
 
-        FindDialogController dialogController = new FindDialogController(this, textField, upButton, downButton, caseSensitiveButton);
+        FindDialogController dialogController = new FindDialogController(this, textField, downButton, caseSensitiveButton);
 
         JButton findButton = createDialogButton("Find", "Find", 350, 20, 90, 25);
         findButton.setEnabled(false);

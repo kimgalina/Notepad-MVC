@@ -6,28 +6,22 @@ import javax.swing.JTextArea;
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.text.Document;
 import javax.swing.text.BadLocationException;
 
 public class FindDialogController implements ActionListener {
 
     private Viewer viewer;
     private JTextField searchField;
-    private JRadioButton upButton;
     private JRadioButton downButton;
     private JCheckBox caseSensitiveButton;
+    private TextFinder textFinder;
 
-    private int currentPosition = 0;
-
-    public FindDialogController(Viewer viewer, JTextField searchField, JRadioButton upButton, JRadioButton downButton, JCheckBox caseSensitiveButton) {
+    public FindDialogController(Viewer viewer, JTextField searchField, JRadioButton downButton, JCheckBox caseSensitiveButton) {
         this.viewer = viewer;
         this.searchField = searchField;
-        this.upButton = upButton;
         this.downButton = downButton;
         this.caseSensitiveButton = caseSensitiveButton;
+        textFinder = new TextFinder();
     }
 
     @Override
@@ -35,64 +29,26 @@ public class FindDialogController implements ActionListener {
         String command = event.getActionCommand();
 
         if (command.equals("Find")) {
-            find(downButton.isSelected(), caseSensitiveButton.isSelected());
-
+            find();
         } else if (command.equals("Cancel")) {
             viewer.closeFindDialog();
         }
     }
 
-    private void find(boolean isDown, boolean isCaseSensitive) {
+    private void find() {
+        String search = searchField.getText();
         JTextArea textArea = viewer.getCurrentContent();
-        textArea.requestFocus();
-        String searchText = searchField.getText();
-        Document document = textArea.getDocument();
-        int textLength = document.getLength();
-        String text;
+        boolean isNext = downButton.isSelected();
+        boolean isCaseSensitive = caseSensitiveButton.isSelected();
+        
+        boolean isFound = false;
         try {
-            text = document.getText(0, textLength);
+            isFound = textFinder.find(search, textArea, isNext, isCaseSensitive);
         } catch (BadLocationException e) {
-            e.printStackTrace();
-            return;
+            viewer.showError("Error");
         }
-
-        Pattern pattern;
-        if (isCaseSensitive) {
-            pattern = Pattern.compile(Pattern.quote(searchText));
-        } else {
-            pattern = Pattern.compile(Pattern.quote(searchText), Pattern.CASE_INSENSITIVE);
-        }
-        Matcher matcher = pattern.matcher(text);
-
-        int start = currentPosition;
-        int end = currentPosition;
-
-        if (isDown) {
-            if (matcher.find(currentPosition)) {
-                start = matcher.start();
-                end = matcher.end();
-            }
-        } else {
-            if (currentPosition == 0) {
-                currentPosition = textLength;
-            }
-            while (matcher.find()) {
-                int tempStart = matcher.start();
-                if (tempStart >= currentPosition) {
-                    break;
-                }
-                start = tempStart;
-                end = matcher.end();
-            }
-        }
-
-        if (start != end) {
-            textArea.setSelectionStart(start);
-            textArea.setSelectionEnd(end);
-            currentPosition = isDown ? end : start;
-        } else {
-            viewer.showError("Text not found");
+        if (!isFound) {
+            viewer.showError("Text is not found");
         }
     }
-
 }
