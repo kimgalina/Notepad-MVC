@@ -57,9 +57,6 @@ public class ActionController implements ActionListener {
         viewer.setStatusPanelToVisible(viewer.getStatusBarBox().isSelected());
 
         String command = event.getActionCommand();
-        if(map.containsKey(command)){
-            map.get(command).actionPerformed();
-        }
 
         if (command.equals("New_Document")) {
             viewer.createNewTab();
