@@ -229,8 +229,8 @@ public class Viewer {
         findButton.setEnabled(false);
         findButton.addActionListener(dialogController);
 
-        TextFieldController textFieldController = new TextFieldController(textField, findButton);
-        textField.getDocument().addDocumentListener(textFieldController);
+        TextFieldListener textFieldListener = new TextFieldListener(textField, findButton);
+        textField.getDocument().addDocumentListener(textFieldListener);
 
         JButton cancelButton = createDialogButton("Cancel", "Cancel", 350, 78, 90, 25);
         cancelButton.addActionListener(dialogController);
@@ -623,7 +623,7 @@ public class Viewer {
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
     }
-    
+
     private int findTabIndexByCloseButton(JButton closeBtn) {
          Container tabPanel = closeBtn.getParent();
          if (tabPanel != null) {
