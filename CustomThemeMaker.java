@@ -13,11 +13,47 @@ public class CustomThemeMaker extends DefaultMetalTheme {
     private Color fullTransparentColor;
 
     public CustomThemeMaker(boolean isLightTheme) {
-        textColor = isLightTheme ? new Color(205, 205, 205) : Color.BLACK;
-        backgroundColor = isLightTheme ? new Color(40, 44, 52) : Color.WHITE;
-        secondBackgroundColor = isLightTheme ? new Color(33, 37, 43) : Color.WHITE;
-        alternativeColor = isLightTheme ? new Color(62, 68, 81) : Color.GRAY;
-        fullTransparentColor = new Color(0, 0, 0, 0);
+        textColor = getTextColor(isLightTheme);
+        backgroundColor = getBackgroundColor(isLightTheme);
+        secondBackgroundColor = getSecondBackgroundColor(isLightTheme);
+        alternativeColor = getAlternativeColor(isLightTheme);
+        fullTransparentColor = getFullTransparentColor(isLightTheme);
+    }
+
+    public static Color getTextColor(boolean isLightTheme)  {
+        if (isLightTheme) {
+            return new Color(205, 205, 205);
+        } else {
+            return Color.BLACK;
+        }
+    }
+
+    public static Color getBackgroundColor(boolean isLightTheme)  {
+        if (isLightTheme) {
+            return new Color(40, 44, 52);
+        } else {
+            return Color.WHITE;
+        }
+    }
+
+    public static Color getSecondBackgroundColor(boolean isLightTheme)  {
+        if (isLightTheme) {
+            return new Color(33, 37, 43);
+        } else {
+            return Color.WHITE;
+        }
+    }
+
+    public static Color getAlternativeColor(boolean isLightTheme)  {
+        if (isLightTheme) {
+            return new Color(62, 68, 81);
+        } else {
+            return Color.GRAY;
+        }
+    }
+
+    public static Color getFullTransparentColor(boolean isLightTheme)  {
+        return new Color(0, 0, 0, 0);
     }
 
     public void refreshTheme() {
@@ -66,10 +102,13 @@ public class CustomThemeMaker extends DefaultMetalTheme {
         UIManager.put("ComboBox.background", secondBackgroundColor);
         UIManager.put("ComboBox.foreground", textColor);
         UIManager.put("CheckBoxMenuItem.foreground", textColor);
+        UIManager.put("CheckBox.foreground", textColor);
 
         //
         // UIManager.put("RadioButton.background", backgroundColor); //changes radiobuttons in colorchooser
         UIManager.put("RadioButton.foreground", textColor); //changes radiobuttons text in colorchooser
+
+        UIManager.put("TitledBorder.titleColor", textColor);
         //
         //
         // //font chooser borders --- titleborder need dorabotka

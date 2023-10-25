@@ -276,6 +276,7 @@ public class Viewer {
 
     public void openFontDialog() {
         if (fontDialog != null) {
+            SwingUtilities.updateComponentTreeUI(fontDialog);
             fontDialog.setVisible(true);
             return;
         }
@@ -442,6 +443,7 @@ public class Viewer {
 
     public void openHelpDialog() {
         if (helpDialog != null) {
+            SwingUtilities.updateComponentTreeUI(helpDialog);
             helpDialog.setVisible(true);
             return;
         }
@@ -523,7 +525,9 @@ public class Viewer {
    }
 
     public int showCloseTabMessage(int currentTabIndex) {
-        int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
+        JLabel coloredLabelText = new JLabel("Do you want to save changes ? ");
+        coloredLabelText.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+        int result = JOptionPane.showConfirmDialog(frame, coloredLabelText, "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
         if(result == JOptionPane.YES_OPTION) {
@@ -553,7 +557,7 @@ public class Viewer {
             frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         }
     }
-    
+
     private int findTabIndexByCloseButton(JButton closeBtn) {
          Container tabPanel = closeBtn.getParent();
          if (tabPanel != null) {
