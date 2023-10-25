@@ -342,6 +342,7 @@ public class Viewer {
     public void updateText(String text) {
         setCurrentContent();
         currentContent.setText(text);
+        currentContent.setCaretPosition(0);
     }
 
     public void updateTextColor(Color color) {
@@ -1006,7 +1007,7 @@ public class Viewer {
 
     private JFrame getFrame() {
         JFrame frame = new JFrame("Notepad MVC");
-        frame.setLocation(300, 15);
+        frame.setLocation(250, 100);
         frame.setSize(1000, 650);
         return frame;
     }
