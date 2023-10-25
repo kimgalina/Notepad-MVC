@@ -29,6 +29,7 @@ public class TextFinder {
         } else {
             pos = foundPos == 0 ? 0 : foundPos;
         }
+        System.out.println(pos);
         return isFound;
     }
 
