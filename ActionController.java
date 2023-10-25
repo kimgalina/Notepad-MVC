@@ -6,12 +6,14 @@ import java.util.HashMap;
 public class ActionController implements ActionListener {
     private Viewer viewer;
     private TabsController tabsController;
+    private FindDialogController findController;
     private Map<String, ActionHandler> actionHandlers;
 
 
-    public ActionController(Viewer viewer, TabsController tabsController) {
+    public ActionController(Viewer viewer, TabsController tabsController, FindDialogController findController) {
         this.viewer = viewer;
         this.tabsController = tabsController;
+        this.findController = findController;
         actionHandlers = new HashMap<>();
         initializeActionHandlers();
     }
@@ -56,10 +58,11 @@ public class ActionController implements ActionListener {
         actionHandlers.put("Paste", new EditActionHandler(viewer));
         actionHandlers.put("Clear", new EditActionHandler(viewer));
         actionHandlers.put("Select_All", new EditActionHandler(viewer));
-        actionHandlers.put("Find", new GoAndFindActionHandler(viewer));
-        actionHandlers.put("Find more", new GoAndFindActionHandler(viewer));
-        actionHandlers.put("Go", new GoAndFindActionHandler(viewer));
-        actionHandlers.put("Time_And_Date", new GoAndFindActionHandler(viewer));
+        actionHandlers.put("Find", new GoAndFindActionHandler(viewer, findController));
+        actionHandlers.put("Find_Next", new GoAndFindActionHandler(viewer, findController));
+        actionHandlers.put("Find_Prev", new GoAndFindActionHandler(viewer, findController));
+        actionHandlers.put("Go", new GoAndFindActionHandler(viewer, findController));
+        actionHandlers.put("Time_And_Date", new GoAndFindActionHandler(viewer, findController));
         actionHandlers.put("Font", new FormatActionHandler(viewer));
         actionHandlers.put("Word_Wrap", new FormatActionHandler(viewer));
         actionHandlers.put("ZOOM_IN", new ViewActionHandler(viewer));
