@@ -1,13 +1,16 @@
+import java.awt.event.ActionEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JTextArea;
-import java.awt.event.ActionEvent;
 
 public class GoAndFindActionHandler implements ActionHandler {
-    private Viewer viewer;
 
-    public GoAndFindActionHandler(Viewer viewer) {
+    private Viewer viewer;
+    private FindDialogController findController;
+
+    public GoAndFindActionHandler(Viewer viewer, FindDialogController findController) {
         this.viewer = viewer;
+        this.findController = findController;
     }
 
     @Override
@@ -22,10 +25,12 @@ public class GoAndFindActionHandler implements ActionHandler {
             case "Find":
                 viewer.openFindDialog();
                 break;
-            case "Find more":
-
+            case "Find_Next":
+                findController.find(true);
                 break;
-
+            case "Find_Prev":
+                findController.find(false);
+                break;
         }
     }
 
