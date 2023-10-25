@@ -12,11 +12,15 @@ import javax.swing.text.BadLocationException;
 public class FindDialogController implements ActionListener {
 
     private Viewer viewer;
-    private int pos = 0;
-    private int foundPos = 0;
+    private int pos;
+    private int foundPos;
+    private boolean isPrevNext;
 
     public FindDialogController(Viewer viewer) {
         this.viewer = viewer;
+        pos = 0;
+        foundPos = 0;
+        isPrevNext = false;
     }
 
     @Override
@@ -38,29 +42,30 @@ public class FindDialogController implements ActionListener {
         boolean isCaseSensitive = viewer.getCaseSensitiveButton().isSelected();
         search = isCaseSensitive ? search : search.toLowerCase();
 
+        int searchLength = search.length();
+
+        if (isDirectionChanged(isNext)) {
+            updatePosition(isNext, searchLength);
+        }
+
         boolean isFound = false;
         isFound = isNext ? findNext(search, textArea.getDocument(), isCaseSensitive)
                          : findPrevious(search, textArea.getDocument(), isCaseSensitive);
 
-        if (isFound) {
-            if (isNext) {
-                textArea.select(pos, pos + search.length());
-                pos += search.length();
-            } else {
-                textArea.select(pos - search.length(), pos);
-                pos -= search.length();
-            }
-            foundPos = pos;
+        handleResult(isFound, isNext, searchLength, textArea);
+    }
+
+    private void updatePosition(boolean isNext, int searchLength) {
+        if (isNext) {
+            pos += searchLength;
         } else {
-            pos = foundPos == 0 ? 0 : foundPos;
-            viewer.showError("Text is not found");
+            pos -= searchLength;
         }
     }
 
     private boolean findNext(String search, Document document, boolean isCaseSensitive) {
         int searchLength = search.length();
         boolean isFound = false;
-
         try {
             while (pos + searchLength <= document.getLength()) {
                 String match = document.getText(pos, searchLength);
@@ -94,5 +99,26 @@ public class FindDialogController implements ActionListener {
             viewer.showError("Error");
         }
         return isFound;
+    }
+
+    private void handleResult(boolean isFound, boolean isNext, int searchLength, JTextArea textArea) {
+        if (isFound) {
+            if (isNext) {
+                textArea.select(pos, pos + searchLength);
+                pos += searchLength;
+            } else {
+                textArea.select(pos - searchLength, pos);
+                pos -= searchLength;
+            }
+            isPrevNext = isDirectionChanged(isNext) ? isNext : isPrevNext;
+            foundPos = pos;
+        } else {
+            pos = foundPos == 0 ? 0 : foundPos;
+            viewer.showError("Text is not found");
+        }
+    }
+
+    private boolean isDirectionChanged(boolean isNext) {
+        return isPrevNext != isNext;
     }
 }
