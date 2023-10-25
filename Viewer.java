@@ -954,7 +954,6 @@ public class Viewer {
         editMenu.add(goDocument);
         editMenu.addSeparator();
         editMenu.add(selectAllDocument);
-        editMenu.addSeparator();
         editMenu.add(timeAndDateDocument);
         editMenu.setFont(menuFont);
 
