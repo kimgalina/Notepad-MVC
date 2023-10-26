@@ -136,10 +136,10 @@ public class Viewer {
         JScrollPane scrollPane = new JScrollPane(content);
 
         panel.add(scrollPane, BorderLayout.CENTER);
-
         tabPane.addTab(null, panel);
         int tabIndex = tabPane.indexOfComponent(panel);
         tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
+        tabPane.setBackgroundAt(tabIndex, CustomThemeMaker.getBackgroundColor(!isLightTheme));
 
         tabsController.getFilesPerTabs().add(tabIndex, null);
         tabsController.getUnsavedChangesPerTab().add(tabIndex, false);
@@ -182,14 +182,15 @@ public class Viewer {
         CustomThemeMaker customTheme = new CustomThemeMaker(isLightTheme);
         MetalLookAndFeel.setCurrentTheme(customTheme);
         customTheme.refreshTheme();
-        JMenuBar menuBar = frame.getJMenuBar();
         changeMenuBarFontsColor();
         setTabColors();
+
         SwingUtilities.updateComponentTreeUI(tabPane);
         SwingUtilities.updateComponentTreeUI(fileChooser);
         SwingUtilities.updateComponentTreeUI(frame);
+
         customTheme = null;
-        isLightTheme = !isLightTheme; //METHOD DOES CHAGES ALL COLOR EXCEPT TABS BACKGROUND
+        isLightTheme = !isLightTheme;
     }
 
     public void changeMenuBarFontsColor() {
@@ -227,7 +228,7 @@ public class Viewer {
         int tabCount = tabPane.getTabCount();
         for (int i = 0; i < tabCount; i++) {
             Component tabComponent = tabPane.getComponentAt(i);
-            //System.out.println("\n\n\n" + tabComponent + "\n\n\n"); //debug
+            tabPane.setBackgroundAt(i, CustomThemeMaker.getBackgroundColor(isLightTheme)); ////colors tab background
             if (!(tabComponent instanceof JPanel)) {
                 continue; //skipping non JPanel components
             }
@@ -236,24 +237,22 @@ public class Viewer {
             inPanelContent.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //not working
             inPanelContent.setForeground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //not working
             for (Component component : inPanelContent.getComponents()) {
-                //System.out.println("\n\n" + component + "\n\n"); //debug
                 if (!(component instanceof JScrollPane)) {
                     continue; //skipping non JScrollPane components
                 }
                 JScrollPane scrollPane = (JScrollPane) component;
-                SwingUtilities.updateComponentTreeUI(scrollPane);
                 JViewport viewport = scrollPane.getViewport();
                 if (viewport.getView() instanceof JTextArea) {
                     JTextArea textArea = (JTextArea) viewport.getView();
                     textArea.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //in-tab content background color
                     textArea.setForeground(CustomThemeMaker.getTextColor(isLightTheme)); //in-tab content text color
+                    textArea.setSelectionColor(CustomThemeMaker.getAlternativeColor(isLightTheme));
+                    textArea.setSelectedTextColor(CustomThemeMaker.getTextColor(isLightTheme));
                 }
             }
             for (Component component : panelContent.getComponents()) {
-                //System.out.println("\n\n" + component + "\n\n"); //debug
                 if (component instanceof JLabel) {
                     JLabel tab = (JLabel) component;
-                    tab.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //not working (IT SHOULD COLOR THE TAB BUT IT DOESNT)
                     tab.setForeground(CustomThemeMaker.getTextColor(isLightTheme)); //colors tab text font
                     SwingUtilities.updateComponentTreeUI(tab);
                 }
