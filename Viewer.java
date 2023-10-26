@@ -222,6 +222,9 @@ public class Viewer {
                 menuItem.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
             }
         }
+        if (statusLabel != null) {
+              statusLabel.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+        }
     }
 
     public void setTabColors() {
@@ -274,7 +277,9 @@ public class Viewer {
     }
 
     public void showDialogFinishPrintDocument() {
-        JOptionPane.showMessageDialog(frame, "The document has been printed.", "Notepad MVC",
+        JLabel coloredLabelText = new JLabel("The document has been printed.");
+        coloredLabelText.setForeground(CustomThemeMaker.getTextColor(!isLightTheme));
+        JOptionPane.showMessageDialog(frame, coloredLabelText, "Notepad MVC",
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -688,7 +693,7 @@ public class Viewer {
 
     public int showCloseTabMessage(int currentTabIndex) {
         JLabel coloredLabelText = new JLabel("Do you want to save changes ? ");
-        coloredLabelText.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+        coloredLabelText.setForeground(CustomThemeMaker.getTextColor(!isLightTheme));
         int result = JOptionPane.showConfirmDialog(frame, coloredLabelText, "Notepad MVC",
                                                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
