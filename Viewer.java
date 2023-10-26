@@ -6,6 +6,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.ButtonGroup;
 import javax.swing.JTextArea;
 import javax.swing.JMenu;
@@ -29,6 +30,7 @@ import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.border.BevelBorder;
 import javax.swing.BoxLayout;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.PlainDocument;
 
 import javax.swing.JTabbedPane;
@@ -57,11 +59,6 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.ColorUIResource;
 import java.awt.Cursor;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
-import javax.swing.text.BadLocationException;
-
 
 public class Viewer {
 
@@ -82,7 +79,7 @@ public class Viewer {
     private JMenuItem viewItemZoomIn;
     private JMenuItem viewItemZoomOut;
     private JMenuItem viewItemZoomDefault;
-    private JCheckBox statusBarBox;
+    private JCheckBoxMenuItem statusBarBox;
     private JCheckBox caseSensitiveButton;
     private Font fontZoom;
     private JPanel statusPanel;
@@ -159,10 +156,10 @@ public class Viewer {
 
     public void setCurrentContent() {
         JPanel currentPanel = getCurrentPanel();
-
         for (Component component : currentPanel.getComponents()) {
             if (component instanceof JScrollPane) {
                 JScrollPane scrollPane = (JScrollPane) component;
+                scrollPane.setBackground(Color.BLUE);
                 JViewport viewport = scrollPane.getViewport();
                 if (viewport.getView() instanceof JTextArea) {
                     JTextArea textArea = (JTextArea) viewport.getView();
@@ -186,16 +183,44 @@ public class Viewer {
         CustomThemeMaker customTheme = new CustomThemeMaker(isLightTheme);
         MetalLookAndFeel.setCurrentTheme(customTheme);
         customTheme.refreshTheme();
-
+        JMenuBar menuBar = frame.getJMenuBar();
+        changeMenuBarFontsColor();
         SwingUtilities.updateComponentTreeUI(tabPane);
         SwingUtilities.updateComponentTreeUI(fileChooser);
         SwingUtilities.updateComponentTreeUI(frame);
-        SwingUtilities.updateComponentTreeUI((JToolBar) frame.getContentPane().getComponent(0));
-        SwingUtilities.updateComponentTreeUI((JPanel) frame.getContentPane().getComponent(1));
-        SwingUtilities.updateComponentTreeUI((JTabbedPane) frame.getContentPane().getComponent(2));
-
         customTheme = null;
-        //isLightTheme = !isLightTheme; //METHOD DOES NOT CHANGE STATUS UNTIL THE BUG WILL BE FIXED
+        isLightTheme = !isLightTheme; //METHOD DOES NOT CHANGE STATUS UNTIL THE BUG WILL BE FIXED
+    }
+
+    public void changeMenuBarFontsColor() {
+        JMenuBar menuBar = frame.getJMenuBar();
+        if (menuBar == null) {
+            return;
+        }
+        int menuCount = menuBar.getMenuCount();
+        for (int i = 0; i < menuCount; i++) {
+            JMenu menu = menuBar.getMenu(i);
+            menu.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+            int itemCount = menu.getItemCount();
+            for (int j = 0; j < itemCount; j++) {
+                JMenuItem menuItem = menu.getItem(j);
+                if (menuItem == null) {
+                    continue;
+                }
+                if (menuItem instanceof JMenu) {
+                    JMenu extraMenu = (JMenu) menuItem;
+                    int extraItemCount = extraMenu.getItemCount();
+                    for (int k = 0; k < extraItemCount; k++) {
+                        JMenuItem extraMenuItem = extraMenu.getItem(k);
+                        if (extraMenuItem == null) {
+                            continue;
+                        }
+                        extraMenuItem.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+                    }
+                }
+                menuItem.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+            }
+        }
     }
 
     public String getCurrentTextAreaContent() {
@@ -210,6 +235,8 @@ public class Viewer {
         JOptionPane.showMessageDialog(frame, "The document has been printed.", "Notepad MVC",
                 JOptionPane.INFORMATION_MESSAGE);
     }
+
+
 
     public Color openColorChooser() {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
@@ -522,7 +549,7 @@ public class Viewer {
         }
     }
 
-    public JCheckBox getStatusBarBox() {
+    public JCheckBoxMenuItem getStatusBarBox() {
         return statusBarBox;
     }
 
@@ -995,7 +1022,7 @@ public class Viewer {
         viewItemZoomDefault.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
         viewItemZoomDefault.setEnabled(true);
 
-        statusBarBox = new JCheckBox("StatusBar");
+        statusBarBox = new JCheckBoxMenuItem("StatusBar");
         statusBarBox.setOpaque(false);
         statusBarBox.setFocusable(false);
         statusBarBox.setFont(submenuFont);
@@ -1029,5 +1056,4 @@ public class Viewer {
         frame.setSize(1000, 650);
         return frame;
     }
-
 }
