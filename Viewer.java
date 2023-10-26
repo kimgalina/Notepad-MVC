@@ -101,8 +101,8 @@ public class Viewer {
         findController = new FindDialogController(this);
         controller = new ActionController(this, tabsController, findController);
         windowController = new WindowController(controller, this);
-        contentFont = new Font("Consolas", Font.PLAIN, 22);
-        menuFont = new Font("Tahoma", Font.BOLD, 20);
+        contentFont = new Font("Arial", Font.PLAIN, 14);
+        menuFont = new Font("Tahoma", Font.BOLD, 18);
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
         dialogFont = new Font("Tahoma", Font.PLAIN, 12);
         tabPane = new JTabbedPane();
@@ -231,7 +231,7 @@ public class Viewer {
         int tabCount = tabPane.getTabCount();
         for (int i = 0; i < tabCount; i++) {
             Component tabComponent = tabPane.getComponentAt(i);
-            tabPane.setBackgroundAt(i, CustomThemeMaker.getBackgroundColor(isLightTheme)); ////colors tab background
+            tabPane.setBackgroundAt(i, CustomThemeMaker.getBackgroundColor(isLightTheme)); //colors tab background
             if (!(tabComponent instanceof JPanel)) {
                 continue; //skipping non JPanel components
             }
