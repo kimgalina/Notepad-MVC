@@ -138,6 +138,7 @@ public class Print implements Printable {
                 }
                 textLinesList.add(text);
             }
+            lines = null;
         }
     }
 
