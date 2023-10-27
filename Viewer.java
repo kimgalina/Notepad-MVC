@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 import javax.swing.JTabbedPane;
