@@ -51,7 +51,7 @@ public class TabsController implements DocumentListener {
 
         } else if (currentOpenFile == null) {
             viewer.setCurrentContent();
-            if(viewer.getCurrentContent().getText().equals("")) {
+            if(viewer.getCurrentTextAreaContent().equals("")) {
                 setValueInToList(unsavedChangesPerTab, currentTabIndex, false);
                 viewer.removeDotInTab(currentTabIndex);
             }
