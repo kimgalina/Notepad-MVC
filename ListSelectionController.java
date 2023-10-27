@@ -58,6 +58,7 @@ public class ListSelectionController implements ListSelectionListener {
         for (Component component : components) {
             if (component instanceof JTextField) {
                 JTextField textField = (JTextField) component;
+                
                 if (textField.getName().equals(name)) {
                     return textField;
                 }

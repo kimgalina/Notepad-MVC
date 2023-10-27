@@ -4,7 +4,6 @@ import java.time.format.DateTimeFormatter;
 import javax.swing.JTextArea;
 
 public class GoAndFindActionHandler implements ActionHandler {
-
     private Viewer viewer;
     private FindDialogController findController;
 

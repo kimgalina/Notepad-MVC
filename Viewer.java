@@ -1,7 +1,6 @@
 import javax.swing.JToolBar;
 import javax.swing.JFrame;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JButton;
 import javax.swing.JRadioButton;
@@ -10,7 +9,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.ButtonGroup;
 import javax.swing.JTextArea;
 import javax.swing.JMenu;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.JMenuItem;
@@ -25,9 +23,7 @@ import java.awt.BorderLayout;
 import java.io.File;
 import javax.swing.JOptionPane;
 import java.awt.GraphicsEnvironment;
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
-import javax.swing.JCheckBox;
 import javax.swing.border.BevelBorder;
 import javax.swing.BoxLayout;
 import javax.swing.border.EmptyBorder;
@@ -50,18 +46,12 @@ import java.awt.Container;
 import javax.swing.JList;
 import javax.swing.JDialog;
 import javax.swing.border.TitledBorder;
-import javax.swing.text.Document;
 
-import javax.swing.UIManager;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.plaf.metal.DefaultMetalTheme;
-import javax.swing.plaf.ColorUIResource;
 import java.awt.Cursor;
 
-
 public class Viewer {
-
     private JFileChooser fileChooser;
     private JFrame frame;
     private ActionController controller;
@@ -112,7 +102,7 @@ public class Viewer {
     }
 
     public void startApplication() {
-        JMenuBar menuBar = getJMenuBar(menuFont, submenuFont, controller);
+        JMenuBar menuBar = getJMenuBar();
         JToolBar toolBar = getToolBar(controller);
         createNewTab();
         initStatusPanel();
@@ -156,6 +146,7 @@ public class Viewer {
 
     public void setCurrentContent() {
         JPanel currentPanel = getCurrentPanel();
+
         for (Component component : currentPanel.getComponents()) {
             if (component instanceof JScrollPane) {
                 JScrollPane scrollPane = (JScrollPane) component;
@@ -195,74 +186,92 @@ public class Viewer {
 
     public void changeMenuBarFontsColor() {
         JMenuBar menuBar = frame.getJMenuBar();
+
         if (menuBar == null) {
             return;
         }
+
         int menuCount = menuBar.getMenuCount();
+
         for (int i = 0; i < menuCount; i++) {
             JMenu menu = menuBar.getMenu(i);
             menu.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
             int itemCount = menu.getItemCount();
+
             for (int j = 0; j < itemCount; j++) {
                 JMenuItem menuItem = menu.getItem(j);
+
                 if (menuItem == null) {
                     continue;
                 }
+
                 if (menuItem instanceof JMenu) {
                     JMenu extraMenu = (JMenu) menuItem;
                     int extraItemCount = extraMenu.getItemCount();
                     for (int k = 0; k < extraItemCount; k++) {
                         JMenuItem extraMenuItem = extraMenu.getItem(k);
+
                         if (extraMenuItem == null) {
                             continue;
                         }
+
                         extraMenuItem.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
                     }
                 }
+
                 menuItem.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
             }
         }
+
         if (statusLabel != null) {
-              statusLabel.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+            statusLabel.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
         }
     }
 
     public void setTabColors() {
         int tabCount = tabPane.getTabCount();
+
         for (int i = 0; i < tabCount; i++) {
             Component tabComponent = tabPane.getComponentAt(i);
-            tabPane.setBackgroundAt(i, CustomThemeMaker.getBackgroundColor(isLightTheme)); //colors tab background
+            tabPane.setBackgroundAt(i, CustomThemeMaker.getBackgroundColor(isLightTheme));
+
             if (!(tabComponent instanceof JPanel)) {
-                continue; //skipping non JPanel components
+                continue;
             }
+
             JPanel inPanelContent = (JPanel) tabComponent;
             JPanel panelContent = (JPanel) tabPane.getTabComponentAt(i);
-            inPanelContent.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //not working
-            inPanelContent.setForeground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //not working
+            inPanelContent.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme));
+            inPanelContent.setForeground(CustomThemeMaker.getBackgroundColor(isLightTheme));
+
             for (Component component : inPanelContent.getComponents()) {
                 if (!(component instanceof JScrollPane)) {
-                    continue; //skipping non JScrollPane components
+                    continue;
                 }
+
                 JScrollPane scrollPane = (JScrollPane) component;
                 JViewport viewport = scrollPane.getViewport();
+
                 if (viewport.getView() instanceof JTextArea) {
                     JTextArea textArea = (JTextArea) viewport.getView();
-                    textArea.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //in-tab content background color
-                    textArea.setForeground(CustomThemeMaker.getTextColor(isLightTheme)); //in-tab content text color
+                    textArea.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme));
+                    textArea.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
                     textArea.setSelectionColor(CustomThemeMaker.getAlternativeColor(isLightTheme));
                     textArea.setSelectedTextColor(CustomThemeMaker.getTextColor(isLightTheme));
                 }
             }
+
             for (Component component : panelContent.getComponents()) {
                 if (component instanceof JLabel) {
                     JLabel tab = (JLabel) component;
-                    tab.setForeground(CustomThemeMaker.getTextColor(isLightTheme)); //colors tab text font
+                    tab.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
                     SwingUtilities.updateComponentTreeUI(tab);
                 }
+
                 if (component instanceof JButton) {
                     JButton button = (JButton) component;
-                    button.setBorder(new EmptyBorder(0, 0, 0, 0)); //keeping no-border button
-                    button.setForeground(CustomThemeMaker.getTextColor(isLightTheme)); //colors close button
+                    button.setBorder(new EmptyBorder(0, 0, 0, 0));
+                    button.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
                 }
             }
         }
@@ -282,8 +291,6 @@ public class Viewer {
         JOptionPane.showMessageDialog(frame, coloredLabelText, "Notepad MVC",
                 JOptionPane.INFORMATION_MESSAGE);
     }
-
-
 
     public Color openColorChooser() {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
@@ -393,31 +400,36 @@ public class Viewer {
 
     public void showError(String errorMessage) {
         JOptionPane.showMessageDialog(
-            new JFrame(),
-            errorMessage,
-            "Error",
-            JOptionPane.ERROR_MESSAGE
+                new JFrame(),
+                errorMessage,
+                "Error",
+                JOptionPane.ERROR_MESSAGE
         );
     }
 
     public File getFile() {
         int returnVal = fileChooser.showOpenDialog(new JFrame());
+
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-           File file = fileChooser.getSelectedFile();
-           return file;
+            File file = fileChooser.getSelectedFile();
+            return file;
         }
+
         return null;
     }
 
-    public File getNewFileSaveLocation(String fileName){
+    public File getNewFileSaveLocation(String fileName) {
         if (!fileName.equals("Untitled.txt")) {
-          fileChooser.setSelectedFile(new File(fileName));
+            fileChooser.setSelectedFile(new File(fileName));
         }
+
         int returnValue = fileChooser.showSaveDialog(new JFrame());
+
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             return selectedFile;
         }
+
         return null;
     }
 
@@ -455,11 +467,7 @@ public class Viewer {
         String[] styles = {"Regular", "Italic", "Bold", "Bold Italic"};
         Integer[] sizes = {8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72};
 
-        int x = frame.getX();
-        int y = frame.getY();
-        fontDialog = new JDialog(frame, "Font", true);
-        fontDialog.setSize(500, 500);
-        fontDialog.setLocation(x + 150, y + 150);
+        fontDialog = createDialog("Font", true, 500, 500);
         fontDialog.setLayout(null);
         fontDialog.setResizable(false);
 
@@ -504,15 +512,11 @@ public class Viewer {
         label.setFont(currentContent.getFont());
         panel.add(label);
 
-        JButton buttonOk = new JButton("Ok");
-        buttonOk.setBounds(260, 420, 100, 30);
+        JButton buttonOk = createDialogButton("Ok", "Ok", 260, 420, 100, 30);
         buttonOk.addActionListener(fontController);
-        buttonOk.setActionCommand("Ok");
 
-        JButton buttonCancel = new JButton("Cancel");
-        buttonCancel.setBounds(380, 420, 100, 30);
+        JButton buttonCancel = createDialogButton("Cancel", "Cancel", 380, 420, 100, 30);
         buttonCancel.addActionListener(fontController);
-        buttonCancel.setActionCommand("Cancel");
 
         fontDialog.add(buttonOk);
         fontDialog.add(buttonCancel);
@@ -589,11 +593,7 @@ public class Viewer {
     }
 
     public boolean canZoomDefault() {
-        if (currentContent.getFont().getSize() >= 22 || currentContent.getFont().getSize() <= 22) {
-            return true;
-        } else {
-            return false;
-        }
+        return currentContent.getFont().getSize() >= 22 || currentContent.getFont().getSize() <= 22;
     }
 
     public JCheckBoxMenuItem getStatusBarBox() {
@@ -652,6 +652,7 @@ public class Viewer {
 
     public JButton getCloseBtnFromTab(int tabIndex) {
         Component tabComponent = tabPane.getTabComponentAt(tabIndex);
+
         if (tabComponent != null && tabComponent instanceof JComponent) {
             JComponent tabCustomComponent = (JComponent) tabComponent;
             Component closeButtonComponent = tabCustomComponent.getComponent(3);
@@ -661,6 +662,7 @@ public class Viewer {
                 return closeButton;
             }
         }
+
         return null;
     }
 
@@ -668,53 +670,60 @@ public class Viewer {
         int foundIndex = findTabIndexByCloseButton(closeBtn);
         int currentTabIndex = foundIndex != -1 ? foundIndex : tabPane.getSelectedIndex();
         tabPane.setSelectedIndex(currentTabIndex);
+
         if (currentTabIndex > 0) {
-            if(controller.hasUnsavedChanges(currentTabIndex)) {
+            if (controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
             } else {
-                 deleteTab(currentTabIndex);
+                deleteTab(currentTabIndex);
             }
-       } else if(currentTabIndex == 0) {
-           int tabCount = tabPane.getTabCount();
-           if(tabCount != 1 && controller.hasUnsavedChanges(currentTabIndex)) {
+        } else if (currentTabIndex == 0) {
+            int tabCount = tabPane.getTabCount();
+
+            if (tabCount != 1 && controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
 
-           } else if(controller.hasUnsavedChanges(currentTabIndex)) {
+            } else if (controller.hasUnsavedChanges(currentTabIndex)) {
                 showExitMessage();
 
-           } else if(tabCount > 1 && !controller.hasUnsavedChanges(currentTabIndex)){
+            } else if (tabCount > 1 && !controller.hasUnsavedChanges(currentTabIndex)) {
                 deleteTab(currentTabIndex);
 
-           } else {
+            } else {
                 System.exit(0);
-           }
-       }
-   }
+            }
+        }
+    }
 
     public int showCloseTabMessage(int currentTabIndex) {
         JLabel coloredLabelText = new JLabel("Do you want to save changes ? ");
         coloredLabelText.setForeground(CustomThemeMaker.getTextColor(!isLightTheme));
         int result = JOptionPane.showConfirmDialog(frame, coloredLabelText, "Notepad MVC",
-                                                   JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
-        if(result == JOptionPane.YES_OPTION) {
+        if (result == JOptionPane.YES_OPTION) {
             int saveResult = ((SaveDocumentActionHandler) controller.getActionHandlers().get("Save")).saveDocument();
-            if(saveResult == -1) {
+
+            if (saveResult == -1) {
                 return -1;
             }
+
             deleteTab(currentTabIndex);
         } else if (result == JOptionPane.NO_OPTION) {
             deleteTab(currentTabIndex);
         }
+
         return result;
     }
 
     public void showExitMessage() {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
-                                                   JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
-        if(result == JOptionPane.YES_OPTION) {
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
+
+        if (result == JOptionPane.YES_OPTION) {
             int saveResult = ((SaveDocumentActionHandler) controller.getActionHandlers().get("Save")).saveDocument();
-            if(saveResult == 0) {
+
+            if (saveResult == 0) {
                 System.exit(0);
             }
 
@@ -726,15 +735,17 @@ public class Viewer {
     }
 
     private int findTabIndexByCloseButton(JButton closeBtn) {
-         Container tabPanel = closeBtn.getParent();
-         if (tabPanel != null) {
-                 int tabIndex = tabPane.indexOfTabComponent(tabPanel);
+        Container tabPanel = closeBtn.getParent();
 
-                 if (tabIndex != -1) {
-                     return tabIndex;
-                 }
-         }
-         return -1;
+        if (tabPanel != null) {
+            int tabIndex = tabPane.indexOfTabComponent(tabPanel);
+
+            if (tabIndex != -1) {
+                return tabIndex;
+            }
+        }
+
+        return -1;
     }
 
     private void filterInput(JTextField textField) {
@@ -775,6 +786,7 @@ public class Viewer {
     private JLabel createLabel(String text, int x, int y) {
         JLabel label = new JLabel(text);
         label.setBounds(x, y, 50, 15);
+
         return label;
     }
 
@@ -782,6 +794,7 @@ public class Viewer {
         JTextField textField = new JTextField(text);
         textField.setBounds(x, y, width, height);
         textField.setName(name);
+
         return textField;
     }
 
@@ -799,16 +812,15 @@ public class Viewer {
 
     public void deleteTab(int tabIndex) {
         tabPane.removeTabAt(tabIndex);
-
         tabsController.getUnsavedChangesPerTab().remove(tabIndex);
         tabsController.getFilesPerTabs().remove(tabIndex);
     }
 
-    private JMenu getHelpMenu(Font menuFont, Font submenuFont, ActionController controller) {
-        JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help", submenuFont, controller);
+    private JMenu getHelpMenu() {
+        JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help");
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
 
-        JMenuItem aboutDocument = createMenuItem("About", "images/font.gif", "About", submenuFont, controller);
+        JMenuItem aboutDocument = createMenuItem("About", "images/font.gif", "About");
         aboutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
 
         JMenu helpMenu = new JMenu("Help");
@@ -829,45 +841,36 @@ public class Viewer {
         statusPanel.setVisible(false);
     }
 
-    private String getNewFileName(){
-        String content = currentContent.getText();
-        if (content.length() != 0) {
-            if(content.length() > 12){
-                return content.substring(0,13) + ".txt";
-            } else {
-                return content + ".txt";
-            }
-        }
-        return "Untitled.txt";
-    }
-
     private JPanel getCurrentPanel() {
         int currentTabIndex = tabPane.getSelectedIndex();
         if (currentTabIndex != -1) {
             Component currentTab = tabPane.getComponentAt(currentTabIndex);
+
             if (currentTab instanceof JPanel) {
                 JPanel panel = (JPanel) currentTab;
                 return panel;
             }
         }
+
         return null;
     }
 
     private JComponent createCustomTabComponent(String tabTitle) {
         JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        tabPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0)); //margin from top and bottom - 10
+        tabPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         tabPanel.setOpaque(false);
-        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));// space between edge and tabName
+        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));
 
         JLabel label = new JLabel(tabTitle);
         label.setFont(new Font("Tahoma", Font.PLAIN, 14));
         tabPanel.add(label);
 
-        tabPanel.add(Box.createRigidArea(new Dimension(40, 10)));// space between button and tabName
+        tabPanel.add(Box.createRigidArea(new Dimension(40, 10)));
 
         JButton closeTabBtn = createCloseTabBtn();
         tabPanel.add(closeTabBtn);
-        tabPanel.add(Box.createRigidArea(new Dimension(5, 5)));// space between edge and button
+        tabPanel.add(Box.createRigidArea(new Dimension(5, 5)));
+
         return tabPanel;
     }
 
@@ -879,11 +882,13 @@ public class Viewer {
         closeButton.setContentAreaFilled(false);
         closeButton.setActionCommand("CloseTab");
         closeButton.addActionListener(controller);
+
         return closeButton;
     }
 
     private void renameTab(String tabName, int tabIndex) {
-        Component tabComponent = tabPane.getTabComponentAt(tabIndex);// taking tab with the index = tabIndex
+        Component tabComponent = tabPane.getTabComponentAt(tabIndex);
+        
         if (tabComponent instanceof Container) {
             Component[] components = ((Container) tabComponent).getComponents();
 
@@ -935,12 +940,12 @@ public class Viewer {
         return button;
     }
 
-    private JMenuBar getJMenuBar(Font menuFont, Font submenuFont, ActionController controller) {
-        JMenu fileMenu = getFileMenu(menuFont, submenuFont, controller);
-        JMenu editMenu = getEditMenu(menuFont, submenuFont, controller);
-        JMenu formatMenu = getFormatMenu(menuFont, submenuFont, controller);
-        JMenu viewMenu = getViewMenu(menuFont, submenuFont, controller);
-        JMenu helpMenu = getHelpMenu(menuFont, submenuFont, controller);
+    private JMenuBar getJMenuBar() {
+        JMenu fileMenu = getFileMenu();
+        JMenu editMenu = getEditMenu();
+        JMenu formatMenu = getFormatMenu();
+        JMenu viewMenu = getViewMenu();
+        JMenu helpMenu = getHelpMenu();
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
@@ -952,23 +957,23 @@ public class Viewer {
         return menuBar;
     }
 
-    private JMenu getFileMenu(Font menuFont, Font submenuFont, ActionController controller) {
+    private JMenu getFileMenu() {
 
-        JMenuItem newDocument = createMenuItem("New Document", "images/new-document.png", "New_Document", submenuFont, controller);
+        JMenuItem newDocument = createMenuItem("New Document", "images/new-document.png", "New_Document");
         newDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
 
-        JMenuItem openDocument = createMenuItem("Open Document", "images/open.png", "Open_Document", submenuFont, controller);
+        JMenuItem openDocument = createMenuItem("Open Document", "images/open.png", "Open_Document");
         openDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 
-        JMenuItem saveDocument = createMenuItem("Save", "images/save.png", "Save", submenuFont, controller);
+        JMenuItem saveDocument = createMenuItem("Save", "images/save.png", "Save");
         saveDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 
-        JMenuItem saveAsDocument = createMenuItem("Save As..." , "images/save_as.png", "Save_As", submenuFont, controller);
+        JMenuItem saveAsDocument = createMenuItem("Save As...", "images/save_as.png", "Save_As");
 
-        JMenuItem printDocument = createMenuItem("Print", "images/print.png", "Print", submenuFont, controller);
+        JMenuItem printDocument = createMenuItem("Print", "images/print.png", "Print");
         printDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
 
-        JMenuItem exitProgram = createMenuItem("Exit", "images/exit.png", "Exit", submenuFont, controller);
+        JMenuItem exitProgram = createMenuItem("Exit", "images/exit.png", "Exit");
 
         JMenu fileMenu = new JMenu("File");
         fileMenu.add(newDocument);
@@ -984,35 +989,35 @@ public class Viewer {
         return fileMenu;
     }
 
-    private JMenu getEditMenu(Font menuFont, Font submenuFont, ActionController controller) {
-        JMenuItem cutDocument = createMenuItem("Cut", "images/cut.png", "Cut", submenuFont, controller);
+    private JMenu getEditMenu() {
+        JMenuItem cutDocument = createMenuItem("Cut", "images/cut.png", "Cut");
         cutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
 
-        JMenuItem copyDocument = createMenuItem("Copy", "images/copy.png", "Copy", submenuFont, controller);
+        JMenuItem copyDocument = createMenuItem("Copy", "images/copy.png", "Copy");
         copyDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
 
-        JMenuItem pasteDocument = createMenuItem("Paste", "images/paste.png", "Paste", submenuFont, controller);
+        JMenuItem pasteDocument = createMenuItem("Paste", "images/paste.png", "Paste");
         pasteDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
 
-        JMenuItem clearDocument = createMenuItem("Clear", "images/clear.png", "Clear", submenuFont, controller);
+        JMenuItem clearDocument = createMenuItem("Clear", "images/clear.png", "Clear");
         clearDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
 
-        JMenuItem findDocument = createMenuItem("Find", "images/find.png", "Find", submenuFont, controller);
+        JMenuItem findDocument = createMenuItem("Find", "images/find.png", "Find");
         findDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
 
-        JMenuItem findNextDocument = createMenuItem("Find next", "images/findMore.png", "Find_Next", submenuFont, controller);
+        JMenuItem findNextDocument = createMenuItem("Find next", "images/findMore.png", "Find_Next");
         findNextDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, ActionEvent.CTRL_MASK));
 
-        JMenuItem findPrevDocument = createMenuItem("Find previous", "images/findMore.png", "Find_Prev", submenuFont, controller);
+        JMenuItem findPrevDocument = createMenuItem("Find previous", "images/findMore.png", "Find_Prev");
         findPrevDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, ActionEvent.CTRL_MASK));
 
-        JMenuItem goDocument = createMenuItem("Go", "images/go.png", "Go", submenuFont,controller);
+        JMenuItem goDocument = createMenuItem("Go", "images/go.png", "Go");
         goDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
 
-        JMenuItem selectAllDocument = createMenuItem("Select all", "images/selectAll.png", "Select_All", submenuFont, controller);
+        JMenuItem selectAllDocument = createMenuItem("Select all", "images/selectAll.png", "Select_All");
         selectAllDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
 
-        JMenuItem timeAndDateDocument = createMenuItem("Time and date", "images/time.png", "Time_And_Date", submenuFont, controller);
+        JMenuItem timeAndDateDocument = createMenuItem("Time and date", "images/time.png", "Time_And_Date");
         timeAndDateDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, ActionEvent.CTRL_MASK));
 
         JMenu editMenu = new JMenu("Edit");
@@ -1031,11 +1036,11 @@ public class Viewer {
         return editMenu;
     }
 
-    private JMenu getFormatMenu(Font menuFont, Font submenuFont, ActionController controller) {
-        JMenuItem wordWrap = createMenuItem("Word wrap", "", "Word_Wrap", submenuFont, controller);
+    private JMenu getFormatMenu() {
+        JMenuItem wordWrap = createMenuItem("Word wrap", "", "Word_Wrap");
         wordWrap.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
 
-        JMenuItem fontDocument = createMenuItem("Font", "images/font.png", "Font", submenuFont, controller);
+        JMenuItem fontDocument = createMenuItem("Font", "images/font.png", "Font");
         fontDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
 
         JMenu formatMenu = new JMenu("Format");
@@ -1047,7 +1052,7 @@ public class Viewer {
         return formatMenu;
     }
 
-    private JMenu getViewMenu(Font menuFont, Font submenuFont, ActionController controller) {
+    private JMenu getViewMenu() {
 
         JMenu viewMenu = new JMenu("View");
         viewMenu.setFont(menuFont);
@@ -1055,17 +1060,17 @@ public class Viewer {
         viewZoom.setFont(submenuFont);
 
         viewItemZoomIn = createMenuItem("Zoom In", null,
-                "ZOOM_IN", submenuFont, controller);
+                "ZOOM_IN");
         viewItemZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, ActionEvent.CTRL_MASK));
         viewItemZoomIn.setEnabled(true);
 
         viewItemZoomOut = createMenuItem("Zoom Out", null,
-                "ZOOM_OUT", submenuFont, controller);
+                "ZOOM_OUT");
         viewItemZoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
         viewItemZoomOut.setEnabled(true);
 
         viewItemZoomDefault = createMenuItem("Restore Default Zoom", null,
-                "ZOOM_DEFAULT", submenuFont, controller);
+                "ZOOM_DEFAULT");
         viewItemZoomDefault.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
         viewItemZoomDefault.setEnabled(true);
 
@@ -1088,7 +1093,7 @@ public class Viewer {
         return viewMenu;
     }
 
-    private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand, Font submenuFont, ActionController controller) {
+    private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand) {
         JMenuItem menuItem = new JMenuItem(name, new ImageIcon(pathToIcon));
         menuItem.addActionListener(controller);
         menuItem.setActionCommand(actionCommand);

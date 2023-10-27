@@ -12,6 +12,7 @@ public class PrintActionHandler implements ActionHandler {
     @Override
     public void handleAction(String command, ActionEvent event) {
         String data = "";
+        
         try {
             Font font = viewer.getCurrentTextAreaFont();
             data = viewer.getCurrentTextAreaContent();

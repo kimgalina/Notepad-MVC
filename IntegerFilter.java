@@ -3,7 +3,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 
 public class IntegerFilter extends DocumentFilter {
-
     private Viewer viewer;
 
     public IntegerFilter(Viewer viewer) {

@@ -1,4 +1,5 @@
 import java.awt.event.ActionEvent;
+
 public class NewDocumentActionHandler implements ActionHandler {
     private Viewer viewer;
 
