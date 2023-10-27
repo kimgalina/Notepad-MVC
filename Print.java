@@ -78,23 +78,28 @@ public class Print implements Printable {
             return NO_SUCH_PAGE;
         }
 
-        metrics = g.getFontMetrics(new Font("Vladimir Script", Font.ITALIC, 16));
+        Font fontForG = new Font("Vladimir Script", Font.ITALIC, 16);
+        metrics = g.getFontMetrics(fontForG);
 
         int pageNumberX = (int) pf.getImageableWidth() - metrics.stringWidth("Page ") - x;
         int pageNumberY = (int) pf.getImageableHeight() - y / 2;
 
         g.setColor(Color.PINK);
-        g.setFont(new Font("Vladimir Script", Font.BOLD, 16));
+        fontForG = new Font("Vladimir Script", Font.BOLD, 16);
+        g.setFont(fontForG);
         g.drawString("Notepad TMDP team", x, pageNumberY);
 
         g.setColor(Color.PINK);
-        g.setFont(new Font("Consolas", Font.PLAIN, 14));
+        fontForG = new Font("Consolas", Font.PLAIN, 14);
+        g.setFont(fontForG);
         g.drawString("Page " + (pageIndex + 1), pageNumberX, pageNumberY);
 
         Graphics2D g2d = (Graphics2D) g;
         g2d.translate(pf.getImageableX(), pf.getImageableY());
         g2d.setFont(font);
-        if (textColor.equals(new Color(205, 205, 205)) || textColor.equals(Color.WHITE)) {
+        
+        Color color = new Color(205, 205, 205);
+        if (textColor.equals(color) || textColor.equals(Color.WHITE)) {
             textColor = Color.BLACK;
         }
         g2d.setColor(textColor);
