@@ -66,6 +66,7 @@ public class Viewer {
     private Font menuFont;
     private Font dialogFont;
     private JTextArea currentContent;
+    private JMenu editMenu;
     private JMenuItem viewItemZoomIn;
     private JMenuItem viewItemZoomOut;
     private JMenuItem viewItemZoomDefault;
@@ -123,10 +124,15 @@ public class Viewer {
     public int createNewTab() {
         BorderLayout panelBorder = new BorderLayout();
         JPanel panel = new JPanel(panelBorder);
-
         JTextArea content = new JTextArea();
+        TextAreaListener textAreaListener = new TextAreaListener(content, editMenu);
+
         content.setFont(contentFont);
-        content.getDocument().addDocumentListener(tabsController);
+        content.addCaretListener(textAreaListener);
+
+        Document document = content.getDocument();
+        document.addDocumentListener(textAreaListener);
+        document.addDocumentListener(tabsController);
 
         JScrollPane scrollPane = new JScrollPane(content);
 
@@ -973,7 +979,7 @@ public class Viewer {
 
     private JMenuBar getJMenuBar() {
         JMenu fileMenu = getFileMenu();
-        JMenu editMenu = getEditMenu();
+        editMenu = getEditMenu();
         JMenu formatMenu = getFormatMenu();
         JMenu viewMenu = getViewMenu();
         JMenu helpMenu = getHelpMenu();
@@ -1023,24 +1029,31 @@ public class Viewer {
     private JMenu getEditMenu() {
         JMenuItem cutDocument = createMenuItem("Cut", "images/cut.png", "Cut");
         cutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        cutDocument.setEnabled(false);
 
         JMenuItem copyDocument = createMenuItem("Copy", "images/copy.png", "Copy");
         copyDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        copyDocument.setEnabled(false);
 
         JMenuItem pasteDocument = createMenuItem("Paste", "images/paste.png", "Paste");
         pasteDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
 
         JMenuItem clearDocument = createMenuItem("Clear", "images/clear.png", "Clear");
         clearDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, ActionEvent.CTRL_MASK));
+        clearDocument.setEnabled(false);
 
         JMenuItem findDocument = createMenuItem("Find", "images/find.png", "Find");
         findDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+        findDocument.setEnabled(false);
 
         JMenuItem findNextDocument = createMenuItem("Find next", "images/next.png", "Find_Next");
         findNextDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, ActionEvent.CTRL_MASK));
+        findNextDocument.setEnabled(false);
 
         JMenuItem findPrevDocument = createMenuItem("Find previous", "images/previous.png", "Find_Prev");
         findPrevDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, ActionEvent.CTRL_MASK));
+        findPrevDocument
+        .setEnabled(false);
 
         JMenuItem goDocument = createMenuItem("Go", "images/go.png", "Go");
         goDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
