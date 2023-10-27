@@ -59,10 +59,11 @@ public class TabsController implements DocumentListener {
         if(index == list.size()) {
             list.add(index, value);
 
-        } else { // index > list.size()
+        } else {
             for(int i = list.size(); i < size ; i++) {
                 list.add(i, null);
             }
+
             list.set(index, value);
         }
     }
@@ -72,8 +73,6 @@ public class TabsController implements DocumentListener {
             list.set(currentTabIndex, value);
         } else {
             fillList(list, currentTabIndex + 1, currentTabIndex, value);
-
         }
     }
-
 }

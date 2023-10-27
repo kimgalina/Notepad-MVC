@@ -5,7 +5,6 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 
 public class TextFieldListener implements DocumentListener {
-
     private JTextField textField;
     private JButton button;
 
@@ -33,5 +32,4 @@ public class TextFieldListener implements DocumentListener {
         String value = textField.getText();
         button.setEnabled(!value.isEmpty());
     }
-
 }

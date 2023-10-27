@@ -20,24 +20,9 @@ public class ViewActionHandler implements ActionHandler {
             case "ZOOM_DEFAULT":
                 viewer.zoomDefault();
                 break;
-            case "View_Help":
-                viewer.openHelpDialog();
-                break;
-            case "About":
-                viewer.openHelpDialog();
-                break;
             case "Change_Theme":
                 viewer.changeTheme();
                 break;
-        }
-    }
-
-    private void makeWordWrap() {
-        JTextArea textArea = viewer.getCurrentContent();
-        if(textArea.getLineWrap()) {
-            textArea.setLineWrap(false);
-        } else {
-            textArea.setLineWrap(true);
         }
     }
 }

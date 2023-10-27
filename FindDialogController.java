@@ -1,16 +1,12 @@
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import javax.swing.JTextField;
 import javax.swing.JTextArea;
-import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
 
 import javax.swing.text.Document;
 import javax.swing.text.BadLocationException;
 
 public class FindDialogController implements ActionListener {
-
     private Viewer viewer;
     private int pos;
     private int foundPos;
@@ -66,38 +62,48 @@ public class FindDialogController implements ActionListener {
     private boolean findNext(String search, Document document, boolean isCaseSensitive) {
         int searchLength = search.length();
         boolean isFound = false;
+
         try {
             while (pos + searchLength <= document.getLength()) {
                 String match = document.getText(pos, searchLength);
                 match = isCaseSensitive ? match : match.toLowerCase();
+
                 if (match.equals(search)) {
                     isFound = true;
                     break;
                 }
+
                 pos++;
             }
+
         } catch (BadLocationException e) {
             viewer.showError("Error");
         }
+
         return isFound;
     }
 
     private boolean findPrevious(String search, Document document, boolean isCaseSensitive) {
         int searchLength = search.length();
         boolean isFound = false;
+
         try {
             while (pos - searchLength >= 0) {
                 String match = document.getText(pos - searchLength, searchLength);
                 match = isCaseSensitive ? match : match.toLowerCase();
+
                 if (match.equals(search)) {
                     isFound = true;
                     break;
                 }
+
                 pos--;
             }
+            
         } catch (BadLocationException e) {
             viewer.showError("Error");
         }
+
         return isFound;
     }
 
@@ -110,6 +116,7 @@ public class FindDialogController implements ActionListener {
                 textArea.select(pos - searchLength, pos);
                 pos -= searchLength;
             }
+
             isPrevNext = isDirectionChanged(isNext) ? isNext : isPrevNext;
             foundPos = pos;
         } else {

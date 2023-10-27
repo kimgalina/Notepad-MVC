@@ -1,6 +1,5 @@
 import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
@@ -40,6 +39,7 @@ public class SaveDocumentActionHandler implements ActionHandler {
               viewer.showError(e.toString());
               return -1;
           }
+          
         } else {
              return saveDocumentAs();
         }
@@ -49,13 +49,15 @@ public class SaveDocumentActionHandler implements ActionHandler {
         int currentTabIndex = viewer.getCurrentTabIndex();
         String fileName = "";
         File currentOpenFile = tabsController.getFilesPerTabs().get(currentTabIndex);
+
         if (currentOpenFile == null) {
             fileName = "Untitled.txt";
-        } else  {
+        } else {
             fileName = getFileNameFromPath(currentOpenFile.getAbsolutePath());
         }
 
         File selectedFile = viewer.getNewFileSaveLocation(fileName);
+
         if(selectedFile != null) {
             try {
                 Path filePath = selectedFile.toPath();
@@ -72,6 +74,7 @@ public class SaveDocumentActionHandler implements ActionHandler {
                 return -1;
             }
         }
+
         return -1;
     }
 
@@ -79,6 +82,7 @@ public class SaveDocumentActionHandler implements ActionHandler {
         String[] directories = path.split("\\\\");
         return directories[directories.length - 1];
     }
+
     private void deleteDotInTab(int currentTabIndex) {
         JButton closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
         closeBtn.setText("\u00d7");

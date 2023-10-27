@@ -27,7 +27,8 @@ public class FormatActionHandler implements ActionHandler {
 
     private void makeWordWrap() {
         JTextArea textArea = viewer.getCurrentContent();
-        if(textArea.getLineWrap()) {
+
+        if (textArea.getLineWrap()) {
             textArea.setLineWrap(false);
         } else {
             textArea.setLineWrap(true);
