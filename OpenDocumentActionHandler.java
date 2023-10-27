@@ -59,6 +59,13 @@ public class OpenDocumentActionHandler implements ActionHandler {
         return fileContent.toString();
     }
 
+    public String readCurrentFile() {
+        int tabIndex = viewer.getCurrentTabIndex();
+        File currentOpenFile = tabsController.getFilesPerTabs().get(tabIndex);
+        return readFile(currentOpenFile.getAbsolutePath());
+    }
+
+
     private String getFileNameFromPath(String path) {
         String[] directories = path.split("\\\\");
         return directories[directories.length - 1];

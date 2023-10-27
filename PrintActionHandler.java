@@ -5,10 +5,14 @@ import java.awt.event.ActionEvent;
 public class PrintActionHandler implements ActionHandler {
     private Viewer viewer;
     private SaveDocumentActionHandler saveDocumentActionHandler;
+    private OpenDocumentActionHandler openDocumentActionHandler;
 
-    public PrintActionHandler(Viewer viewer, SaveDocumentActionHandler saveDocumentActionHandler) {
+    public PrintActionHandler(Viewer viewer, SaveDocumentActionHandler saveDocumentActionHandler,
+                                OpenDocumentActionHandler openDocumentActionHandler) {
+
         this.viewer = viewer;
         this.saveDocumentActionHandler = saveDocumentActionHandler;
+        this.openDocumentActionHandler = openDocumentActionHandler;
     }
 
     @Override
@@ -21,7 +25,8 @@ public class PrintActionHandler implements ActionHandler {
 
         try {
             Font font = viewer.getCurrentTextAreaFont();
-            data = viewer.getCurrentTextAreaContent();
+            data = openDocumentActionHandler.readCurrentFile();
+
             Color textColor = viewer.getCurrentTextAreaColor();
             Print document = new Print(data, font, textColor);
             document.printDocument();
