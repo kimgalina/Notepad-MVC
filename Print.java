@@ -20,12 +20,6 @@ public class Print implements Printable {
     private boolean aDocumentHasBeenPrinted;
 
     public Print(String data, Font font, Color textColor) throws Exception {
-        if (data.isEmpty()) {
-            throw new Exception("Invalid text content");
-        }
-        if (font == null) {
-            throw new Exception("Invalid font object");
-        }
         this.data = data;
         this.font = font;
         this.textColor = textColor;
@@ -33,11 +27,14 @@ public class Print implements Printable {
 
     public void printDocument() {
         PrinterJob job = PrinterJob.getPrinterJob();
+
         if (job == null) {
             return;
         }
+
         job.setPrintable(this);
         boolean doPrint = job.printDialog();
+
         if (doPrint) {
             try {
                 job.print();
@@ -53,7 +50,6 @@ public class Print implements Printable {
     }
 
     public int print(Graphics g, PageFormat pf, int pageIndex) {
-
         FontMetrics metrics = g.getFontMetrics(font);
 
         int x = 50;
@@ -63,12 +59,12 @@ public class Print implements Printable {
         int pageWidth = (int) (pf.getImageableWidth()) - (x * 2);
 
         if (pageBreaks == null) {
-
             initTextLines(metrics, pageWidth);
 
             int linesPerPage = pageHeight / lineHeight;
             int numBreaks = (textLinesList.size() - 1) / linesPerPage;
             pageBreaks = new int[numBreaks];
+
             for (int b = 0; b < numBreaks; b++) {
                 pageBreaks[b] = (b + 1) * linesPerPage;
             }
@@ -97,11 +93,12 @@ public class Print implements Printable {
         Graphics2D g2d = (Graphics2D) g;
         g2d.translate(pf.getImageableX(), pf.getImageableY());
         g2d.setFont(font);
-        
+
         Color color = new Color(205, 205, 205);
         if (textColor.equals(color) || textColor.equals(Color.WHITE)) {
             textColor = Color.BLACK;
         }
+
         g2d.setColor(textColor);
 
         int start = (pageIndex == 0) ? 0 : pageBreaks[pageIndex - 1];
@@ -112,11 +109,11 @@ public class Print implements Printable {
             y += lineHeight;
             g.drawString(textLinesList.get(line), x, y);
         }
+
         return PAGE_EXISTS;
     }
 
     private void initTextLines(FontMetrics metrics, int pageWidth) {
-
         if (textLinesList == null) {
             textLinesList = new ArrayList<>();
             String[] lines = data.split("\n");
@@ -127,22 +124,23 @@ public class Print implements Printable {
                 int textWidth = metrics.stringWidth(text);
 
                 if (textWidth > pageWidth) {
-                    // The text does not fit on the width of the page, move it to a new line
                     while (textWidth > pageWidth) {
                         int cutoff = (text.length() * pageWidth) / textWidth;
+
                         if (cutoff == 0) {
                             cutoff = 1;
                         }
+
                         String lineText = text.substring(0, cutoff);
-
                         textLinesList.add(lineText);
-
                         text = text.substring(cutoff);
                         textWidth = metrics.stringWidth(text);
                     }
                 }
+
                 textLinesList.add(text);
             }
+            
             lines = null;
         }
     }

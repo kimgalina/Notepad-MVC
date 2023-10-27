@@ -9,7 +9,6 @@ public class ActionController implements ActionListener {
     private FindDialogController findController;
     private Map<String, ActionHandler> actionHandlers;
 
-
     public ActionController(Viewer viewer, TabsController tabsController, FindDialogController findController) {
         this.viewer = viewer;
         this.tabsController = tabsController;
@@ -17,7 +16,6 @@ public class ActionController implements ActionListener {
         actionHandlers = new HashMap<>();
         initializeActionHandlers();
     }
-
 
     @Override
     public void actionPerformed(ActionEvent event) {
@@ -39,10 +37,12 @@ public class ActionController implements ActionListener {
 
     public boolean hasUnsavedChanges(int tabIndex) {
         Boolean hasChanges = tabsController.getUnsavedChangesPerTab().get(tabIndex);
-        if(hasChanges != null){
+
+        if (hasChanges != null) {
             System.out.println("hasChanges = " + hasChanges);
             return hasChanges;
         }
+
         return false;
     }
 
@@ -56,6 +56,7 @@ public class ActionController implements ActionListener {
         GoAndFindActionHandler goAndFindActionHandler = new GoAndFindActionHandler(viewer, findController);
         FormatActionHandler formatActionHandler = new FormatActionHandler(viewer);
         ViewActionHandler viewActionHandler = new ViewActionHandler(viewer);
+        HelpActionHandler helpActionHandler = new HelpActionHandler(viewer);
 
         actionHandlers.put("New_Document", newDocumentActionHandler);
         actionHandlers.put("Open_Document", openDocumentActionHandler);
@@ -84,8 +85,8 @@ public class ActionController implements ActionListener {
         actionHandlers.put("ZOOM_IN", viewActionHandler);
         actionHandlers.put("ZOOM_OUT", viewActionHandler);
         actionHandlers.put("ZOOM_DEFAULT", viewActionHandler);
-        actionHandlers.put("View_Help", viewActionHandler);
-        actionHandlers.put("About", viewActionHandler);
+        actionHandlers.put("View_Help", helpActionHandler);
+        actionHandlers.put("About", helpActionHandler);
         actionHandlers.put("Change_Theme", viewActionHandler);
 
         actionHandlers.put("Exit", exitActionHandler);

@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.Font;
 import java.awt.Container;
 import java.awt.Component;
-import javax.swing.JList;
-import javax.swing.JTextField;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
@@ -46,7 +44,7 @@ public class FontController implements ActionListener {
         for(Component component : panel.getComponents()) {
             if (component instanceof JLabel) {
                 Font font = component.getFont();
-                viewer.getCurrentContent().setFont(font);
+                viewer.setNewFontForTextArea(font);
                 break;
             }
         }

@@ -33,7 +33,7 @@ public class EditActionHandler implements ActionHandler {
             case "Select_All":
                 viewer.getCurrentContent().selectAll();
                 break;
-            }
+        }
     }
 
     private void copyOrCut(String command) {

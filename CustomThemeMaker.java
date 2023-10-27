@@ -1,11 +1,9 @@
 import java.awt.Color;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.UIManager;
 
 public class CustomThemeMaker extends DefaultMetalTheme {
-
     private Color textColor;
     private Color backgroundColor;
     private Color secondBackgroundColor;
@@ -57,38 +55,38 @@ public class CustomThemeMaker extends DefaultMetalTheme {
     }
 
     public void refreshTheme() {
-        UIManager.put("ScrollBar.background", backgroundColor); //scroll background
+        UIManager.put("ScrollBar.background", backgroundColor);
 
         UIManager.put("Button.foreground", textColor);
         UIManager.put("Button.select", secondBackgroundColor);
         UIManager.put("Button.focus", fullTransparentColor);
 
-        UIManager.put("Menu.foreground", textColor); //menubar text color
+        UIManager.put("Menu.foreground", textColor);
         UIManager.put("MenuItem.foreground", textColor);
 
-        UIManager.put("TextArea.background", backgroundColor); //font color in notepad tabs
-        UIManager.put("TextArea.foreground", textColor); //text color in notepad tabs
+        UIManager.put("TextArea.background", backgroundColor);
+        UIManager.put("TextArea.foreground", textColor);
         UIManager.put("TextArea.selectionBackground", alternativeColor);
         UIManager.put("TextArea.selectionForeground", textColor);
-        UIManager.put("TextField.background", backgroundColor); //background color in fields
-        UIManager.put("TextField.foreground", textColor); //font color in fields
+        UIManager.put("TextField.background", backgroundColor);
+        UIManager.put("TextField.foreground", textColor);
 
-        UIManager.put("TabbedPane.background", backgroundColor); //text color of tabs
-        UIManager.put("TabbedPane.foreground", textColor); //status bar font color and tabs in colorchooser
+        UIManager.put("TabbedPane.background", backgroundColor);
+        UIManager.put("TabbedPane.foreground", textColor);
 
         UIManager.put("Dialog.foreground", textColor);
 
-        UIManager.put("List.background", backgroundColor); //background fileopener main window
-        UIManager.put("List.foreground", textColor); //font color fileopener main window
+        UIManager.put("List.background", backgroundColor);
+        UIManager.put("List.foreground", textColor);
 
-        UIManager.put("Label.foreground", textColor); //others font color below main window
+        UIManager.put("Label.foreground", textColor);
 
         UIManager.put("ComboBox.background", secondBackgroundColor);
         UIManager.put("ComboBox.foreground", textColor);
         UIManager.put("CheckBoxMenuItem.foreground", textColor);
         UIManager.put("CheckBox.foreground", textColor);
 
-        UIManager.put("RadioButton.foreground", textColor); //changes radiobuttons text in colorchooser
+        UIManager.put("RadioButton.foreground", textColor);
 
         UIManager.put("TitledBorder.titleColor", textColor);
 
@@ -101,31 +99,31 @@ public class CustomThemeMaker extends DefaultMetalTheme {
 
     @Override
     public ColorUIResource getPrimary1() {
-        return new ColorUIResource(textColor); //colors Selection-Borders
+        return new ColorUIResource(textColor);
     }
 
     @Override
     public ColorUIResource getPrimary2() {
-        return new ColorUIResource(alternativeColor); //colors Selection-Background
+        return new ColorUIResource(alternativeColor);
     }
 
     @Override
     public ColorUIResource getPrimary3() {
-        return new ColorUIResource(alternativeColor); //colors Selected JList items
+        return new ColorUIResource(alternativeColor);
     }
 
     @Override
     public ColorUIResource getSecondary1() {
-        return new ColorUIResource(textColor); //colors TextArea, Panel and Label borders
+        return new ColorUIResource(textColor);
     }
 
     @Override
     public ColorUIResource getSecondary2() {
-        return new ColorUIResource(Color.GRAY); //colors Selection-Button borders, TitleBorder and MenuBar border
+        return new ColorUIResource(Color.GRAY);
     }
 
     @Override
     public ColorUIResource getSecondary3() {
-        return new ColorUIResource(secondBackgroundColor); //colors whole MenuBar, MenuBarItem, ToolBar, Panel backgrounds
+        return new ColorUIResource(secondBackgroundColor);
     }
 }

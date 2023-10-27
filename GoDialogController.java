@@ -7,7 +7,6 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
 public class GoDialogController implements ActionListener {
-
     private Viewer viewer;
     private JTextField textField;
 
@@ -29,14 +28,14 @@ public class GoDialogController implements ActionListener {
 
     private void goToTheLine() {
         JTextArea textArea = viewer.getCurrentContent();
+
         try {
             int line = Integer.parseInt(textField.getText());
             int lineStartOffset = textArea.getLineStartOffset(line - 1);
             viewer.closeGoDialog();
             textArea.setCaretPosition(lineStartOffset);
             textArea.requestFocusInWindow();
-        }
-        catch (BadLocationException | NumberFormatException e) {
+        } catch (BadLocationException | NumberFormatException e) {
             viewer.showError("Line number exceeds total number of lines");
         }
     }
