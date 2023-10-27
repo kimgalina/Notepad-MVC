@@ -6,6 +6,7 @@ import java.awt.Container;
 import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 public class FontController implements ActionListener {
     private Viewer viewer;
@@ -20,7 +21,6 @@ public class FontController implements ActionListener {
         switch (command) {
             case "Ok":
                 processOkClick();
-                viewer.hideFontDialog();
                 break;
             case "Cancel":
                 viewer.hideFontDialog();
@@ -30,24 +30,47 @@ public class FontController implements ActionListener {
     }
 
     private void processOkClick() {
-        Container contentPane = viewer.getFontDialog().getContentPane();
-        Component[] components = contentPane.getComponents();
-        JPanel panel = null;
-
-        for (Component component : components) {
-            if (component instanceof JPanel) {
-                panel = (JPanel) component;
-                break;
-            }
-        }
-
-        for(Component component : panel.getComponents()) {
-            if (component instanceof JLabel) {
-                Font font = component.getFont();
-                viewer.setNewFontForTextArea(font);
-                break;
-            }
+        try {
+            String fontName = getTextField("fontTextField");
+            String fontStyle = getTextField("styleTextField");
+            Integer fontSize = Integer.parseInt(getTextField("sizeTextField"));
+            Font font = new Font(fontName, getStyle(fontStyle), fontSize);
+            viewer.setNewFontForTextArea(font);
+            viewer.hideFontDialog();
+        } catch (NumberFormatException e) {
+            viewer.showError("Write correct size!");
         }
     }
+
+    private String getTextField(String name) {
+        Container contentPane = viewer.getFontDialog().getContentPane();
+        Component[] components = contentPane.getComponents();
+
+        for (Component component : components) {
+            if (component instanceof JTextField) {
+                JTextField textField = (JTextField) component;
+
+                if (textField.getName().equals(name)) {
+                    return textField.getText();
+                }
+            }
+        }
+        return null;
+    }
+
+    private int getStyle(String selectedStyle) {
+        switch (selectedStyle) {
+            case "Regular":
+                return Font.PLAIN;
+            case "Italic":
+                return Font.ITALIC;
+            case "Bold":
+                return Font.BOLD;
+            case "Bold Italic":
+                return Font.BOLD | Font.ITALIC;
+            default:
+                return Font.PLAIN;
+      }
+  }
 
 }
