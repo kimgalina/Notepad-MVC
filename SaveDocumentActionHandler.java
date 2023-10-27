@@ -39,6 +39,7 @@ public class SaveDocumentActionHandler implements ActionHandler {
               viewer.showError(e.toString());
               return -1;
           }
+          
         } else {
              return saveDocumentAs();
         }
@@ -81,7 +82,7 @@ public class SaveDocumentActionHandler implements ActionHandler {
         String[] directories = path.split("\\\\");
         return directories[directories.length - 1];
     }
-    
+
     private void deleteDotInTab(int currentTabIndex) {
         JButton closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
         closeBtn.setText("\u00d7");

@@ -75,6 +75,7 @@ public class FindDialogController implements ActionListener {
 
                 pos++;
             }
+
         } catch (BadLocationException e) {
             viewer.showError("Error");
         }
@@ -98,6 +99,7 @@ public class FindDialogController implements ActionListener {
 
                 pos--;
             }
+            
         } catch (BadLocationException e) {
             viewer.showError("Error");
         }
@@ -114,7 +116,7 @@ public class FindDialogController implements ActionListener {
                 textArea.select(pos - searchLength, pos);
                 pos -= searchLength;
             }
-            
+
             isPrevNext = isDirectionChanged(isNext) ? isNext : isPrevNext;
             foundPos = pos;
         } else {

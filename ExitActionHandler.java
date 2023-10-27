@@ -14,7 +14,6 @@ public class ExitActionHandler implements ActionHandler {
 
     @Override
     public void handleAction(String command, ActionEvent event) {
-
         switch (command) {
             case "Exit":
                 exit();
@@ -28,6 +27,7 @@ public class ExitActionHandler implements ActionHandler {
     private void exit() {
         JTabbedPane tabPane = viewer.getTabPane();
         int tabCount = tabPane.getTabCount();
+
         for(int i = 0; i < tabCount; i++) {
             int currentTabIndex = viewer.getCurrentTabIndex();
 
@@ -37,11 +37,12 @@ public class ExitActionHandler implements ActionHandler {
                 if(result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION || result == -1) {
                     return;
                 }
+
             } else {
                 viewer.deleteTab(currentTabIndex);
-
             }
         }
+        
         System.exit(0);
     }
 }

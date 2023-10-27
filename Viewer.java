@@ -98,7 +98,8 @@ public class Viewer {
         tabPane = new JTabbedPane();
         isLightTheme = true;
         fileChooser = new JFileChooser();
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Text files (*.txt)", "txt"));
+        FileNameExtensionFilter fileNameExtensionFilter = new FileNameExtensionFilter("Text files (*.txt)", "txt");
+        fileChooser.setFileFilter(fileNameExtensionFilter);
     }
 
     public void startApplication() {
@@ -106,6 +107,7 @@ public class Viewer {
         JToolBar toolBar = getToolBar(controller);
         createNewTab();
         initStatusPanel();
+
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
         frame.add(statusPanel, BorderLayout.SOUTH);
@@ -113,11 +115,14 @@ public class Viewer {
         frame.addWindowListener(windowController);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setVisible(true);
-        frame.setIconImage(new ImageIcon("images/notepad.png").getImage());
+
+        ImageIcon notepadIcon = new ImageIcon("images/notepad.png");
+        frame.setIconImage(notepadIcon.getImage());
     }
 
     public int createNewTab() {
-        JPanel panel = new JPanel(new BorderLayout());
+        BorderLayout panelBorder = new BorderLayout();
+        JPanel panel = new JPanel(panelBorder);
 
         JTextArea content = new JTextArea();
         content.setFont(contentFont);
@@ -133,6 +138,7 @@ public class Viewer {
 
         tabsController.getFilesPerTabs().add(tabIndex, null);
         tabsController.getUnsavedChangesPerTab().add(tabIndex, false);
+
         return tabIndex;
     }
 
@@ -153,7 +159,8 @@ public class Viewer {
                 JViewport viewport = scrollPane.getViewport();
                 if (viewport.getView() instanceof JTextArea) {
                     JTextArea textArea = (JTextArea) viewport.getView();
-                    textArea.addCaretListener(new CaretController(this));
+                    CaretController caretController = new CaretController(this);
+                    textArea.addCaretListener(caretController);
                     currentContent = textArea;
                     fontZoom = textArea.getFont();
                 }
@@ -270,7 +277,8 @@ public class Viewer {
 
                 if (component instanceof JButton) {
                     JButton button = (JButton) component;
-                    button.setBorder(new EmptyBorder(0, 0, 0, 0));
+                    EmptyBorder emptyBorder = new EmptyBorder(0, 0, 0, 0);
+                    button.setBorder(emptyBorder);
                     button.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
                 }
             }
@@ -302,7 +310,8 @@ public class Viewer {
         JPanel panel = new JPanel();
         panel.setLayout(null);
 
-        JLabel label = new JLabel(new ImageIcon("images/find.png"));
+        ImageIcon findIcon = new ImageIcon("images/find.png");
+        JLabel label = new JLabel(findIcon);
         label.setBounds(5, 15, 50, 30);
         label.setFont(dialogFont);
 
@@ -408,7 +417,8 @@ public class Viewer {
     }
 
     public File getFile() {
-        int returnVal = fileChooser.showOpenDialog(new JFrame());
+        JFrame fileChooserFrame = new JFrame();
+        int returnVal = fileChooser.showOpenDialog(fileChooserFrame);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
@@ -420,10 +430,12 @@ public class Viewer {
 
     public File getNewFileSaveLocation(String fileName) {
         if (!fileName.equals("Untitled.txt")) {
-            fileChooser.setSelectedFile(new File(fileName));
+            File selectedFile = new File(fileName);
+            fileChooser.setSelectedFile(selectedFile);
         }
 
-        int returnValue = fileChooser.showSaveDialog(new JFrame());
+        JFrame fileChooserFrame = new JFrame();
+        int returnValue = fileChooser.showSaveDialog(fileChooserFrame);
 
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
@@ -503,7 +515,8 @@ public class Viewer {
 
         JPanel panel = new JPanel();
         panel.setBounds(235, 217, 240, 100);
-        panel.setLayout(new BorderLayout());
+        BorderLayout panelBorder = new BorderLayout();
+        panel.setLayout(panelBorder);
         panel.setName("samplePanel");
         TitledBorder border = BorderFactory.createTitledBorder("Sample");
         panel.setBorder(border);
@@ -587,8 +600,8 @@ public class Viewer {
 
     public void zoomDefault() {
         if (canZoomDefault()) {
-            currentContent.setFont(new java.awt.Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(),
-                    22));
+            Font defaultFont = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), 22);
+            currentContent.setFont(defaultFont);
         }
     }
 
@@ -682,13 +695,10 @@ public class Viewer {
 
             if (tabCount != 1 && controller.hasUnsavedChanges(currentTabIndex)) {
                 showCloseTabMessage(currentTabIndex);
-
             } else if (controller.hasUnsavedChanges(currentTabIndex)) {
                 showExitMessage();
-
             } else if (tabCount > 1 && !controller.hasUnsavedChanges(currentTabIndex)) {
                 deleteTab(currentTabIndex);
-
             } else {
                 System.exit(0);
             }
@@ -834,16 +844,25 @@ public class Viewer {
 
     private void initStatusPanel() {
         statusPanel = new JPanel();
-        statusPanel.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        statusPanel.setPreferredSize(new Dimension(frame.getWidth(), 20));
-        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+
+        BevelBorder bevelBorder = new BevelBorder(BevelBorder.LOWERED);
+        statusPanel.setBorder(bevelBorder);
+
+        Dimension dimension = new Dimension(frame.getWidth(), 20);
+        statusPanel.setPreferredSize(dimension);
+
+        BoxLayout boxLayout = new BoxLayout(statusPanel, BoxLayout.X_AXIS);
+        statusPanel.setLayout(boxLayout);
+
         statusLabel = new JLabel();
+
         statusPanel.add(statusLabel);
         statusPanel.setVisible(false);
     }
 
     private JPanel getCurrentPanel() {
         int currentTabIndex = tabPane.getSelectedIndex();
+
         if (currentTabIndex != -1) {
             Component currentTab = tabPane.getComponentAt(currentTabIndex);
 
@@ -857,20 +876,27 @@ public class Viewer {
     }
 
     private JComponent createCustomTabComponent(String tabTitle) {
-        JPanel tabPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
+        JPanel tabPanel = new JPanel(flowLayout);
         tabPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
         tabPanel.setOpaque(false);
-        tabPanel.add(Box.createRigidArea(new Dimension(10, 10)));
+
+        Dimension dimension = new Dimension(10, 10);
+        tabPanel.add(Box.createRigidArea(dimension));
 
         JLabel label = new JLabel(tabTitle);
-        label.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        Font labelFont = new Font("Tahoma", Font.PLAIN, 14);
+        label.setFont(labelFont);
         tabPanel.add(label);
 
-        tabPanel.add(Box.createRigidArea(new Dimension(40, 10)));
+        dimension = new Dimension(40, 10);
+        tabPanel.add(Box.createRigidArea(dimension));
 
         JButton closeTabBtn = createCloseTabBtn();
         tabPanel.add(closeTabBtn);
-        tabPanel.add(Box.createRigidArea(new Dimension(5, 5)));
+
+        dimension = new Dimension(5, 5);
+        tabPanel.add(Box.createRigidArea(dimension));
 
         return tabPanel;
     }
@@ -889,7 +915,7 @@ public class Viewer {
 
     private void renameTab(String tabName, int tabIndex) {
         Component tabComponent = tabPane.getTabComponentAt(tabIndex);
-        
+
         if (tabComponent instanceof Container) {
             Component[] components = ((Container) tabComponent).getComponents();
 
@@ -932,7 +958,8 @@ public class Viewer {
     }
 
     private JButton createButton(String iconPath, String actionCommand, ActionController controller) {
-        JButton button = new JButton(new ImageIcon(iconPath));
+        ImageIcon buttonIcon = new ImageIcon(iconPath);
+        JButton button = new JButton(buttonIcon);
 
         button.addActionListener(controller);
         button.setActionCommand(actionCommand);
@@ -1006,10 +1033,10 @@ public class Viewer {
         JMenuItem findDocument = createMenuItem("Find", "images/find.png", "Find");
         findDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
 
-        JMenuItem findNextDocument = createMenuItem("Find next", "images/next.png", "Find_Next", submenuFont, controller);
+        JMenuItem findNextDocument = createMenuItem("Find next", "images/next.png", "Find_Next");
         findNextDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, ActionEvent.CTRL_MASK));
 
-        JMenuItem findPrevDocument = createMenuItem("Find previous", "images/previous.png", "Find_Prev", submenuFont, controller);
+        JMenuItem findPrevDocument = createMenuItem("Find previous", "images/previous.png", "Find_Prev");
         findPrevDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, ActionEvent.CTRL_MASK));
 
         JMenuItem goDocument = createMenuItem("Go", "images/go.png", "Go");
@@ -1081,7 +1108,9 @@ public class Viewer {
         statusBarBox.setOpaque(false);
         statusBarBox.setFocusable(false);
         statusBarBox.setFont(submenuFont);
-        statusBarBox.setPreferredSize(new Dimension(100, 20));
+
+        Dimension dimension = new Dimension(100, 20);
+        statusBarBox.setPreferredSize(dimension);
         statusBarBox.setSelected(false);
 
         statusBarBox.addActionListener(controller);
@@ -1097,7 +1126,8 @@ public class Viewer {
     }
 
     private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand) {
-        JMenuItem menuItem = new JMenuItem(name, new ImageIcon(pathToIcon));
+        ImageIcon itemIcon = new ImageIcon(pathToIcon);
+        JMenuItem menuItem = new JMenuItem(name, itemIcon);
         menuItem.addActionListener(controller);
         menuItem.setActionCommand(actionCommand);
         menuItem.setFont(submenuFont);
