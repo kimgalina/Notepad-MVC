@@ -689,6 +689,16 @@ public class Viewer {
         return null;
     }
 
+    public void removeDotInTab(int tabIndex) {
+        JButton closeBtn = getCloseBtnFromTab(tabIndex);
+        closeBtn.setText("\u00d7");
+    }
+
+    public void setDotInTab(int tabIndex) {
+        JButton closeBtn = getCloseBtnFromTab(tabIndex);
+        closeBtn.setText("\u2022");
+    }
+
     public void closeCurrentTab(JButton closeBtn) {
         int foundIndex = findTabIndexByCloseButton(closeBtn);
         int currentTabIndex = foundIndex != -1 ? foundIndex : tabPane.getSelectedIndex();
