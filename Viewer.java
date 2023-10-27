@@ -486,6 +486,7 @@ public class Viewer {
         JLabel fontLabel = createLabel("Font:", 15, 10);
         String currentFont = currentContent.getFont().getFontName();
         JTextField fontTextField = createTextField("fontTextField", currentFont, 15, 27, 200, 30);
+        fontTextField.setEditable(false);
         JList<String> fontsList = new JList<>(fonts);
         fontsList.setSelectedValue(currentFont, true);
         fontsList.setName("FontsList");
@@ -496,6 +497,7 @@ public class Viewer {
         JLabel styleLabel = createLabel("Style:", 235, 10);
         String currentStyle = getFontStyle(currentContent.getFont().getStyle());
         JTextField styleTextField = createTextField("styleTextField", currentStyle, 235, 27, 150, 30);
+        styleTextField.setEditable(false);
         JList<String> stylesList = new JList<>(styles);
         stylesList.setSelectedValue(currentStyle, true);
         stylesList.setName("StylesList");
@@ -506,6 +508,7 @@ public class Viewer {
         JLabel sizeLabel = createLabel("Size:", 405, 10);
         int currentSize = currentContent.getFont().getSize();
         JTextField sizeTextField = createTextField("sizeTextField", String.valueOf(currentSize), 405, 27, 70, 30);
+        sizeTextField.setEditable(false);
         JList<Integer> sizesList = new JList<>(sizes);
         sizesList.setSelectedValue(currentSize, true);
         sizesList.setName("SizesList");
