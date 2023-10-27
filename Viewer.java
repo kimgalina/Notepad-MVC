@@ -768,6 +768,7 @@ public class Viewer {
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.setLocation(frame.getX() + 150, frame.getY() + 150);
         dialog.setSize(width, height);
+        dialog.setResizable(false);
 
         return dialog;
     }
@@ -1000,10 +1001,10 @@ public class Viewer {
         JMenuItem findDocument = createMenuItem("Find", "images/find.png", "Find", submenuFont, controller);
         findDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
 
-        JMenuItem findNextDocument = createMenuItem("Find next", "images/findMore.png", "Find_Next", submenuFont, controller);
+        JMenuItem findNextDocument = createMenuItem("Find next", "images/next.png", "Find_Next", submenuFont, controller);
         findNextDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, ActionEvent.CTRL_MASK));
 
-        JMenuItem findPrevDocument = createMenuItem("Find previous", "images/findMore.png", "Find_Prev", submenuFont, controller);
+        JMenuItem findPrevDocument = createMenuItem("Find previous", "images/previous.png", "Find_Prev", submenuFont, controller);
         findPrevDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, ActionEvent.CTRL_MASK));
 
         JMenuItem goDocument = createMenuItem("Go", "images/go.png", "Go", submenuFont,controller);
@@ -1020,10 +1021,12 @@ public class Viewer {
         editMenu.add(copyDocument);
         editMenu.add(pasteDocument);
         editMenu.add(clearDocument);
+        editMenu.addSeparator();
         editMenu.add(findDocument);
         editMenu.add(findNextDocument);
         editMenu.add(findPrevDocument);
         editMenu.add(goDocument);
+        editMenu.addSeparator();
         editMenu.add(selectAllDocument);
         editMenu.add(timeAndDateDocument);
         editMenu.setFont(menuFont);
