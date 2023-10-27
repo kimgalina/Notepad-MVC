@@ -33,13 +33,13 @@ public class SaveDocumentActionHandler implements ActionHandler {
               String content = viewer.getCurrentContent().getText();
               Files.write(currentOpenFile.toPath(), content.getBytes("UTF-8"));
               tabsController.setValueInToList(tabsController.getUnsavedChangesPerTab(), currentTabIndex, false);
-              deleteDotInTab(currentTabIndex);
+              removeDotInTab(currentTabIndex);
               return 0;
           } catch (IOException e) {
               viewer.showError(e.toString());
               return -1;
           }
-          
+
         } else {
              return saveDocumentAs();
         }
@@ -67,7 +67,7 @@ public class SaveDocumentActionHandler implements ActionHandler {
                 viewer.update(viewer.getCurrentContent().getText(), getFileNameFromPath(selectedFile.getAbsolutePath()), currentTabIndex);
 
                 tabsController.setValueInToList(tabsController.getUnsavedChangesPerTab(), currentTabIndex, false);
-                deleteDotInTab(currentTabIndex);
+                removeDotInTab(currentTabIndex);
                 return 0;
             } catch (IOException e) {
                 viewer.showError(e.toString());
@@ -83,7 +83,7 @@ public class SaveDocumentActionHandler implements ActionHandler {
         return directories[directories.length - 1];
     }
 
-    private void deleteDotInTab(int currentTabIndex) {
+    private void removeDotInTab(int currentTabIndex) {
         JButton closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
         closeBtn.setText("\u00d7");
     }

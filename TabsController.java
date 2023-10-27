@@ -33,21 +33,22 @@ public class TabsController implements DocumentListener {
 
     @Override
     public void insertUpdate(DocumentEvent e) {
-        if(!isFileOpening) {
-            int currentTabIndex = viewer.getCurrentTabIndex();
+        int currentTabIndex = viewer.getCurrentTabIndex();
+        if(!isFileOpening && !unsavedChangesPerTab.get(currentTabIndex)) {
             setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
-            closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
-            closeBtn.setText("\u2022");
+            setDotInTab(currentTabIndex);
+            System.out.println("set true");
         }
     }
 
     @Override
     public void removeUpdate(DocumentEvent e) {
         int currentTabIndex = viewer.getCurrentTabIndex();
-        setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
-        closeBtn = viewer.getCloseBtnFromTab(currentTabIndex);
-        closeBtn.setText("\u2022");
-
+        if(!unsavedChangesPerTab.get(currentTabIndex)) {
+            setValueInToList(unsavedChangesPerTab, currentTabIndex, true);
+            setDotInTab(currentTabIndex);
+            System.out.println("set true");
+        }
     }
 
     @Override
@@ -75,4 +76,10 @@ public class TabsController implements DocumentListener {
             fillList(list, currentTabIndex + 1, currentTabIndex, value);
         }
     }
+
+    private void setDotInTab(int tabIndex) {
+        closeBtn = viewer.getCloseBtnFromTab(tabIndex);
+        closeBtn.setText("\u2022");
+    }
+
 }
