@@ -25,10 +25,10 @@ public class GoAndFindActionHandler implements ActionHandler {
                 viewer.openFindDialog();
                 break;
             case "Find_Next":
-                findController.find(true);
+                find(true);
                 break;
             case "Find_Prev":
-                findController.find(false);
+                find(false);
                 break;
         }
     }
@@ -38,5 +38,14 @@ public class GoAndFindActionHandler implements ActionHandler {
         String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy"));
         JTextArea textArea = viewer.getCurrentContent();
         textArea.insert(formattedDate, textArea.getCaretPosition());
+    }
+
+    private void find(boolean isNext) {
+        javax.swing.JTextField searchField = viewer.getSearchField();
+        if (searchField == null || searchField.getText().equals("")) {
+            viewer.openFindDialog();
+        } else {
+            findController.find(isNext);
+        }
     }
 }
