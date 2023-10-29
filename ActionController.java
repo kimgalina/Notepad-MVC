@@ -50,7 +50,7 @@ public class ActionController implements ActionListener {
         NewDocumentActionHandler newDocumentActionHandler = new NewDocumentActionHandler(viewer);
         OpenDocumentActionHandler openDocumentActionHandler = new OpenDocumentActionHandler(viewer, tabsController);
         SaveDocumentActionHandler saveDocumentActionHandler = new SaveDocumentActionHandler(viewer, tabsController);
-        PrintActionHandler printActionHandler = new PrintActionHandler(viewer, saveDocumentActionHandler, openDocumentActionHandler);
+        PrintActionHandler printActionHandler = new PrintActionHandler(viewer);
         ExitActionHandler exitActionHandler = new ExitActionHandler(this, viewer);
         EditActionHandler editActionHandler = new EditActionHandler(viewer);
         GoAndFindActionHandler goAndFindActionHandler = new GoAndFindActionHandler(viewer, findController);
