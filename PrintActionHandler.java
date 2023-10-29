@@ -1,42 +1,31 @@
 import java.awt.Font;
-import java.awt.Color;
+import java.util.List;
 import java.awt.event.ActionEvent;
 
 public class PrintActionHandler implements ActionHandler {
     private Viewer viewer;
-    private SaveDocumentActionHandler saveDocumentActionHandler;
-    private OpenDocumentActionHandler openDocumentActionHandler;
+    private List<String> data;
 
-    public PrintActionHandler(Viewer viewer, SaveDocumentActionHandler saveDocumentActionHandler,
-                                OpenDocumentActionHandler openDocumentActionHandler) {
-
+    public PrintActionHandler(Viewer viewer) {
         this.viewer = viewer;
-        this.saveDocumentActionHandler = saveDocumentActionHandler;
-        this.openDocumentActionHandler = openDocumentActionHandler;
     }
 
     @Override
     public void handleAction(String command, ActionEvent event) {
-        int savingResult = saveDocumentActionHandler.saveDocument();
-        if(savingResult == -1) {
-            return;
-        }
-        String data = "";
-
+        Font font = viewer.getCurrentTextAreaFont();
         try {
-            Font font = viewer.getCurrentTextAreaFont();
-            data = openDocumentActionHandler.readCurrentFile();
+            String textPageNumber = "Page ";
+            data = viewer.getListTextFromTextAreaContent();
 
-            Color textColor = viewer.getCurrentTextAreaColor();
-            Print document = new Print(data, font, textColor);
+            Print document = new Print(data, font, textPageNumber);
             document.printDocument();
-
             if (document.isPrinted()) {
                 viewer.showDialogFinishPrintDocument();
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
         } finally {
+            data.clear();
             data = null;
         }
     }
