@@ -98,7 +98,7 @@ public class Viewer {
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
         dialogFont = new Font("Tahoma", Font.PLAIN, 12);
         tabPane = new JTabbedPane();
-        isLightTheme = true;
+        isLightTheme = false;
         fileChooser = new JFileChooser();
         FileNameExtensionFilter fileNameExtensionFilter = new FileNameExtensionFilter("Text files (*.txt)", "txt");
         fileChooser.setFileFilter(fileNameExtensionFilter);
@@ -109,7 +109,6 @@ public class Viewer {
         JToolBar toolBar = getToolBar(controller);
         createNewTab();
         initStatusPanel();
-
         frame.setJMenuBar(menuBar);
         frame.add(toolBar, BorderLayout.NORTH);
         frame.add(statusPanel, BorderLayout.SOUTH);
@@ -120,6 +119,7 @@ public class Viewer {
 
         ImageIcon notepadIcon = new ImageIcon("images/notepad.png");
         frame.setIconImage(notepadIcon.getImage());
+        changeTheme();
     }
 
     public int createNewTab() {
@@ -189,6 +189,7 @@ public class Viewer {
         customTheme.refreshTheme();
         changeMenuBarFontsColor();
         setTabColors();
+        changeDialogsColors();
 
         SwingUtilities.updateComponentTreeUI(tabPane);
         SwingUtilities.updateComponentTreeUI(fileChooser);
