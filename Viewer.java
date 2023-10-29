@@ -198,6 +198,7 @@ public class Viewer {
         updateMenuBarFontsColor();
         updateTabColors();
         updateFontDialogColors();
+        updateHelpDialogColors();
 
         SwingUtilities.updateComponentTreeUI(tabPane);
         SwingUtilities.updateComponentTreeUI(fileChooser);
@@ -816,6 +817,30 @@ public class Viewer {
             panelComponent.setBackground(currentTheme.getBackgroundColor()); //here changes others elements (JButton and JTextField)
             panelComponent.setForeground(currentTheme.getTextColor());
           }
+    }
+
+    private void updateHelpDialogColors() {
+        if (helpDialog == null) {
+            return;
+        }
+
+        javax.swing.JRootPane rootPane = (javax.swing.JRootPane) helpDialog.getComponent(0); //our helpDialog have only one component as JRootPane
+        javax.swing.JLayeredPane layeredPane = (javax.swing.JLayeredPane) rootPane.getComponent(1); //previous JRootPane have empty JPanel and JLayeredPane that contains all components
+        JPanel mainDialogPanel = (JPanel) layeredPane.getComponent(0);
+
+        for (Component panelComponent : mainDialogPanel.getComponents()) {
+
+            if (!(panelComponent instanceof JLabel)) {
+                panelComponent.setBackground(currentTheme.getBackgroundColor());
+                panelComponent.setForeground(currentTheme.getTextColor());
+                continue;
+            }
+
+            JLabel label = (JLabel) panelComponent;
+            if (!label.getText().equals("See the development process")) {
+              panelComponent.setForeground(currentTheme.getTextColor());
+            }
+        }
     }
 
     private void updateScrollTheme(Component component) {
