@@ -52,6 +52,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.Cursor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Arrays;
+
+
 public class Viewer {
     private JFileChooser fileChooser;
     private JFrame frame;
@@ -212,6 +217,18 @@ public class Viewer {
         coloredLabelText.setForeground(currentTheme.getTextColor());
         JOptionPane.showMessageDialog(frame, coloredLabelText, "Notepad MVC",
                 JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public List<String> getListTextFromTextAreaContent() {
+        Document document = currentContent.getDocument();
+        List<String> listTxt = new ArrayList<>();
+        try {
+            String txt = document.getText(0, document.getLength());
+            listTxt.addAll(Arrays.asList(txt.split("\n")));
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return listTxt;
     }
 
     public Color openColorChooser() {
