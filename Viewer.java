@@ -84,6 +84,7 @@ public class Viewer {
     private JDialog fontDialog;
     private JDialog helpDialog;
     private boolean isLightTheme;
+    private CustomThemeMaker currentTheme;
 
     public Viewer() {
         frame = getFrame();
@@ -98,7 +99,8 @@ public class Viewer {
         submenuFont = new Font("Tahoma", Font.PLAIN, 16);
         dialogFont = new Font("Tahoma", Font.PLAIN, 12);
         tabPane = new JTabbedPane();
-        isLightTheme = false;
+        isLightTheme = true;
+        currentTheme = new CustomThemeMaker(isLightTheme);
         fileChooser = new JFileChooser();
         FileNameExtensionFilter fileNameExtensionFilter = new FileNameExtensionFilter("Text files (*.txt)", "txt");
         fileChooser.setFileFilter(fileNameExtensionFilter);
@@ -141,7 +143,7 @@ public class Viewer {
         tabPane.addTab(null, panel);
         int tabIndex = tabPane.indexOfComponent(panel);
         tabPane.setTabComponentAt(tabIndex, createCustomTabComponent("Untitled.txt"));
-        tabPane.setBackgroundAt(tabIndex, CustomThemeMaker.getBackgroundColor(!isLightTheme));
+        tabPane.setBackgroundAt(tabIndex, currentTheme.getBackgroundColor());
 
         tabsController.getFilesPerTabs().add(tabIndex, null);
         tabsController.getUnsavedChangesPerTab().add(tabIndex, false);
@@ -184,9 +186,10 @@ public class Viewer {
     }
 
     public void changeTheme() {
-        CustomThemeMaker customTheme = new CustomThemeMaker(isLightTheme);
-        MetalLookAndFeel.setCurrentTheme(customTheme);
-        customTheme.refreshTheme();
+        isLightTheme = !isLightTheme;
+        currentTheme = new CustomThemeMaker(isLightTheme);
+        MetalLookAndFeel.setCurrentTheme(currentTheme);
+        currentTheme.refreshTheme();
         updateMenuBarFontsColor();
         updateTabColors();
         updateFontDialogColors();
@@ -194,9 +197,6 @@ public class Viewer {
         SwingUtilities.updateComponentTreeUI(tabPane);
         SwingUtilities.updateComponentTreeUI(fileChooser);
         SwingUtilities.updateComponentTreeUI(frame);
-
-        customTheme = null;
-        isLightTheme = !isLightTheme;
     }
 
     public String getCurrentTextAreaContent() {
@@ -209,7 +209,7 @@ public class Viewer {
 
     public void showDialogFinishPrintDocument() {
         JLabel coloredLabelText = new JLabel("The document has been printed.");
-        coloredLabelText.setForeground(CustomThemeMaker.getTextColor(!isLightTheme));
+        coloredLabelText.setForeground(currentTheme.getTextColor());
         JOptionPane.showMessageDialog(frame, coloredLabelText, "Notepad MVC",
                 JOptionPane.INFORMATION_MESSAGE);
     }
@@ -631,7 +631,7 @@ public class Viewer {
 
     public int showCloseTabMessage(int currentTabIndex) {
         JLabel coloredLabelText = new JLabel("Do you want to save changes ? ");
-        coloredLabelText.setForeground(CustomThemeMaker.getTextColor(!isLightTheme));
+        coloredLabelText.setForeground(currentTheme.getTextColor());
         int result = JOptionPane.showConfirmDialog(frame, coloredLabelText, "Notepad MVC",
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
 
@@ -679,7 +679,7 @@ public class Viewer {
 
         for (int i = 0; i < menuCount; i++) {
             JMenu menu = menuBar.getMenu(i);
-            menu.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+            menu.setForeground(currentTheme.getTextColor());
             int itemCount = menu.getItemCount();
 
             for (int j = 0; j < itemCount; j++) {
@@ -699,16 +699,16 @@ public class Viewer {
                             continue;
                         }
 
-                        extraMenuItem.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+                        extraMenuItem.setForeground(currentTheme.getTextColor());
                     }
                 }
 
-                menuItem.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+                menuItem.setForeground(currentTheme.getTextColor());
             }
         }
 
         if (statusLabel != null) {
-            statusLabel.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+            statusLabel.setForeground(currentTheme.getTextColor());
         }
     }
 
@@ -721,7 +721,7 @@ public class Viewer {
 
         for (int i = 0; i < tabCount; i++) {
             Component tabComponent = tabPane.getComponentAt(i);
-            tabPane.setBackgroundAt(i, CustomThemeMaker.getBackgroundColor(isLightTheme));
+            tabPane.setBackgroundAt(i, currentTheme.getBackgroundColor());
 
             if (!(tabComponent instanceof JPanel)) {
                 continue;
@@ -729,8 +729,8 @@ public class Viewer {
 
             JPanel inPanelContent = (JPanel) tabComponent;
             JPanel panelContent = (JPanel) tabPane.getTabComponentAt(i);
-            inPanelContent.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme));
-            inPanelContent.setForeground(CustomThemeMaker.getBackgroundColor(isLightTheme));
+            inPanelContent.setBackground(currentTheme.getBackgroundColor());
+            inPanelContent.setForeground(currentTheme.getBackgroundColor());
 
             for (Component component : inPanelContent.getComponents()) {
                 if (!(component instanceof JScrollPane)) {
@@ -742,17 +742,17 @@ public class Viewer {
 
                 if (viewport.getView() instanceof JTextArea) {
                     JTextArea textArea = (JTextArea) viewport.getView();
-                    textArea.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme));
-                    textArea.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
-                    textArea.setSelectionColor(CustomThemeMaker.getAlternativeColor(isLightTheme));
-                    textArea.setSelectedTextColor(CustomThemeMaker.getTextColor(isLightTheme));
+                    textArea.setBackground(currentTheme.getBackgroundColor());
+                    textArea.setForeground(currentTheme.getTextColor());
+                    textArea.setSelectionColor(currentTheme.getAlternativeColor());
+                    textArea.setSelectedTextColor(currentTheme.getTextColor());
                 }
             }
 
             for (Component component : panelContent.getComponents()) {
                 if (component instanceof JLabel) {
                     JLabel tab = (JLabel) component;
-                    tab.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+                    tab.setForeground(currentTheme.getTextColor());
                     SwingUtilities.updateComponentTreeUI(tab);
                 }
 
@@ -760,7 +760,7 @@ public class Viewer {
                     JButton button = (JButton) component;
                     EmptyBorder emptyBorder = new EmptyBorder(0, 0, 0, 0);
                     button.setBorder(emptyBorder);
-                    button.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+                    button.setForeground(currentTheme.getTextColor());
                 }
             }
         }
@@ -779,7 +779,7 @@ public class Viewer {
 
             if (panelComponent instanceof JLabel) {
                 JLabel label = (JLabel) panelComponent;
-                label.setForeground(CustomThemeMaker.getTextColor(isLightTheme)); //here changes font color on top of JLists (as a Font: Style: Size:)
+                label.setForeground(currentTheme.getTextColor()); //here changes font color on top of JLists (as a Font: Style: Size:)
                 continue;
             }
 
@@ -790,14 +790,14 @@ public class Viewer {
 
             if (panelComponent instanceof JPanel) {
                 JPanel secondDialogPanel = (JPanel) panelComponent;
-                secondDialogPanel.setBackground(CustomThemeMaker.getSecondBackgroundColor(isLightTheme)); //here changes background color  of example font label
+                secondDialogPanel.setBackground(currentTheme.getSecondBackgroundColor()); //here changes background color  of example font label
                 JLabel label = (JLabel) secondDialogPanel.getComponent(0);
-                label.setForeground(CustomThemeMaker.getTextColor(isLightTheme)); //here changes font color of example font label
+                label.setForeground(currentTheme.getTextColor()); //here changes font color of example font label
                 continue;
             }
 
-            panelComponent.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //here changes others elements (JButton and JTextField)
-            panelComponent.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+            panelComponent.setBackground(currentTheme.getBackgroundColor()); //here changes others elements (JButton and JTextField)
+            panelComponent.setForeground(currentTheme.getTextColor());
           }
     }
 
@@ -813,15 +813,15 @@ public class Viewer {
                 JViewport vp = (JViewport) scrollPaneElement;
 
                 for (Component vpComponent : vp.getComponents()) {
-                    vpComponent.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //here changes JList from fontChooser
-                    vpComponent.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+                    vpComponent.setBackground(currentTheme.getBackgroundColor()); //here changes JList from fontChooser
+                    vpComponent.setForeground(currentTheme.getTextColor());
                 }
 
                 continue;
             }
 
-            scrollPaneElement.setBackground(CustomThemeMaker.getBackgroundColor(isLightTheme)); //here changes scroll
-            scrollPaneElement.setForeground(CustomThemeMaker.getTextColor(isLightTheme));
+            scrollPaneElement.setBackground(currentTheme.getBackgroundColor()); //here changes scroll
+            scrollPaneElement.setForeground(currentTheme.getTextColor());
         }
     }
 

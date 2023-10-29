@@ -11,47 +11,31 @@ public class CustomThemeMaker extends DefaultMetalTheme {
     private Color fullTransparentColor;
 
     public CustomThemeMaker(boolean isLightTheme) {
-        textColor = getTextColor(isLightTheme);
-        backgroundColor = getBackgroundColor(isLightTheme);
-        secondBackgroundColor = getSecondBackgroundColor(isLightTheme);
-        alternativeColor = getAlternativeColor(isLightTheme);
-        fullTransparentColor = getFullTransparentColor(isLightTheme);
+        textColor = isLightTheme ? new Color(205, 205, 205) : new Color(24, 24, 24);
+        backgroundColor =  isLightTheme ? new Color(40, 44, 52) : new Color(240, 240, 240);
+        secondBackgroundColor =  isLightTheme ? new Color(33, 37, 43) : new Color(220, 220, 220);
+        alternativeColor =  isLightTheme ? new Color(62, 68, 81) : new Color(163, 184, 204);
+        fullTransparentColor = new Color(0, 0, 0, 0);
     }
 
-    public static Color getTextColor(boolean isLightTheme)  {
-        if (isLightTheme) {
-            return new Color(205, 205, 205);
-        } else {
-            return new Color(24, 24, 24);
-        }
+    public Color getTextColor()  {
+        return textColor;
     }
 
-    public static Color getBackgroundColor(boolean isLightTheme)  {
-        if (isLightTheme) {
-            return new Color(40, 44, 52);
-        } else {
-            return new Color(240, 240, 240);
-        }
+    public Color getBackgroundColor()  {
+        return backgroundColor;
     }
 
-    public static Color getSecondBackgroundColor(boolean isLightTheme)  {
-        if (isLightTheme) {
-            return new Color(33, 37, 43);
-        } else {
-            return new Color(220, 220, 220);
-        }
+    public Color getSecondBackgroundColor()  {
+        return secondBackgroundColor;
     }
 
-    public static Color getAlternativeColor(boolean isLightTheme)  {
-        if (isLightTheme) {
-            return new Color(62, 68, 81);
-        } else {
-            return new Color(163, 184, 204);
-        }
+    public Color getAlternativeColor()  {
+        return alternativeColor;
     }
 
-    public static Color getFullTransparentColor(boolean isLightTheme)  {
-        return new Color(0, 0, 0, 0);
+    public Color getFullTransparentColor()  {
+        return fullTransparentColor;
     }
 
     public void refreshTheme() {
