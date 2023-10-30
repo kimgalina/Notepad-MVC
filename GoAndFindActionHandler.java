@@ -2,6 +2,7 @@ import java.awt.event.ActionEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 public class GoAndFindActionHandler implements ActionHandler {
     private Viewer viewer;
@@ -41,8 +42,7 @@ public class GoAndFindActionHandler implements ActionHandler {
     }
 
     private void find(boolean isNext) {
-        javax.swing.JTextField searchField = viewer.getSearchField();
-        if (searchField == null || searchField.getText().equals("")) {
+        if (findController.getSearchValue() == null) {
             viewer.openFindDialog();
         } else {
             findController.find(isNext);

@@ -20,15 +20,14 @@ public class GoDialogController implements ActionListener {
         String command = event.getActionCommand();
 
         if (command.equals("Go")) {
-            goToTheLine();
+            goToLine();
         } else if (command.equals("Cancel")) {
             viewer.closeGoDialog();
         }
     }
 
-    private void goToTheLine() {
+    private void goToLine() {
         JTextArea textArea = viewer.getCurrentContent();
-
         try {
             int line = Integer.parseInt(textField.getText());
             int lineStartOffset = textArea.getLineStartOffset(line - 1);
