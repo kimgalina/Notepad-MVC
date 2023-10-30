@@ -6,15 +6,16 @@ import javax.swing.text.BadLocationException;
 
 public class FindDialogController implements ActionListener {
     private Viewer viewer;
+    private String searchValue;
+    private boolean isNext;
+    private boolean isCaseSensitive;
     private int pos;
     private int foundPos;
     private boolean isPrevNext;
 
     public FindDialogController(Viewer viewer) {
         this.viewer = viewer;
-        pos = 0;
-        foundPos = 0;
-        isPrevNext = false;
+        isNext = true;
     }
 
     @Override
@@ -22,31 +23,43 @@ public class FindDialogController implements ActionListener {
         String command = event.getActionCommand();
 
         if (command.equals("Find")) {
-            find(viewer.getDownButton().isSelected());
+            searchValue = viewer.getSearchField().getText();
+            isCaseSensitive = viewer.getCaseSensitiveButton().isSelected();
+            isNext = viewer.getDownButton().isSelected();
+            find(isNext);
+
         } else if (command.equals("Cancel")) {
             viewer.closeFindDialog();
         }
     }
 
     public void find(boolean isNext) {
-        String search = viewer.getSearchField().getText();
         JTextArea textArea = viewer.getCurrentContent();
         textArea.requestFocus();
 
-        boolean isCaseSensitive = viewer.getCaseSensitiveButton().isSelected();
-        search = isCaseSensitive ? search : search.toLowerCase();
-
-        int searchLength = search.length();
+        String search = isCaseSensitive ? searchValue : searchValue.toLowerCase();
 
         if (isDirectionChanged(isNext)) {
-            updatePosition(isNext, searchLength);
+            updatePosition(isNext, search.length());
         }
 
         boolean isFound = false;
         isFound = isNext ? findNext(search, textArea.getDocument(), isCaseSensitive)
                          : findPrevious(search, textArea.getDocument(), isCaseSensitive);
 
-        handleResult(isFound, isNext, searchLength, textArea);
+        handleResult(isFound, isNext, textArea);
+    }
+
+    public String getSearchValue() {
+        return searchValue;
+    }
+
+    public boolean isCaseSensitive() {
+        return isCaseSensitive;
+    }
+
+    public boolean isNext() {
+        return isNext;
     }
 
     private void updatePosition(boolean isNext, int searchLength) {
@@ -97,7 +110,8 @@ public class FindDialogController implements ActionListener {
         return isFound;
     }
 
-    private void handleResult(boolean isFound, boolean isNext, int searchLength, JTextArea textArea) {
+    private void handleResult(boolean isFound, boolean isNext, JTextArea textArea) {
+        int searchLength = searchValue.length();
         if (isFound) {
             if (isNext) {
                 textArea.select(pos, pos + searchLength);
@@ -110,7 +124,7 @@ public class FindDialogController implements ActionListener {
             foundPos = pos;
         } else {
             pos = foundPos == 0 ? 0 : foundPos;
-            viewer.showError("Text is not found");
+            viewer.showError("Text \"" + searchValue + "\" is not found");
         }
     }
 

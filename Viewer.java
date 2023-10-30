@@ -249,23 +249,38 @@ public class Viewer {
         searchField = new JTextField();
         searchField.setBounds(60, 20, 270, 20);
 
+        String searchValue = findController.getSearchValue();
+        if (searchValue != null) {
+            searchField.setText(searchValue);
+            searchField.selectAll();
+        }
+
         JLabel directionLabel = new JLabel("Direction");
         directionLabel.setBounds(215, 60, 70, 20);
         directionLabel.setFont(dialogFont);
 
         ButtonGroup direction = new ButtonGroup();
         upButton = createRadioButton("Up", false, 180, 85, 60, 20);
+        upButton.setSelected(!findController.isNext());
+
         downButton = createRadioButton("Down", true, 240, 85, 60, 20);
+        downButton.setSelected(findController.isNext());
+        
         direction.add(upButton);
         direction.add(downButton);
 
         caseSensitiveButton = new JCheckBox("Case sensitive");
+        caseSensitiveButton.setSelected(findController.isCaseSensitive());
         caseSensitiveButton.setBounds(30, 80, 100, 25);
         caseSensitiveButton.setFont(dialogFont);
         caseSensitiveButton.setFocusable(false);
 
         JButton findButton = createDialogButton("Find", "Find", 350, 20, 90, 25);
-        findButton.setEnabled(false);
+        if (searchValue != null) {
+            findButton.setEnabled(true);
+        } else {
+            findButton.setEnabled(false);
+        }
         findButton.addActionListener(findController);
 
         TextFieldListener textFieldListener = new TextFieldListener(searchField, findButton);
