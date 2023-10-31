@@ -832,7 +832,7 @@ public class Viewer {
     }
 
     /**
-    * Removes the dot symbol (●) in the tab's close button.
+    * Removes the dot symbol in the tab's close button.
     *
     * @param tabIndex The index of the tab to modify.
     */
@@ -842,7 +842,7 @@ public class Viewer {
     }
 
     /**
-    * Sets the dot symbol (●) in the tab's close button, indicating unsaved changes.
+    * Sets the dot symbol  in the tab's close button, indicating unsaved changes.
     *
     * @param tabIndex The index of the tab to modify.
     */

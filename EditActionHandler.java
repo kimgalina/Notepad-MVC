@@ -8,13 +8,27 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
+/**
+ * The EditActionHandler class implements action handling for edit-related operations in a text viewer application.
+ */
 public class EditActionHandler implements ActionHandler {
     private Viewer viewer;
 
+    /**
+    * Constructs an EditActionHandler with the associated viewer.
+    *
+    * @param viewer The viewer to be associated with this action handler.
+    */
     public EditActionHandler(Viewer viewer) {
         this.viewer = viewer;
     }
 
+    /**
+    * Handles an action based on the given command.
+    *
+    * @param command The command representing the action to be performed.
+    * @param event   The ActionEvent associated with the action.
+    */
     @Override
     public void handleAction(String command, ActionEvent event) {
         switch (command) {
@@ -36,6 +50,11 @@ public class EditActionHandler implements ActionHandler {
         }
     }
 
+    /**
+     * Copies or cuts the selected text from the JTextArea and stores it in the system clipboard.
+     *
+     * @param command The command indicating whether to copy or cut the text.
+     */
     private void copyOrCut(String command) {
         JTextArea textArea = viewer.getCurrentContent();
         String selectedText = textArea.getSelectedText();
@@ -48,6 +67,9 @@ public class EditActionHandler implements ActionHandler {
         }
     }
 
+    /**
+    * Pastes text from the system clipboard into the JTextArea.
+    */
     private void pasteText() {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable transferable = clipboard.getContents(null);
