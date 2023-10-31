@@ -3,12 +3,28 @@ import java.awt.event.ActionEvent;
 import java.util.Map;
 import java.util.HashMap;
 
-public class ActionController implements ActionListener {
+/**
+ * The ActionController class is responsible for handling various actions triggered by the user interface,
+ * such as menu item clicks, button presses, and other user interactions. It implements the ActionListener
+ * interface to respond to action events. This class maintains a collection of action handlers to execute
+ * specific actions based on the event's action command.
+ *
+ * @author Template Design Method Pattern command
+ * @version 1.0
+ */
+ public class ActionController implements ActionListener {
     private Viewer viewer;
     private TabsController tabsController;
     private FindDialogController findController;
     private Map<String, ActionHandler> actionHandlers;
 
+    /**
+     * Constructor for the ActionController class.
+     *
+     * @param viewer          The main viewer component of the application.
+     * @param tabsController  The controller for managing tabs and documents.
+     * @param findController  The controller for the find dialog and search functionality.
+     */
     public ActionController(Viewer viewer, TabsController tabsController, FindDialogController findController) {
         this.viewer = viewer;
         this.tabsController = tabsController;
@@ -17,6 +33,11 @@ public class ActionController implements ActionListener {
         initializeActionHandlers();
     }
 
+    /**
+     * Handles the actionPerformed event when a user triggers an action.
+     *
+     * @param event The ActionEvent object representing the user's action.
+     */
     @Override
     public void actionPerformed(ActionEvent event) {
         viewer.setCurrentContent();
@@ -31,21 +52,34 @@ public class ActionController implements ActionListener {
         }
     }
 
+    /**
+     * Retrieve the map of action handlers associated with specific action commands.
+     *
+     * @return A map of action handlers.
+     */
     public Map<String, ActionHandler> getActionHandlers() {
         return actionHandlers;
     }
 
+    /**
+    * Check if a tab has unsaved changes.
+    *
+    * @param tabIndex The index of the tab to check for unsaved changes.
+    * @return True if there are unsaved changes, false otherwise.
+    */
     public boolean hasUnsavedChanges(int tabIndex) {
         Boolean hasChanges = tabsController.getUnsavedChangesPerTab().get(tabIndex);
 
         if (hasChanges != null) {
-            System.out.println("hasChanges = " + hasChanges);
             return hasChanges;
         }
 
         return false;
     }
 
+    /**
+    * Initialize the action handlers and map them to their corresponding action commands.
+    */
     private void initializeActionHandlers() {
         NewDocumentActionHandler newDocumentActionHandler = new NewDocumentActionHandler(viewer);
         OpenDocumentActionHandler openDocumentActionHandler = new OpenDocumentActionHandler(viewer, tabsController);

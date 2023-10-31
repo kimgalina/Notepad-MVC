@@ -3,6 +3,11 @@ import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.UIManager;
 
+/**
+ * The CustomThemeMaker class extends the DefaultMetalTheme and provides custom
+ * color themes for the application's user interface. It allows switching between
+ * light and dark themes and refreshing the theme dynamically.
+ */
 public class CustomThemeMaker extends DefaultMetalTheme {
     private Color textColor;
     private Color backgroundColor;
@@ -10,6 +15,11 @@ public class CustomThemeMaker extends DefaultMetalTheme {
     private Color alternativeColor;
     private Color fullTransparentColor;
 
+    /**
+     * Constructs a CustomThemeMaker with the specified theme.
+     *
+     * @param isLightTheme True for a light theme, false for a dark theme.
+     */
     public CustomThemeMaker(boolean isLightTheme) {
         textColor = isLightTheme ? new Color(205, 205, 205) : new Color(24, 24, 24);
         backgroundColor =  isLightTheme ? new Color(40, 44, 52) : new Color(240, 240, 240);
@@ -18,26 +28,55 @@ public class CustomThemeMaker extends DefaultMetalTheme {
         fullTransparentColor = new Color(0, 0, 0, 0);
     }
 
+    /**
+   * Get the text color for the current theme.
+   *
+   * @return The text color.
+   */
     public Color getTextColor()  {
         return textColor;
     }
 
+    /**
+     * Get the background color for the current theme.
+     *
+     * @return The background color.
+     */
     public Color getBackgroundColor()  {
         return backgroundColor;
     }
 
+    /**
+    * Get the second background color for the current theme.
+    *
+    * @return The second background color.
+    */
     public Color getSecondBackgroundColor()  {
         return secondBackgroundColor;
     }
 
+    /**
+   * Get the alternative color for the current theme.
+   *
+   * @return The alternative color.
+   */
     public Color getAlternativeColor()  {
         return alternativeColor;
     }
 
+    /**
+    * Get a fully transparent color.
+    *
+    * @return The fully transparent color.
+    */
     public Color getFullTransparentColor()  {
         return fullTransparentColor;
     }
 
+    /**
+    * Refreshes the UI theme by updating various UI component properties to match
+    * the current theme's colors.
+    */
     public void refreshTheme() {
         UIManager.put("ScrollBar.background", backgroundColor);
 
@@ -81,6 +120,7 @@ public class CustomThemeMaker extends DefaultMetalTheme {
         }
     }
 
+    
     @Override
     public ColorUIResource getPrimary1() {
         return new ColorUIResource(textColor);

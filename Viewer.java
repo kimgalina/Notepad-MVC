@@ -56,7 +56,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
-
+/**
+ * The Viewer class is the main component of the text editor application. It provides the user interface
+ * and manages various controllers, dialogs, and user interactions.
+ */
 public class Viewer {
     private JFileChooser fileChooser;
     private JFrame frame;
@@ -91,6 +94,9 @@ public class Viewer {
     private boolean isLightTheme;
     private CustomThemeMaker currentTheme;
 
+    /**
+     * Constructor for the Viewer class.
+     */
     public Viewer() {
         frame = getFrame();
         mouseController = new MouseListener();
@@ -111,6 +117,9 @@ public class Viewer {
         fileChooser.setFileFilter(fileNameExtensionFilter);
     }
 
+    /**
+    * Starts the application by creating the user interface components, menus, and toolbars.
+    */
     public void startApplication() {
         JMenuBar menuBar = getJMenuBar();
         JToolBar toolBar = getToolBar(controller);
@@ -128,6 +137,11 @@ public class Viewer {
         frame.setIconImage(notepadIcon.getImage());
     }
 
+    /**
+     * Creates a new tab with an empty text area for editing.
+     *
+     * @return The index of the newly created tab.
+     */
     public int createNewTab() {
         BorderLayout panelBorder = new BorderLayout();
         JPanel panel = new JPanel(panelBorder);
@@ -155,14 +169,27 @@ public class Viewer {
         return tabIndex;
     }
 
+    /**
+    * Gets the tab pane that holds all open tabs.
+    *
+    * @return The JTabbedPane component representing the tab pane.
+    */
     public JTabbedPane getTabPane() {
         return tabPane;
     }
 
+    /**
+     * Gets the index of the currently selected tab.
+     *
+     * @return The index of the currently selected tab.
+     */
     public int getCurrentTabIndex() {
         return tabPane.getSelectedIndex();
     }
 
+    /**
+     * Sets the current content text area for various operations.
+     */
     public void setCurrentContent() {
         JPanel currentPanel = getCurrentPanel();
 
@@ -181,14 +208,28 @@ public class Viewer {
         }
     }
 
+    /**
+    * Gets the currently active text area content.
+    *
+    * @return The JTextArea component representing the current content.
+    */
     public JTextArea getCurrentContent() {
         return currentContent;
     }
 
+    /**
+    * Gets the font of the currently active text area.
+    *
+    * @return The Font object representing the font of the current text area.
+    */
     public Font getCurrentTextAreaFont() {
         return currentContent.getFont();
     }
 
+    /**
+    * Changes the application's theme between light and dark themes, updating the UI accordingly.
+    * This method toggles the current theme, applies it, and updates the UI components to reflect the theme change.
+    */
     public void changeTheme() {
         isLightTheme = !isLightTheme;
         currentTheme = new CustomThemeMaker(isLightTheme);
@@ -204,14 +245,27 @@ public class Viewer {
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
+    /**
+     * Gets the current text area content.
+     *
+     * @return The content of the current text area as a String.
+     */
     public String getCurrentTextAreaContent() {
         return currentContent.getText();
     }
 
+    /**
+     * Gets the current text area color.
+     *
+     * @return The text color of the current text area as a Color object.
+     */
     public Color getCurrentTextAreaColor() {
         return currentContent.getForeground();
     }
 
+    /**
+     * Shows a dialog to inform the user that the document has been printed.
+     */
     public void showDialogFinishPrintDocument() {
         JLabel coloredLabelText = new JLabel("The document has been printed.");
         coloredLabelText.setForeground(currentTheme.getTextColor());
@@ -219,6 +273,11 @@ public class Viewer {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Retrieves the text from the current text area and returns it as a list of lines.
+     *
+     * @return A list of lines from the current text area content.
+     */
     public List<String> getListTextFromTextAreaContent() {
         Document document = currentContent.getDocument();
         List<String> listTxt = new ArrayList<>();
@@ -231,10 +290,18 @@ public class Viewer {
         return listTxt;
     }
 
+    /**
+     * Opens a color chooser dialog for selecting a text color.
+     *
+     * @return The selected text color.
+     */
     public Color openColorChooser() {
         return JColorChooser.showDialog(frame, "Color Chooser", Color.BLACK);
     }
 
+    /**
+    * Opens the "Find" dialog for searching text in the current text area.
+    */
     public void openFindDialog() {
         findDialog = createDialog("Find", false, 480, 170);
 
@@ -249,23 +316,38 @@ public class Viewer {
         searchField = new JTextField();
         searchField.setBounds(60, 20, 270, 20);
 
+        String searchValue = findController.getSearchValue();
+        if (searchValue != null) {
+            searchField.setText(searchValue);
+            searchField.selectAll();
+        }
+
         JLabel directionLabel = new JLabel("Direction");
         directionLabel.setBounds(215, 60, 70, 20);
         directionLabel.setFont(dialogFont);
 
         ButtonGroup direction = new ButtonGroup();
         upButton = createRadioButton("Up", false, 180, 85, 60, 20);
+        upButton.setSelected(!findController.isNext());
+
         downButton = createRadioButton("Down", true, 240, 85, 60, 20);
+        downButton.setSelected(findController.isNext());
+
         direction.add(upButton);
         direction.add(downButton);
 
         caseSensitiveButton = new JCheckBox("Case sensitive");
+        caseSensitiveButton.setSelected(findController.isCaseSensitive());
         caseSensitiveButton.setBounds(30, 80, 100, 25);
         caseSensitiveButton.setFont(dialogFont);
         caseSensitiveButton.setFocusable(false);
 
         JButton findButton = createDialogButton("Find", "Find", 350, 20, 90, 25);
-        findButton.setEnabled(false);
+        if (searchValue != null) {
+            findButton.setEnabled(true);
+        } else {
+            findButton.setEnabled(false);
+        }
         findButton.addActionListener(findController);
 
         TextFieldListener textFieldListener = new TextFieldListener(searchField, findButton);
@@ -287,22 +369,43 @@ public class Viewer {
         findDialog.setVisible(true);
     }
 
+    /**
+    * Gets the search field used in the "Find" dialog for searching text.
+    *
+    * @return The JTextField component representing the search field.
+    */
     public JTextField getSearchField() {
         return searchField;
     }
 
+    /**
+    * Gets the radio button for the "Down" direction in the "Find" dialog.
+    *
+    * @return The JRadioButton component for selecting the "Down" direction.
+    */
     public JRadioButton getDownButton() {
         return downButton;
     }
 
+    /**
+    * Gets the checkbox for enabling case-sensitive search in the "Find" dialog.
+    *
+    * @return The JCheckBox component for enabling case-sensitive search.
+    */
     public JCheckBox getCaseSensitiveButton() {
         return caseSensitiveButton;
     }
 
+    /**
+    * Closes the "Find" dialog.
+    */
     public void closeFindDialog() {
         findDialog.dispose();
     }
 
+    /**
+    * Opens the "Go to Line" dialog for navigating to a specific line in the text area.
+    */
     public void openGoDialog() {
         goDialog = createDialog("Go to the line", true, 300, 150);
 
@@ -334,10 +437,18 @@ public class Viewer {
         goDialog.setVisible(true);
     }
 
+    /**
+    * Closes the "Go to Line" dialog.
+    */
     public void closeGoDialog() {
         goDialog.dispose();
     }
 
+    /**
+    * Displays an error message dialog with the provided error message.
+    *
+    * @param errorMessage The error message to be displayed.
+    */
     public void showError(String errorMessage) {
         JOptionPane.showMessageDialog(
                 new JFrame(),
@@ -347,6 +458,11 @@ public class Viewer {
         );
     }
 
+    /**
+    * Opens a file chooser dialog for selecting a file to open and returns the selected file.
+    *
+    * @return The selected file, or null if no file is selected.
+    */
     public File getFile() {
         JFrame fileChooserFrame = new JFrame();
         int returnVal = fileChooser.showOpenDialog(fileChooserFrame);
@@ -359,6 +475,12 @@ public class Viewer {
         return null;
     }
 
+    /**
+    * Opens a file chooser dialog for selecting a location to save a new file with the provided filename.
+    *
+    * @param fileName The name of the file to save.
+    * @return The selected file location, or null if no location is selected.
+    */
     public File getNewFileSaveLocation(String fileName) {
         if (!fileName.equals("Untitled.txt")) {
             File selectedFile = new File(fileName);
@@ -376,26 +498,52 @@ public class Viewer {
         return null;
     }
 
+    /**
+    * Updates the content, name, and selected tab of a specific tab in the application's tab pane.
+    *
+    * @param text     The text content to update.
+    * @param tabName  The new tab name.
+    * @param tabIndex The index of the tab to update.
+    */
     public void update(String text, String tabName, int tabIndex) {
         tabPane.setSelectedIndex(tabIndex);
         updateText(text);
         renameTab(tabName, tabIndex);
     }
 
+    /**
+    * Updates the text content of the current tab's text area.
+    *
+    * @param text The new text content to set.
+    */
     public void updateText(String text) {
         setCurrentContent();
         currentContent.setText(text);
         currentContent.setCaretPosition(0);
     }
 
+    /**
+    * Updates the text color of the current tab's text area.
+    *
+    * @param color The new text color to set.
+    */
     public void updateTextColor(Color color) {
         currentContent.setForeground(color);
     }
 
+    /**
+    * Retrieves the Font dialog used for changing text font settings.
+    *
+    * @return The Font dialog.
+    */
     public JDialog getFontDialog() {
         return fontDialog;
     }
 
+    /**
+    * Opens the Font dialog for changing text font settings.
+    * If the dialog is already opened, it is brought to the front.
+    */
     public void openFontDialog() {
         if (fontDialog != null) {
             SwingUtilities.updateComponentTreeUI(fontDialog);
@@ -477,14 +625,26 @@ public class Viewer {
         fontDialog.setVisible(true);
     }
 
+    /**
+    * Sets a new font for the current text area.
+    *
+    * @param font The new font to set.
+    */
     public void setNewFontForTextArea(Font font) {
         currentContent.setFont(font);
     }
 
+    /**
+    * Hides the Font dialog.
+    */
     public void hideFontDialog() {
         fontDialog.setVisible(false);
     }
 
+    /**
+    * Increases the font size for the current text area.
+    * The font size is increased by 2 points.
+    */
     public void zoomIn() {
         if (canZoomIn()) {
             fontZoom = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), currentContent.getFont().getSize() + 2);
@@ -492,6 +652,11 @@ public class Viewer {
         }
     }
 
+    /**
+    * Checks if the font can be zoomed in.
+    *
+    * @return true if zooming in is possible, false otherwise.
+    */
     public boolean canZoomIn() {
         if (fontZoom.getSize() > 48) {
             setViewItemZoomIn(false);
@@ -502,10 +667,20 @@ public class Viewer {
         }
     }
 
+    /**
+    * Enables or disables the "Zoom In" menu item.
+    *
+    * @param active true to enable, false to disable.
+    */
     public void setViewItemZoomIn(boolean active) {
         viewItemZoomIn.setEnabled(active);
     }
 
+
+    /**
+    * Decreases the font size for the current text area.
+    * The font size is decreased by 2 points.
+    */
     public void zoomOut() {
         if (canZoomOut()) {
             int size = currentContent.getFont().getSize();
@@ -515,6 +690,11 @@ public class Viewer {
         }
     }
 
+    /**
+    * Checks if the font can be zoomed out.
+    *
+    * @return true if zooming out is possible, false otherwise.
+    */
     public boolean canZoomOut() {
         if (fontZoom.getSize() <= 8) {
             setViewItemZoomOut(false);
@@ -525,10 +705,18 @@ public class Viewer {
         }
     }
 
+    /**
+    * Enables or disables the "Zoom Out" menu item.
+    *
+    * @param active true to enable, false to disable.
+    */
     public void setViewItemZoomOut(boolean active) {
         viewItemZoomOut.setEnabled(active);
     }
 
+    /**
+    * Resets the font size for the current text area to the default size.
+    */
     public void zoomDefault() {
         if (canZoomDefault()) {
             Font defaultFont = new Font(currentContent.getFont().getFontName(), currentContent.getFont().getStyle(), 22);
@@ -536,22 +724,46 @@ public class Viewer {
         }
     }
 
+    /**
+    * Checks if resetting the font size to the default size is possible.
+    *
+    * @return true if resetting is possible, false otherwise.
+    */
     public boolean canZoomDefault() {
         return currentContent.getFont().getSize() >= 22 || currentContent.getFont().getSize() <= 22;
     }
 
+    /**
+    * Retrieves the status bar check box menu item.
+    *
+    * @return The status bar check box menu item.
+    */
     public JCheckBoxMenuItem getStatusBarBox() {
         return statusBarBox;
     }
 
+    /**
+    * Sets the status label text to display the current line and column information.
+    *
+    * @param line   The current line number.
+    * @param column The current column number.
+    */
     public void setLabelByTextAreaLines(int line, int column) {
         statusLabel.setText("  Line " + line + ", Column " + column);
     }
 
+    /**
+    * Sets the visibility of the status panel.
+    *
+    * @param visible true to make the status panel visible, false to hide it.
+    */
     public void setStatusPanelToVisible(boolean visible) {
         statusPanel.setVisible(visible);
     }
 
+    /**
+    * Opens the "About Notepad" help dialog, displaying information about the application.
+    */
     public void openHelpDialog() {
         if (helpDialog != null) {
             SwingUtilities.updateComponentTreeUI(helpDialog);
@@ -590,10 +802,19 @@ public class Viewer {
         helpDialog.setVisible(true);
     }
 
+    /**
+    * Hides the "About Notepad" help dialog.
+    */
     public void hideHelpDialog() {
         helpDialog.setVisible(false);
     }
 
+    /**
+    * Retrieves the close button from a specific tab if available.
+    *
+    * @param tabIndex The index of the tab to retrieve the close button from.
+    * @return The close button component if found, or null if not found.
+    */
     public JButton getCloseBtnFromTab(int tabIndex) {
         Component tabComponent = tabPane.getTabComponentAt(tabIndex);
 
@@ -610,16 +831,31 @@ public class Viewer {
         return null;
     }
 
+    /**
+    * Removes the dot symbol in the tab's close button.
+    *
+    * @param tabIndex The index of the tab to modify.
+    */
     public void removeDotInTab(int tabIndex) {
         JButton closeBtn = getCloseBtnFromTab(tabIndex);
         closeBtn.setText("\u00d7");
     }
 
+    /**
+    * Sets the dot symbol  in the tab's close button, indicating unsaved changes.
+    *
+    * @param tabIndex The index of the tab to modify.
+    */
     public void setDotInTab(int tabIndex) {
         JButton closeBtn = getCloseBtnFromTab(tabIndex);
         closeBtn.setText("\u2022");
     }
 
+    /**
+    * Closes the currently selected tab, handling unsaved changes and prompting for user actions.
+    *
+    * @param closeBtn The close button associated with the tab to be closed.
+    */
     public void closeCurrentTab(JButton closeBtn) {
         int foundIndex = findTabIndexByCloseButton(closeBtn);
         int currentTabIndex = foundIndex != -1 ? foundIndex : tabPane.getSelectedIndex();
@@ -646,6 +882,12 @@ public class Viewer {
         }
     }
 
+    /**
+    * Shows a confirmation message dialog for closing a tab, handling unsaved changes.
+    *
+    * @param currentTabIndex The index of the tab to close.
+    * @return An integer indicating the user's choice (YES, NO, or CANCEL).
+    */
     public int showCloseTabMessage(int currentTabIndex) {
         JLabel coloredLabelText = new JLabel("Do you want to save changes ? ");
         coloredLabelText.setForeground(currentTheme.getTextColor());
@@ -667,6 +909,9 @@ public class Viewer {
         return result;
     }
 
+    /**
+    * Shows a confirmation message dialog for exiting the application, handling unsaved changes.
+    */
     public void showExitMessage() {
         int result = JOptionPane.showConfirmDialog(frame, "Do you want to save changes ? ", "Notepad MVC",
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null);
@@ -685,6 +930,9 @@ public class Viewer {
         }
     }
 
+    /**
+    * Updates the fonts and colors of the menu bar components to match the current theme.
+    */
     private void updateMenuBarFontsColor() {
         JMenuBar menuBar = frame.getJMenuBar();
 
@@ -729,6 +977,9 @@ public class Viewer {
         }
     }
 
+    /**
+    * Updates the colors and fonts of the tabs and their components to match the current theme.
+    */
     private void updateTabColors() {
         if (tabPane == null) {
             return;
@@ -783,6 +1034,9 @@ public class Viewer {
         }
     }
 
+    /**
+    * Updates the colors and fonts of the font dialog components to match the current theme.
+    */
     private void updateFontDialogColors() {
         if (fontDialog == null) {
             return;
@@ -818,6 +1072,9 @@ public class Viewer {
           }
     }
 
+    /**
+    * Updates the colors and fonts of the help dialog components to match the current theme.
+    */
     private void updateHelpDialogColors() {
         if (helpDialog == null) {
             return;
@@ -842,6 +1099,11 @@ public class Viewer {
         }
     }
 
+    /**
+    * Updates the colors and fonts of scroll panes and their components to match the current theme.
+    *
+    * @param component The component (usually a JScrollPane) to update.
+    */
     private void updateScrollTheme(Component component) {
         if (component == null) {
             return;
@@ -866,8 +1128,12 @@ public class Viewer {
         }
     }
 
-
-
+    /**
+    * Finds the index of the tab associated with a close button.
+    *
+    * @param closeBtn The close button whose associated tab index is to be found.
+    * @return The index of the tab if found; otherwise, -1.
+    */
     private int findTabIndexByCloseButton(JButton closeBtn) {
         Container tabPanel = closeBtn.getParent();
 
@@ -882,12 +1148,28 @@ public class Viewer {
         return -1;
     }
 
+    /**
+    * Applies an input filter to restrict the allowed content in a JTextField.
+    *
+    * @param textField The JTextField to which the input filter is applied.
+    */
     private void filterInput(JTextField textField) {
         PlainDocument doc = (PlainDocument) textField.getDocument();
         IntegerFilter filter = new IntegerFilter(this);
         doc.setDocumentFilter(filter);
     }
 
+    /**
+    * Creates and configures a radio button with the specified attributes.
+    *
+    * @param name     The name of the radio button.
+    * @param isSelected  Whether the radio button is initially selected.
+    * @param x         The X-coordinate of the radio button.
+    * @param y         The Y-coordinate of the radio button.
+    * @param width     The width of the radio button.
+    * @param height    The height of the radio button.
+    * @return The configured radio button.
+    */
     private JRadioButton createRadioButton(String name, boolean isSelected, int x, int y, int width, int height) {
         JRadioButton radioButton = new JRadioButton(name, isSelected);
         radioButton.setBounds(x, y, width, height);
@@ -896,6 +1178,17 @@ public class Viewer {
         return radioButton;
     }
 
+    /**
+    * Creates and configures a dialog button with the specified attributes.
+    *
+    * @param name     The name of the button.
+    * @param command  The action command associated with the button.
+    * @param x         The X-coordinate of the button.
+    * @param y         The Y-coordinate of the button.
+    * @param width     The width of the button.
+    * @param height    The height of the button.
+    * @return The configured dialog button.
+    */
     private JButton createDialogButton(String name, String command, int x, int y, int width, int height) {
         JButton button = new JButton(name);
 
@@ -907,6 +1200,15 @@ public class Viewer {
         return button;
     }
 
+    /**
+    * Creates a custom dialog for various purposes.
+    *
+    * @param title    The title of the dialog.
+    * @param resizable Whether the dialog is resizable.
+    * @param width    The width of the dialog.
+    * @param height   The height of the dialog.
+    * @return The created JDialog component.
+    */
     private JDialog createDialog(String title, boolean isModal, int width, int height) {
         JDialog dialog = new JDialog(frame, title, isModal);
 
@@ -918,6 +1220,14 @@ public class Viewer {
         return dialog;
     }
 
+    /**
+    * Creates a JLabel with the specified text and location attributes.
+    *
+    * @param text The text to be displayed on the label.
+    * @param x    The X-coordinate of the label.
+    * @param y    The Y-coordinate of the label.
+    * @return A configured JLabel with the specified text and location.
+    */
     private JLabel createLabel(String text, int x, int y) {
         JLabel label = new JLabel(text);
         label.setBounds(x, y, 50, 15);
@@ -925,6 +1235,17 @@ public class Viewer {
         return label;
     }
 
+    /**
+    * Creates a JTextField with the specified name, text, and location attributes.
+    *
+    * @param name   The name to assign to the text field.
+    * @param text   The initial text content of the text field.
+    * @param x      The X-coordinate of the text field.
+    * @param y      The Y-coordinate of the text field.
+    * @param width  The width of the text field.
+    * @param height The height of the text field.
+    * @return A configured JTextField with the specified attributes.
+    */
     private JTextField createTextField(String name, String text, int x, int y, int width, int height) {
         JTextField textField = new JTextField(text);
         textField.setBounds(x, y, width, height);
@@ -933,6 +1254,13 @@ public class Viewer {
         return textField;
     }
 
+
+    /**
+    * Retrieves the name of a font style based on the provided style value.
+    *
+    * @param style The font style value.
+    * @return The name of the font style (e.g., "Regular", "Italic", "Bold", "Bold Italic").
+    */
     private String getFontStyle(int style) {
         if (style == Font.PLAIN) {
             return "Regular";
@@ -945,12 +1273,22 @@ public class Viewer {
         }
     }
 
+    /**
+    * Deletes a tab at the specified index, removing it from the tab pane and related data structures.
+    *
+    * @param tabIndex The index of the tab to be deleted.
+    */
     public void deleteTab(int tabIndex) {
         tabPane.removeTabAt(tabIndex);
         tabsController.getUnsavedChangesPerTab().remove(tabIndex);
         tabsController.getFilesPerTabs().remove(tabIndex);
     }
 
+    /**
+    * Creates the "Help" menu, including its items and associated keyboard shortcuts.
+    *
+    * @return The configured "Help" menu.
+    */
     private JMenu getHelpMenu() {
         JMenuItem viewHelpDocument = createMenuItem("View Help", "images/font.gif", "View_Help");
         viewHelpDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, ActionEvent.CTRL_MASK));
@@ -966,6 +1304,9 @@ public class Viewer {
         return helpMenu;
     }
 
+    /**
+    * Initializes the status panel, configuring its appearance and adding a status label.
+    */
     private void initStatusPanel() {
         statusPanel = new JPanel();
 
@@ -984,6 +1325,11 @@ public class Viewer {
         statusPanel.setVisible(false);
     }
 
+    /**
+    * Retrieves the currently selected tab's panel from the tab pane.
+    *
+    * @return The JPanel representing the content of the currently selected tab, or null if none is selected.
+    */
     private JPanel getCurrentPanel() {
         int currentTabIndex = tabPane.getSelectedIndex();
 
@@ -999,6 +1345,12 @@ public class Viewer {
         return null;
     }
 
+    /**
+    * Creates a custom tab component for the given tab title.
+    *
+    * @param tabTitle The title of the tab.
+    * @return A JComponent representing the custom tab component.
+    */
     private JComponent createCustomTabComponent(String tabTitle) {
         FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT, 0, 0);
         JPanel tabPanel = new JPanel(flowLayout);
@@ -1025,6 +1377,11 @@ public class Viewer {
         return tabPanel;
     }
 
+    /**
+    * Creates a close tab button for use in custom tab components.
+    *
+    * @return A JButton representing the close tab button.
+    */
     private JButton createCloseTabBtn() {
         JButton closeButton = new JButton("\u00d7");
         closeButton.addMouseListener(mouseController);
@@ -1037,6 +1394,12 @@ public class Viewer {
         return closeButton;
     }
 
+    /**
+    * Renames the title of a tab at the specified index in the tab pane.
+    *
+    * @param tabName  The new title for the tab.
+    * @param tabIndex The index of the tab to be renamed.
+    */
     private void renameTab(String tabName, int tabIndex) {
         Component tabComponent = tabPane.getTabComponentAt(tabIndex);
 
@@ -1053,6 +1416,12 @@ public class Viewer {
         }
     }
 
+    /**
+    * Creates and returns a toolbar with various action buttons.
+    *
+    * @param controller The ActionController to handle button actions.
+    * @return A JToolBar containing action buttons.
+    */
     private JToolBar getToolBar(ActionController controller) {
         JToolBar toolBar = new JToolBar();
 
@@ -1081,6 +1450,14 @@ public class Viewer {
         return toolBar;
     }
 
+    /**
+    * Creates a button with the specified icon and action command.
+    *
+    * @param iconPath      The path to the button's icon.
+    * @param actionCommand The action command associated with the button.
+    * @param controller    The ActionController to handle button actions.
+    * @return A JButton with the specified icon and action command.
+    */
     private JButton createButton(String iconPath, String actionCommand, ActionController controller) {
         ImageIcon buttonIcon = new ImageIcon(iconPath);
         JButton button = new JButton(buttonIcon);
@@ -1092,6 +1469,11 @@ public class Viewer {
         return button;
     }
 
+    /**
+    * Creates and returns the main menu bar with various menu options.
+    *
+    * @return A JMenuBar containing the application's main menus.
+    */
     private JMenuBar getJMenuBar() {
         JMenu fileMenu = getFileMenu();
         editMenu = getEditMenu();
@@ -1109,6 +1491,11 @@ public class Viewer {
         return menuBar;
     }
 
+    /**
+    * Creates and returns the "File" menu with its associated menu items.
+    *
+    * @return A JMenu representing the "File" menu.
+    */
     private JMenu getFileMenu() {
 
         JMenuItem newDocument = createMenuItem("New Document", "images/new-document.png", "New_Document");
@@ -1141,6 +1528,11 @@ public class Viewer {
         return fileMenu;
     }
 
+    /**
+    * Creates and returns the "Edit" menu with its associated menu items.
+    *
+    * @return A JMenu representing the "Edit" menu.
+    */
     private JMenu getEditMenu() {
         JMenuItem cutDocument = createMenuItem("Cut", "images/cut.png", "Cut");
         cutDocument.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
@@ -1197,6 +1589,11 @@ public class Viewer {
         return editMenu;
     }
 
+    /**
+    * Creates and returns the "Format" menu with its associated menu items.
+    *
+    * @return A JMenu representing the "Format" menu.
+    */
     private JMenu getFormatMenu() {
         JMenuItem wordWrap = createMenuItem("Word wrap", "", "Word_Wrap");
         wordWrap.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
@@ -1213,6 +1610,11 @@ public class Viewer {
         return formatMenu;
     }
 
+    /**
+    * Creates and returns the "View" menu with its associated submenus and menu items.
+    *
+    * @return A JMenu representing the "View" menu.
+    */
     private JMenu getViewMenu() {
 
         JMenu viewMenu = new JMenu("View");
@@ -1256,6 +1658,14 @@ public class Viewer {
         return viewMenu;
     }
 
+    /**
+    * Creates a menu item with the specified name, icon, and action command.
+    *
+    * @param name          The name of the menu item.
+    * @param pathToIcon    The path to the menu item's icon.
+    * @param actionCommand The action command associated with the menu item.
+    * @return A JMenuItem with the specified name, icon, and action command.
+    */
     private JMenuItem createMenuItem(String name, String pathToIcon, String actionCommand) {
         ImageIcon itemIcon = new ImageIcon(pathToIcon);
         JMenuItem menuItem = new JMenuItem(name, itemIcon);
@@ -1266,6 +1676,11 @@ public class Viewer {
         return menuItem;
     }
 
+    /**
+    * Creates and returns the main application frame.
+    *
+    * @return A JFrame representing the main application frame.
+    */
     private JFrame getFrame() {
         JFrame frame = new JFrame("Notepad MVC");
         frame.setLocation(250, 100);
