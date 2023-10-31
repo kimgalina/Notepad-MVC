@@ -8,13 +8,27 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+/**
+ * The FontController class handles font-related actions in the Viewer.
+ */
 public class FontController implements ActionListener {
     private Viewer viewer;
 
+  /**
+   * Constructs a new FontController associated with the given Viewer.
+   *
+   * @param viewer The Viewer instance to which this controller is associated.
+   */
     public FontController(Viewer viewer) {
         this.viewer = viewer;
     }
 
+  /**
+   * Handles the actionPerformed event for the FontController.
+   *
+   * @param event The ActionEvent representing the user's action.
+   */
+   @Override
     public void actionPerformed(ActionEvent event) {
         String command = event.getActionCommand();
 
@@ -29,6 +43,9 @@ public class FontController implements ActionListener {
         }
     }
 
+  /**
+   * Processes user clicks on the "Ok" button to set the new font for the TextArea.
+   */
     private void processOkClick() {
         try {
             String fontName = getTextField("fontTextField");
@@ -42,6 +59,12 @@ public class FontController implements ActionListener {
         }
     }
 
+   /**
+    * Retrieves the text value from a JTextField with the given name.
+    *
+    * @param name The name of the JTextField to retrieve text from.
+    * @return The text content of the specified JTextField.
+    */
     private String getTextField(String name) {
         Container contentPane = viewer.getFontDialog().getContentPane();
         Component[] components = contentPane.getComponents();
@@ -58,6 +81,12 @@ public class FontController implements ActionListener {
         return null;
     }
 
+    /**
+    * Maps a font style name to the corresponding Font constant.
+    *
+    * @param selectedStyle The selected font style name ("Regular," "Italic," "Bold," "Bold Italic").
+    * @return The Font constant representing the selected style.
+    */
     private int getStyle(String selectedStyle) {
         switch (selectedStyle) {
             case "Regular":
