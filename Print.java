@@ -9,7 +9,9 @@ import java.awt.FontMetrics;
 import java.util.List;
 import java.awt.Color;
 
-
+/**
+ * The Print class is responsible for printing a document using the Printable interface.
+ */
 public class Print implements Printable {
     private final Font font;
     private int[] pageBreaks;
@@ -18,6 +20,14 @@ public class Print implements Printable {
     private FontMetrics metrics;
     private boolean aDocumentHasBeenPrinted;
 
+    /**
+    * Constructs a Print object for printing text.
+    *
+    * @param textLinesList  The list of text lines to print.
+    * @param font           The font to use for printing.
+    * @param textColor      The color of the printed text.
+    * @throws Exception if the provided text content or font is invalid.
+    */
     public Print(List<String> textLinesList, Font font, Color textColor) throws Exception {
         if (textLinesList == null) {
             throw new Exception("Invalid text content");
@@ -30,10 +40,18 @@ public class Print implements Printable {
         this.textColor = textColor;
     }
 
+    /**
+     * Checks if a document has been successfully printed.
+     *
+     * @return true if a document has been printed; otherwise, false.
+     */
     public boolean isPrinted() {
         return aDocumentHasBeenPrinted;
     }
 
+    /**
+     * Initiates the process of printing the document.
+     */
     public void printDocument() {
         PrinterJob job = PrinterJob.getPrinterJob();
         if (job == null) {
@@ -55,6 +73,14 @@ public class Print implements Printable {
         }
     }
 
+    /**
+   * Implements the print method for rendering the text on each printed page.
+   *
+   * @param g          The Graphics object for rendering.
+   * @param pf         The PageFormat for the printed page.
+   * @param pageIndex  The index of the page to print.
+   * @return PAGE_EXISTS if the page is successfully printed; otherwise, NO_SUCH_PAGE.
+   */
     public int print(Graphics g, PageFormat pf, int pageIndex) {
         metrics = g.getFontMetrics(font);
 
@@ -122,6 +148,14 @@ public class Print implements Printable {
         return PAGE_EXISTS;
     }
 
+    /**
+    * Separates a line into two lines at a word boundary to fit within the specified page width.
+    *
+    * @param line       The line of text to separate.
+    * @param pageWidth  The width of the printed page.
+    * @param pos        The position of the line within the textLinesList.
+    * @return The remaining portion of the line that couldn't fit on the current page.
+    */
     private String separateLineByWords(String line, int pageWidth, int pos) {
         int index = 0;
         int lineWidth = -1;
@@ -152,6 +186,14 @@ public class Print implements Printable {
         return line;
     }
 
+    /**
+    * Separates a line into two lines at a character boundary to fit within the specified page width.
+    *
+    * @param line       The line of text to separate.
+    * @param pageWidth  The width of the printed page.
+    * @param pos        The position of the line within the textLinesList.
+    * @return The remaining portion of the line that couldn't fit on the current page.
+    */
     private String separateLine(String line, int pageWidth, int pos) {
         int index = 0;
         int lineWidth = -1;
@@ -173,6 +215,13 @@ public class Print implements Printable {
         return line;
     }
 
+    /**
+    * Calculates the width of the line up to a specified character index.
+    *
+    * @param line   The line of text.
+    * @param index  The character index to calculate the width up to.
+    * @return The width of the line up to the specified character index.
+    */
     private int getLineWidth(String line, int index) {
         char[] symbols = new char[index];
         line.getChars(0, index, symbols, 0);
@@ -182,6 +231,11 @@ public class Print implements Printable {
         return lineWidth;
     }
 
+    /**
+    * Initializes the textLinesList by splitting lines to fit within the specified page width.
+    *
+    * @param pageWidth  The width of the printed page.
+    */
     private void initTextLines(int pageWidth) {
         for (int i = 0; i < textLinesList.size(); i++) {
             int strWidth = metrics.stringWidth(textLinesList.get(i));
