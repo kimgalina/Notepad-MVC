@@ -26,15 +26,8 @@ public class Print implements Printable {
     * @param textLinesList  The list of text lines to print.
     * @param font           The font to use for printing.
     * @param textColor      The color of the printed text.
-    * @throws Exception if the provided text content or font is invalid.
     */
     public Print(List<String> textLinesList, Font font, Color textColor) throws Exception {
-        if (textLinesList == null) {
-            throw new Exception("Invalid text content");
-        }
-        if (font == null) {
-            throw new Exception("Invalid font object");
-        }
         this.textLinesList = textLinesList;
         this.font = font;
         this.textColor = textColor;
